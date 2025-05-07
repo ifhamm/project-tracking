@@ -39,13 +39,13 @@ class part extends Model
         return $this->hasMany(breakdown_part::class);
     }
 
-    public function customer()
-    {
-        return $this->belongsTo(customer::class);
-    }
-
     public function akunMekanik()
     {
-        return $this->belongsTo(akun_mekanik::class);
+        return $this->belongsToMany(akun_mekanik::class);
+    }
+
+    public function workProgres()
+    {
+        return $this->hasMany(work_progres::class);
     }
 }
