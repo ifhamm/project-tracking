@@ -204,14 +204,10 @@
                                 <div class="modal-body">
                                     <div class="mb-3">
                                         <label for="id_mekanik" class="form-label">Pilih Mekanik</label>
-                                        <select class="form-select @error('id_mekanik') is-invalid @enderror"
-                                            id="id_mekanik" name="id_mekanik" required>
-                                            <option value="" disabled selected>Pilih Mekanik</option>
-                                            @foreach ($mekanik as $mekaniks)
-                                                <option value="{{ $mekaniks->id_mekanik }}"
-                                                    {{ old('id_mekanik') == $mekaniks->id_mekanik ? 'selected' : '' }}>
-                                                    {{ $mekaniks->nama_mekanik }}
-                                                </option>
+                                        <select name="id_mekanik" class="form-control" required>
+                                            <option value="">Pilih Mekanik</option>
+                                            @foreach ($mekanik as $m)
+                                                <option value="{{ $m->id_mekanik }}">{{ $m->nama_mekanik }}</option>
                                             @endforeach
                                         </select>
                                         @error('id_mekanik')
@@ -294,50 +290,51 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Table - Responsive -->
-            <div class="card">
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>No WBS</th>
-                                    <th>Part Name</th>
-                                    <th>Part Number</th>
-                                    <th>Date Received</th>
-                                    <th>Customer</th>
-                                    <th>Mekanik</th>
-                                    <th>Progress</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($parts as $part)
-                                <tr>
-                                    <td>{{ $part->no_wbs }}</td>
-                                    <td>{{ $part->part_name }}</td>
-                                    <td>{{ $part->part_number }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($part->incoming_date)->format('M d, Y') }}</td>
-                                    <td>{{ $part->customer }}</td>
-                                    <td>{{ $part->akunMekanik->nama_mekanik }}</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <span class="status-badge bg-info bg-opacity-25 text-info me-2">In Progress</span>
-                                            <div class="flex-grow-1">
-                                                <div class="progress">
-                                                    <div class="progress-bar bg-info" role="progressbar"
-                                                        style="width: 45%;" aria-valuenow="45" aria-valuemin="0"
-                                                        aria-valuemax="100"></div>
+                <!-- Table - Responsive -->
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>No WBS</th>
+                                        <th>Part Name</th>
+                                        <th>Part Number</th>
+                                        <th>Date Received</th>
+                                        <th>Customer</th>
+                                        <th>Mekanik</th>
+                                        <th>Progress</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($parts as $part)
+                                        <tr>
+                                            <td>{{ $part->no_wbs }}</td>
+                                            <td>{{ $part->part_name }}</td>
+                                            <td>{{ $part->part_number }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($part->incoming_date)->format('M d, Y') }}
+                                            </td>
+                                            <td>{{ $part->customer }}</td>
+                                            <td>{{ $part->akunMekanik->nama_mekanik }}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="status-badge bg-info bg-opacity-25 text-info me-2">In
+                                                        Progress</span>
+                                                    <div class="flex-grow-1">
+                                                        <div class="progress">
+                                                            <div class="progress-bar bg-info" role="progressbar"
+                                                                style="width: 45%;" aria-valuenow="45"
+                                                                aria-valuemin="0" aria-valuemax="100"></div>
+                                                        </div>
+                                                        <div class="text-end mt-1"><small>45%</small></div>
+                                                    </div>
                                                 </div>
-                                                <div class="text-end mt-1"><small>45%</small></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
