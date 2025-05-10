@@ -134,7 +134,7 @@
         .auth-footer {
             margin-top: 24px;
             text-align: center;
-            color: #64748b;
+            color: #123666;
             font-size: 0.9rem;
         }
 
