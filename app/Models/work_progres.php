@@ -22,6 +22,6 @@ class work_progres extends Model
 
     public function part()
     {
-        return $this->belongsTo(part::class);
+        return $this->belongsTo(part::class, 'no_iwo', 'no_iwo');
     }
 }

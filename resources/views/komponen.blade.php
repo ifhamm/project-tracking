@@ -274,6 +274,24 @@
                                     </div>
 
                                     <div class="mb-3">
+                                        <label for="step_sequence" class="form-label">Urutan Step</label>
+                                        <select class="form-select @error('step_sequence') is-invalid @enderror" id="step_sequence" name="step_sequence[]" multiple required>
+                                            <option value="1">Incoming</option>
+                                            <option value="2">Pre Test</option>
+                                            <option value="3">Disassembly</option>
+                                            <option value="4">Check + Stripping</option>
+                                            <option value="5">Cleaning</option>
+                                            <option value="6">Assembly + Repair</option>
+                                            <option value="7">Post Test</option>
+                                            <option value="8">Final Inspection</option>
+                                        </select>
+                                        <small class="form-text text-muted">Pilih urutan step yang akan dilakukan (gunakan Ctrl/Cmd untuk memilih multiple)</small>
+                                        @error('step_sequence')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="mb-3">
                                         <label for="customer" class="form-label">Customer</label>
                                         <textarea class="form-control @error('customer') is-invalid @enderror" id="customer" name="customer">{{ old('customer') }}</textarea>
                                         @error('customer')
