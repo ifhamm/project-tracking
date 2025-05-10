@@ -208,9 +208,9 @@
                                             id="id_mekanik" name="id_mekanik" required>
                                             <option value="" disabled selected>Pilih Mekanik</option>
                                             @foreach ($mekanik as $mekaniks)
-                                                <option value="{{ $mekaniks->id }}"
-                                                    {{ old('id_mekanik') == $mekaniks->id ? 'selected' : '' }}>
-                                                    {{ $mekaniks->name }}
+                                                <option value="{{ $mekaniks->id_mekanik }}"
+                                                    {{ old('id_mekanik') == $mekaniks->id_mekanik ? 'selected' : '' }}>
+                                                    {{ $mekaniks->nama_mekanik }}
                                                 </option>
                                             @endforeach
                                         </select>
