@@ -12,6 +12,7 @@ class akun_mekanik extends Model
 {
     use HasFactory, HasUuid;
 
+    protected $table = 'akun_mekaniks';
     protected $primaryKey = 'id_mekanik';
 
     protected $fillable = [

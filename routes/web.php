@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\loginController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\PartController;
 
 Route::get('/dashboard', function () {
     return view('dashboard_utama');
@@ -25,3 +26,6 @@ Route::post('/login', [LoginController::class, 'login'])->name('login');
 
 Route::get('/register', [RegisterController::class, 'index'])->name('register.show');
 Route::post('/register', [RegisterController::class, 'register'])->name('register');
+
+Route::get('/part/create', [PartController::class, 'create'])->name('part.create');
+Route::post('/part/store', [PartController::class, 'store'])->name('part.store');

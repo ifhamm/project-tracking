@@ -95,6 +95,11 @@
                 display: block;
                 opacity: 1;
             }
+
+            .modal-dialog {
+                z-index: 1050 !important;
+            }
+
         }
     </style>
 </head>
@@ -156,194 +161,306 @@
                 <h2 class="mb-4">Aircraft Component Tracking</h2>
 
                 <!-- Filter Section -->
-                <div class="filter-section">
+                <div class="filter-section mb-4">
                     <div class="row g-3 align-items-center">
-                        <div class="col-12 col-md-auto me-md-auto">
+                        <div class="col-md">
                             <!-- Empty space to push filters to the right -->
                         </div>
-                        <div class="col-12 col-md-auto">
-                            <div class="d-flex align-items-center">
-                                <label for="statusFilter" class="me-2">Status:</label>
-                                <select id="statusFilter" class="form-select">
-                                    <option selected>All</option>
-                                    <option>In Progress</option>
-                                    <option>Completed</option>
-                                    <option>Not Started</option>
-                                </select>
-                            </div>
+                        <div class="col-md-auto">
+                            <label for="statusFilter" class="me-2 fw-semibold">Status:</label>
+                            <select id="statusFilter" class="form-select">
+                                <option selected>All</option>
+                                <option>In Progress</option>
+                                <option>Completed</option>
+                                <option>Not Started</option>
+                            </select>
                         </div>
-                        <div class="col-12 col-md-auto">
-                            <div class="d-flex align-items-center">
-                                <label for="dateFilter" class="me-2">Date:</label>
-                                <input type="search" id="dateFilter" class="form-control" placeholder="Search">
-                            </div>
+                        <div class="col-md-auto">
+                            <label for="dateFilter" class="me-2 fw-semibold">Date:</label>
+                            <input type="search" id="dateFilter" class="form-control" placeholder="Search">
                         </div>
                     </div>
                 </div>
 
-                <!-- Table - Responsive -->
-                <div class="card">
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Description</th>
-                                        <th>Date Received</th>
-                                        <th>Customer/Airline</th>
-                                        <th>Progress</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>COMP-001</td>
-                                        <td>Hydraulic pump</td>
-                                        <td>April 1, 2025</td>
-                                        <td>Airline X</td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <span class="status-badge bg-info bg-opacity-25 text-info me-2">In
-                                                    Progress</span>
-                                                <div class="flex-grow-1">
-                                                    <div class="progress">
-                                                        <div class="progress-bar bg-info" role="progressbar"
-                                                            style="width: 45%;" aria-valuenow="45" aria-valuemin="0"
-                                                            aria-valuemax="100"></div>
-                                                    </div>
-                                                    <div class="text-end mt-1"><small>45%</small></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>COMP-002</td>
-                                        <td>Generator</td>
-                                        <td>March 28, 2025</td>
-                                        <td>Airline Y</td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <span
-                                                    class="status-badge bg-success bg-opacity-25 text-success me-2">Completed</span>
-                                                <div class="flex-grow-1">
-                                                    <div class="progress">
-                                                        <div class="progress-bar bg-success" role="progressbar"
-                                                            style="width: 100%;" aria-valuenow="100" aria-valuemin="0"
-                                                            aria-valuemax="100"></div>
-                                                    </div>
-                                                    <div class="text-end mt-1"><small>100%</small></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>COMP-003</td>
-                                        <td>Valve</td>
-                                        <td>March 25, 2025</td>
-                                        <td>Airline Z</td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <span
-                                                    class="status-badge bg-success bg-opacity-25 text-success me-2">Completed</span>
-                                                <div class="flex-grow-1">
-                                                    <div class="progress">
-                                                        <div class="progress-bar bg-success" role="progressbar"
-                                                            style="width: 100%;" aria-valuenow="100" aria-valuemin="0"
-                                                            aria-valuemax="100"></div>
-                                                    </div>
-                                                    <div class="text-end mt-1"><small>100%</small></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>COMP-004</td>
-                                        <td>Actuator</td>
-                                        <td>March 20, 2025</td>
-                                        <td>Airline X</td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <span
-                                                    class="status-badge bg-secondary bg-opacity-25 text-secondary me-2">Not
-                                                    Started</span>
-                                                <div class="flex-grow-1">
-                                                    <div class="progress">
-                                                        <div class="progress-bar bg-secondary" role="progressbar"
-                                                            style="width: 0%;" aria-valuenow="0" aria-valuemin="0"
-                                                            aria-valuemax="100"></div>
-                                                    </div>
-                                                    <div class="text-end mt-1"><small>0%</small></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>COMP-005</td>
-                                        <td>Fuel pump</td>
-                                        <td>Febr.115, 2025</td>
-                                        <td>Airline Y</td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <span
-                                                    class="status-badge bg-success bg-opacity-25 text-success me-2">Completed</span>
-                                                <div class="flex-grow-1">
-                                                    <div class="progress">
-                                                        <div class="progress-bar bg-success" role="progressbar"
-                                                            style="width: 100%;" aria-valuenow="100"
-                                                            aria-valuemin="0" aria-valuemax="100"></div>
-                                                    </div>
-                                                    <div class="text-end mt-1"><small>100%</small></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>COMP-006</td>
-                                        <td>Landing gear</td>
-                                        <td>Jan.10, 2025</td>
-                                        <td>AOG</td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <span
-                                                    class="status-badge bg-success bg-opacity-25 text-success me-2">Completed</span>
-                                                <div class="flex-grow-1">
-                                                    <div class="progress">
-                                                        <div class="progress-bar bg-success" role="progressbar"
-                                                            style="width: 100%;" aria-valuenow="100"
-                                                            aria-valuemin="0" aria-valuemax="100"></div>
-                                                    </div>
-                                                    <div class="text-end mt-1"><small>100%</small></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>COMP-006</td>
-                                        <td>Landing gear</td>
-                                        <td>Jan.10, 2025</td>
-                                        <td>—</td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <span
-                                                    class="status-badge bg-success bg-opacity-25 text-success me-2">Completed</span>
-                                                <div class="flex-grow-1">
-                                                    <div class="progress">
-                                                        <div class="progress-bar bg-success" role="progressbar"
-                                                            style="width: 100%;" aria-valuenow="100"
-                                                            aria-valuemin="0" aria-valuemax="100"></div>
-                                                    </div>
-                                                    <div class="text-end mt-1"><small>100%</small></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                <!-- Insert Button -->
+                <div class="mb-3 text-end">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#insertModal">
+                        <i class="bi bi-plus-circle"></i> Insert Component
+                    </button>
+                </div>
+
+                <!-- Modal Insert Component -->
+                <div class="modal fade" id="insertModal" tabindex="-1" aria-labelledby="insertModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="insertModalLabel">Tambah Komponen</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <form action="{{ route('part.store') }}" method="POST">
+                                @csrf
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="id_mekanik" class="form-label">Pilih Mekanik</label>
+                                        <select class="form-select @error('id_mekanik') is-invalid @enderror"
+                                            id="id_mekanik" name="id_mekanik" required>
+                                            <option value="" disabled selected>Pilih Mekanik</option>
+                                            @foreach ($mekanik as $mekaniks)
+                                                <option value="{{ $mekaniks->id }}"
+                                                    {{ old('id_mekanik') == $mekaniks->id ? 'selected' : '' }}>
+                                                    {{ $mekaniks->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('id_mekanik')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="no_wbs" class="form-label">No WBS</label>
+                                        <input type="text" class="form-control @error('no_wbs') is-invalid @enderror"
+                                            id="no_wbs" name="no_wbs" value="{{ old('no_wbs') }}" required>
+                                        @error('no_wbs')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="incoming_date" class="form-label">Tanggal Masuk</label>
+                                        <input type="date"
+                                            class="form-control @error('incoming_date') is-invalid @enderror"
+                                            id="incoming_date" name="incoming_date"
+                                            value="{{ old('incoming_date') }}" required>
+                                        @error('incoming_date')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="part_name" class="form-label">Nama Part</label>
+                                        <input type="text"
+                                            class="form-control @error('part_name') is-invalid @enderror"
+                                            id="part_name" name="part_name" value="{{ old('part_name') }}" required>
+                                        @error('part_name')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="part_number" class="form-label">Nomor Part</label>
+                                        <input type="text"
+                                            class="form-control @error('part_number') is-invalid @enderror"
+                                            id="part_number" name="part_number" value="{{ old('part_number') }}"
+                                            required>
+                                        @error('part_number')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="no_seri" class="form-label">Nomor Seri (Opsional)</label>
+                                        <input type="text"
+                                            class="form-control @error('no_seri') is-invalid @enderror" id="no_seri"
+                                            name="no_seri" value="{{ old('no_seri') }}">
+                                        @error('no_seri')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="description" class="form-label">Deskripsi (Opsional)</label>
+                                        <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description">{{ old('description') }}</textarea>
+                                        @error('description')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="customer" class="form-label">Customer</label>
+                                        <textarea class="form-control @error('customer') is-invalid @enderror" id="customer" name="customer">{{ old('customer') }}</textarea>
+                                        @error('customer')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
+
+
+
+            <!-- Table - Responsive -->
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Component</th>
+                                    <th>Description</th>
+                                    <th>Date Received</th>
+                                    <th>Customer/Airline</th>
+                                    <th>Progress</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>COMP-001</td>
+                                    <td>Hydraulic pump</td>
+                                    <td>April 1, 2025</td>
+                                    <td>Airline X</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="status-badge bg-info bg-opacity-25 text-info me-2">In
+                                                Progress</span>
+                                            <div class="flex-grow-1">
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-info" role="progressbar"
+                                                        style="width: 45%;" aria-valuenow="45" aria-valuemin="0"
+                                                        aria-valuemax="100"></div>
+                                                </div>
+                                                <div class="text-end mt-1"><small>45%</small></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>COMP-002</td>
+                                    <td>Generator</td>
+                                    <td>March 28, 2025</td>
+                                    <td>Airline Y</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span
+                                                class="status-badge bg-success bg-opacity-25 text-success me-2">Completed</span>
+                                            <div class="flex-grow-1">
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-success" role="progressbar"
+                                                        style="width: 100%;" aria-valuenow="100" aria-valuemin="0"
+                                                        aria-valuemax="100"></div>
+                                                </div>
+                                                <div class="text-end mt-1"><small>100%</small></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>COMP-003</td>
+                                    <td>Valve</td>
+                                    <td>March 25, 2025</td>
+                                    <td>Airline Z</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span
+                                                class="status-badge bg-success bg-opacity-25 text-success me-2">Completed</span>
+                                            <div class="flex-grow-1">
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-success" role="progressbar"
+                                                        style="width: 100%;" aria-valuenow="100" aria-valuemin="0"
+                                                        aria-valuemax="100"></div>
+                                                </div>
+                                                <div class="text-end mt-1"><small>100%</small></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>COMP-004</td>
+                                    <td>Actuator</td>
+                                    <td>March 20, 2025</td>
+                                    <td>Airline X</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span
+                                                class="status-badge bg-secondary bg-opacity-25 text-secondary me-2">Not
+                                                Started</span>
+                                            <div class="flex-grow-1">
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-secondary" role="progressbar"
+                                                        style="width: 0%;" aria-valuenow="0" aria-valuemin="0"
+                                                        aria-valuemax="100"></div>
+                                                </div>
+                                                <div class="text-end mt-1"><small>0%</small></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>COMP-005</td>
+                                    <td>Fuel pump</td>
+                                    <td>Febr.115, 2025</td>
+                                    <td>Airline Y</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span
+                                                class="status-badge bg-success bg-opacity-25 text-success me-2">Completed</span>
+                                            <div class="flex-grow-1">
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-success" role="progressbar"
+                                                        style="width: 100%;" aria-valuenow="100" aria-valuemin="0"
+                                                        aria-valuemax="100"></div>
+                                                </div>
+                                                <div class="text-end mt-1"><small>100%</small></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>COMP-006</td>
+                                    <td>Landing gear</td>
+                                    <td>Jan.10, 2025</td>
+                                    <td>AOG</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span
+                                                class="status-badge bg-success bg-opacity-25 text-success me-2">Completed</span>
+                                            <div class="flex-grow-1">
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-success" role="progressbar"
+                                                        style="width: 100%;" aria-valuenow="100" aria-valuemin="0"
+                                                        aria-valuemax="100"></div>
+                                                </div>
+                                                <div class="text-end mt-1"><small>100%</small></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>COMP-006</td>
+                                    <td>Landing gear</td>
+                                    <td>Jan.10, 2025</td>
+                                    <td>—</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span
+                                                class="status-badge bg-success bg-opacity-25 text-success me-2">Completed</span>
+                                            <div class="flex-grow-1">
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-success" role="progressbar"
+                                                        style="width: 100%;" aria-valuenow="100" aria-valuemin="0"
+                                                        aria-valuemax="100"></div>
+                                                </div>
+                                                <div class="text-end mt-1"><small>100%</small></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
     </div>
 
     <!-- Bootstrap Bundle with Popper -->

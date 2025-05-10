@@ -6,6 +6,7 @@ use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Laravel\Scout\Searchable;
+use Illuminate\Support\Str;
 
 class part extends Model
 {
@@ -15,23 +16,22 @@ class part extends Model
 
     protected $fillable = [
         'no_wbs',
+        'customer',
         'incoming_date',
         'part_name',
         'part_number',
         'no_seri',
         'description',
+        'id_mekanik',
     ];
+    public $timestamps = false;
 
-    public function toSearchableArray(): array
+    protected static function boot()
     {
-        return [
-            'no_wbs' => $this['no_wbs'],
-            'incoming_date' => $this['incoming_date'],
-            'part_name' => $this['part_name'],
-            'part_number' => $this['part_number'],
-            'no_seri' => $this['no_seri'],
-            'description' => $this['description'],
-        ];
+        parent::boot();
+        static::creating(function ($model) {
+            $model->id_mekanik = (string) Str::uuid();
+        });
     }
 
     public function breakdownPart()
