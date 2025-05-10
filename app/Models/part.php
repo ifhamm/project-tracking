@@ -5,12 +5,11 @@ namespace App\Models;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Laravel\Scout\Searchable;
 use Illuminate\Support\Str;
 
 class part extends Model
 {
-    use HasUuid, HasFactory, Searchable;
+    use HasUuid, HasFactory;
 
     protected $primaryKey = 'no_iwo';
 
@@ -31,7 +30,7 @@ class part extends Model
     {
         parent::boot();
         static::creating(function ($model) {
-            $model->id_mekanik = (string) Str::uuid();
+            $model->no_iwo = (string) Str::uuid();
         });
     }
 
@@ -42,7 +41,7 @@ class part extends Model
 
     public function akunMekanik()
     {
-        return $this->belongsToMany(akun_mekanik::class, 'id_mekanik', 'id_mekanik');
+        return $this->belongsTo(akun_mekanik::class, 'id_mekanik', 'id_mekanik');
     }
 
     public function workProgres()

@@ -296,8 +296,6 @@
                 </div>
             </div>
 
-
-
             <!-- Table - Responsive -->
             <div class="card">
                 <div class="card-body p-0">
@@ -305,23 +303,27 @@
                         <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
-                                    <th>Component</th>
-                                    <th>Description</th>
+                                    <th>No WBS</th>
+                                    <th>Part Name</th>
+                                    <th>Part Number</th>
                                     <th>Date Received</th>
-                                    <th>Customer/Airline</th>
+                                    <th>Customer</th>
+                                    <th>Mekanik</th>
                                     <th>Progress</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach($parts as $part)
                                 <tr>
-                                    <td>COMP-001</td>
-                                    <td>Hydraulic pump</td>
-                                    <td>April 1, 2025</td>
-                                    <td>Airline X</td>
+                                    <td>{{ $part->no_wbs }}</td>
+                                    <td>{{ $part->part_name }}</td>
+                                    <td>{{ $part->part_number }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($part->incoming_date)->format('M d, Y') }}</td>
+                                    <td>{{ $part->customer }}</td>
+                                    <td>{{ $part->akunMekanik->nama_mekanik }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <span class="status-badge bg-info bg-opacity-25 text-info me-2">In
-                                                Progress</span>
+                                            <span class="status-badge bg-info bg-opacity-25 text-info me-2">In Progress</span>
                                             <div class="flex-grow-1">
                                                 <div class="progress">
                                                     <div class="progress-bar bg-info" role="progressbar"
@@ -333,127 +335,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>COMP-002</td>
-                                    <td>Generator</td>
-                                    <td>March 28, 2025</td>
-                                    <td>Airline Y</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <span
-                                                class="status-badge bg-success bg-opacity-25 text-success me-2">Completed</span>
-                                            <div class="flex-grow-1">
-                                                <div class="progress">
-                                                    <div class="progress-bar bg-success" role="progressbar"
-                                                        style="width: 100%;" aria-valuenow="100" aria-valuemin="0"
-                                                        aria-valuemax="100"></div>
-                                                </div>
-                                                <div class="text-end mt-1"><small>100%</small></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>COMP-003</td>
-                                    <td>Valve</td>
-                                    <td>March 25, 2025</td>
-                                    <td>Airline Z</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <span
-                                                class="status-badge bg-success bg-opacity-25 text-success me-2">Completed</span>
-                                            <div class="flex-grow-1">
-                                                <div class="progress">
-                                                    <div class="progress-bar bg-success" role="progressbar"
-                                                        style="width: 100%;" aria-valuenow="100" aria-valuemin="0"
-                                                        aria-valuemax="100"></div>
-                                                </div>
-                                                <div class="text-end mt-1"><small>100%</small></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>COMP-004</td>
-                                    <td>Actuator</td>
-                                    <td>March 20, 2025</td>
-                                    <td>Airline X</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <span
-                                                class="status-badge bg-secondary bg-opacity-25 text-secondary me-2">Not
-                                                Started</span>
-                                            <div class="flex-grow-1">
-                                                <div class="progress">
-                                                    <div class="progress-bar bg-secondary" role="progressbar"
-                                                        style="width: 0%;" aria-valuenow="0" aria-valuemin="0"
-                                                        aria-valuemax="100"></div>
-                                                </div>
-                                                <div class="text-end mt-1"><small>0%</small></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>COMP-005</td>
-                                    <td>Fuel pump</td>
-                                    <td>Febr.115, 2025</td>
-                                    <td>Airline Y</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <span
-                                                class="status-badge bg-success bg-opacity-25 text-success me-2">Completed</span>
-                                            <div class="flex-grow-1">
-                                                <div class="progress">
-                                                    <div class="progress-bar bg-success" role="progressbar"
-                                                        style="width: 100%;" aria-valuenow="100" aria-valuemin="0"
-                                                        aria-valuemax="100"></div>
-                                                </div>
-                                                <div class="text-end mt-1"><small>100%</small></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>COMP-006</td>
-                                    <td>Landing gear</td>
-                                    <td>Jan.10, 2025</td>
-                                    <td>AOG</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <span
-                                                class="status-badge bg-success bg-opacity-25 text-success me-2">Completed</span>
-                                            <div class="flex-grow-1">
-                                                <div class="progress">
-                                                    <div class="progress-bar bg-success" role="progressbar"
-                                                        style="width: 100%;" aria-valuenow="100" aria-valuemin="0"
-                                                        aria-valuemax="100"></div>
-                                                </div>
-                                                <div class="text-end mt-1"><small>100%</small></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>COMP-006</td>
-                                    <td>Landing gear</td>
-                                    <td>Jan.10, 2025</td>
-                                    <td>—</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <span
-                                                class="status-badge bg-success bg-opacity-25 text-success me-2">Completed</span>
-                                            <div class="flex-grow-1">
-                                                <div class="progress">
-                                                    <div class="progress-bar bg-success" role="progressbar"
-                                                        style="width: 100%;" aria-valuenow="100" aria-valuemin="0"
-                                                        aria-valuemax="100"></div>
-                                                </div>
-                                                <div class="text-end mt-1"><small>100%</small></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

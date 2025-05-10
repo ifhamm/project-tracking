@@ -12,7 +12,8 @@ class PartController extends Controller
     public function create()
     {
         $mekanik = akun_mekanik::all();
-        return view('komponen', compact('mekanik'));
+        $parts = part::with('akunMekanik')->get();
+        return view('komponen', compact('mekanik', 'parts'));
     }
 
     public function store(Request $request)
