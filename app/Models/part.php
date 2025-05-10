@@ -25,6 +25,7 @@ class part extends Model
         'id_mekanik',
     ];
     public $timestamps = false;
+    public $created_at = false;
 
     protected static function boot()
     {
@@ -41,7 +42,7 @@ class part extends Model
 
     public function akunMekanik()
     {
-        return $this->belongsToMany(akun_mekanik::class);
+        return $this->belongsToMany(akun_mekanik::class, 'id_mekanik', 'id_mekanik');
     }
 
     public function workProgres()

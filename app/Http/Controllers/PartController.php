@@ -25,9 +25,22 @@ class PartController extends Controller
             'no_seri' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'customer' => 'required|string|max:255',
+            'id_mekanik' => 'required|uuid',
         ]);
 
-        part::create($validated);
+        $part = [
+            'no_iwo' => Str::uuid(),
+            'no_wbs' => $validated['no_wbs'],
+            'incoming_date' => $validated['incoming_date'],
+            'part_name' => $validated['part_name'],
+            'part_number' => $validated['part_number'],
+            'no_seri' => $validated['no_seri'],
+            'description' => $validated['description'],
+            'customer' => $validated['customer'],
+            'id_mekanik' => $validated['id_mekanik'],
+        ];
+
+        part::create($part);
 
         return redirect()->route('part.create')->with('success', 'Data part berhasil disimpan.');
     }

@@ -9,9 +9,7 @@ Route::get('/dashboard', function () {
     return view('dashboard_utama');
 })->name('dashboard');
 
-Route::get('/komponen', function () {
-    return view('komponen');
-});
+Route::get('/komponen', [PartController::class, 'create'])->name('komponen');
 
 Route::get('/proses-mekanik', function () {
     return view('proses_mekanik');
