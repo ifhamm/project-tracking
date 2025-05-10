@@ -27,6 +27,8 @@ class PartController extends Controller
             'description' => 'nullable|string',
             'customer' => 'required|string|max:255',
             'id_mekanik' => 'required|uuid',
+            'step_sequence' => 'required|array',
+            'step_sequence.*' => 'required|integer|between:1,8',
         ]);
 
         $part = [
@@ -41,7 +43,29 @@ class PartController extends Controller
             'id_mekanik' => $validated['id_mekanik'],
         ];
 
-        part::create($part);
+        $newPart = part::create($part);
+
+        // Create work progress entries for each step
+        $stepNames = [
+            1 => 'Incoming',
+            2 => 'Pre Test',
+            3 => 'Disassembly',
+            4 => 'Check + Stripping',
+            5 => 'Cleaning',
+            6 => 'Assembly + Repair',
+            7 => 'Post Test',
+            8 => 'Final Inspection'
+        ];
+
+        foreach ($validated['step_sequence'] as $order => $stepNumber) {
+            \App\Models\work_progres::create([
+                'id_progres' => Str::uuid(),
+                'no_iwo' => $newPart->no_iwo,
+                'step_order' => $order + 1,
+                'step_name' => $stepNames[$stepNumber],
+                'is_completed' => false,
+            ]);
+        }
 
         return redirect()->route('part.create')->with('success', 'Data part berhasil disimpan.');
     }

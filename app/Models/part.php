@@ -46,6 +46,6 @@ class part extends Model
 
     public function workProgres()
     {
-        return $this->hasMany(work_progres::class);
+        return $this->hasMany(work_progres::class, 'no_iwo', 'no_iwo');
     }
 }

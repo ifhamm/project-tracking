@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\loginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PartController;
+use App\Http\Controllers\ProsesMekanikController;
 
 Route::get('/dashboard', function () {
     return view('dashboard_utama');
@@ -11,9 +12,8 @@ Route::get('/dashboard', function () {
 
 Route::get('/komponen', [PartController::class, 'create'])->name('komponen');
 
-Route::get('/proses-mekanik', function () {
-    return view('proses_mekanik');
-});
+Route::get('/proses-mekanik', [ProsesMekanikController::class, 'index'])->name('proses-mekanik');
+Route::post('/proses-mekanik/update-step', [ProsesMekanikController::class, 'updateStep'])->name('proses-mekanik.update-step');
 
 Route::get('/detail-proses', function () {
     return view('detail_komponen');
