@@ -5,11 +5,12 @@ namespace App\Models;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Laravel\Scout\Searchable;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class akun_mekanik extends Model
 {
-    use HasFactory, HasUuid, Searchable;
+    use HasFactory, HasUuid;
 
     protected $primaryKey = 'id_mekanik';
 
@@ -20,20 +21,16 @@ class akun_mekanik extends Model
         'password',
     ];
 
-    public function toSearchableArray(): array
+    protected static function boot()
     {
-        return [
-            'nama_mekanik' => $this['nama_mekanik'],
-            'username' => $this['username'],
-            'email' => $this['email'],
-            'password' => $this['password'],
-            
-        ];
+        parent::boot();
+        static::creating(function ($model) {
+            $model->id_mekanik = (string) Str::uuid();
+        });
     }
 
-   public function part()
-   {
-       return $this->belongsToMany(part::class);
-   }
+    public function part()
+    {
+        return $this->belongsToMany(Part::class);
+    }
 }
-
