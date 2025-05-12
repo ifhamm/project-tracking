@@ -28,7 +28,7 @@ class loginController extends Controller
             Session::put('logged_in', true);
             Session::put('id_mekanik', $mekanik->id_mekanik);
             Session::put('email', $mekanik->email);
-            return redirect()->route('dashboard');
+            return redirect()->route('dashboard_utama');
         }
 
         return back()->withErrors([
