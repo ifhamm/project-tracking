@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.0/font/bootstrap-icons.min.css" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <!-- Select 2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         .sidebar {
             background-color: #0f2a4a;
@@ -18,26 +21,31 @@
             transition: all 0.3s;
             z-index: 1000;
         }
+
         .sidebar .nav-link {
             color: white;
             padding: 0.75rem 1rem;
         }
-        .sidebar .nav-link:hover, 
+
+        .sidebar .nav-link:hover,
         .sidebar .nav-link:focus {
             background-color: #1a3a5f;
         }
+
         .sidebar .nav-link.active {
             background-color: #1a3a5f;
         }
+
         .chart-container {
             height: 250px;
         }
+
         .status-badge {
             border-radius: 20px;
             padding: 5px 10px;
             font-size: 0.85rem;
         }
-        
+
         /* Responsive sidebar */
         @media (max-width: 991.98px) {
             .sidebar {
@@ -48,15 +56,15 @@
                 height: 100%;
                 transition: all 0.3s;
             }
-            
+
             .sidebar.show {
                 left: 0;
             }
-            
+
             .content-wrapper {
                 width: 100%;
             }
-            
+
             .overlay {
                 display: none;
                 position: fixed;
@@ -67,6 +75,7 @@
                 opacity: 0;
                 transition: all 0.5s ease-in-out;
             }
+
             .overlay.show {
                 display: block;
                 opacity: 1;
@@ -74,6 +83,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Mobile Nav Toggle Button -->
     <div class="d-lg-none position-fixed top-0 end-0 p-3" style="z-index: 1050;">
@@ -81,7 +91,7 @@
             <i class="bi bi-list"></i>
         </button>
     </div>
-    
+
     <!-- Overlay for sidebar on mobile -->
     <div class="overlay" id="overlay"></div>
 
@@ -132,7 +142,8 @@
 
                 <!-- Stats Cards -->
                 <div class="row g-3 mb-4">
-                    <div class="col-12 col-md-4">
+
+                    <!-- <div class="col-12 col-md-4">
                         <div class="card h-100">
                             <div class="card-body">
                                 <h6 class="card-subtitle mb-2 text-muted">Total Masuk</h6>
@@ -155,7 +166,21 @@
                                 <h2 class="card-title">7</h2>
                             </div>
                         </div>
+                    </div> -->
+
+                    <div class="mb-3">
+                        <label for="customer" class="form-label">Pilih Customer</label>
+                        <select name="customer" id="customerSelect" class="form-control select2" required>
+                            <option value="">Pilih Customer</option>
+                            @foreach ($customers as $c)
+                            <option value="{{ $c->customer }}">{{ $c->customer }}</option>
+                            @endforeach
+                        </select>
+                        @error('customer')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
+
                 </div>
 
                 <!-- Charts Section -->
@@ -165,11 +190,9 @@
                             <div class="card-body">
                                 <h5 class="card-title">Status Komponen</h5>
                                 <div class="chart-container">
-                                    <!-- This is where the first chart will go -->
-                                    <div class="d-flex justify-content-center align-items-center h-100">
-                                        <p class="text-muted">[Diagram Status Komponen]</p>
-                                    </div>
+                                    <canvas id="statusChart"></canvas>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -264,7 +287,11 @@
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
     <!-- Sidebar Toggle Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -272,16 +299,104 @@
             const overlay = document.getElementById('overlay');
             const sidebarToggle = document.getElementById('sidebarToggle');
             const sidebarClose = document.getElementById('sidebarClose');
-            
+
             function toggleSidebar() {
                 sidebar.classList.toggle('show');
                 overlay.classList.toggle('show');
             }
-            
+
             sidebarToggle.addEventListener('click', toggleSidebar);
             sidebarClose.addEventListener('click', toggleSidebar);
             overlay.addEventListener('click', toggleSidebar);
         });
     </script>
+
+    <script>
+        $(document).ready(function() {
+            $('#customerSelect').select2({
+                placeholder: 'Cari atau pilih customer',
+                allowClear: true
+            });
+        });
+    </script>
+
+    <script>
+        $('#customerSelect').on('change', function() {
+            const customer = $(this).val();
+
+            if (customer) {
+                // Ambil dan tampilkan chart (jika ada)
+                $.get(`/api/chart-data/${customer}`, function(response) {
+                    renderChart(response);
+                });
+
+                // Ambil data parts berdasarkan customer
+                $.get(`/api/parts-by-customer/${customer}`, function(parts) {
+                    const tbody = $('table tbody');
+                    tbody.empty();
+
+                    if (parts.length === 0) {
+                        tbody.append('<tr><td colspan="4" class="text-center">Tidak ada komponen</td></tr>');
+                    } else {
+                        parts.forEach(part => {
+                            const statusClass = part.status === 'Final Inspection' ?
+                                'bg-success bg-opacity-25 text-success' :
+                                'bg-info bg-opacity-25 text-info';
+
+                            const row = `
+                        <tr>
+                            <td>${part.no_wbs}</td>
+                            <td>${part.part_name}</td>
+                            <td><span class="status-badge ${statusClass}">${part.status}</span></td>
+                            <td>${part.incoming_date}</td>
+                        </tr>
+                    `;
+                            tbody.append(row);
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+
+    <script>
+        let chartInstance;
+
+        function renderChart(data) {
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy(); // Hapus chart sebelumnya
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Status Komponen per Minggu'
+                        }
+                    }
+                }
+            });
+        }
+
+        $('#customerSelect').on('change', function() {
+            const customer = $(this).val();
+            if (customer) {
+                $.get(`/api/chart-data/${customer}`, function(response) {
+                    renderChart(response);
+                });
+            }
+        });
+    </script>
+
+
+
 </body>
+
 </html>
+

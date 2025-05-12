@@ -5,10 +5,18 @@ use App\Http\Controllers\loginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PartController;
 use App\Http\Controllers\ProsesMekanikController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ChartController;
 
-Route::get('/dashboard', function () {
-    return view('dashboard_utama');
-})->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('dashboard_utama');
+// })->name('dashboard');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard_utama');
+Route::get('/api/chart-data/{customer}', [ChartController::class, 'getData']);
+
+Route::get('/api/parts-by-customer/{customer}', [PartController::class, 'getByCustomer']);
+
 
 Route::get('/komponen', [PartController::class, 'create'])->name('komponen');
 
