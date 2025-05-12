@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\part;    
+use App\Models\part;
 use Illuminate\Http\Request;
 use App\Models\akun_mekanik;
 use Illuminate\Support\Str;
@@ -68,5 +68,25 @@ class PartController extends Controller
         }
 
         return redirect()->route('part.create')->with('success', 'Data part berhasil disimpan.');
+    }
+
+    public function getByCustomer($customer)
+    {
+        $parts = part::where('customer', $customer)
+            ->select('no_wbs', 'part_name', 'incoming_date')
+            ->with(['workProgres' => function ($query) {
+                $query->orderByDesc('step_order')->limit(1);
+            }])
+            ->get()
+            ->map(function ($part) {
+                return [
+                    'no_wbs' => $part->no_wbs,
+                    'part_name' => $part->part_name,
+                    'incoming_date' => $part->incoming_date,
+                    'status' => $part->workProgres->first()?->step_name ?? 'Belum Diproses',
+                ];
+            });
+
+        return response()->json($parts);
     }
 }
