@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Aviation Auth</title>
+    <title>Aircraft Component Tracking</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -64,7 +64,7 @@
 
         .form-title {
             color: #fff;
-            font-size: 1.rem;
+            font-size: 1.5rem;
             margin-bottom: 8px;
             font-weight: 600;
         }
@@ -134,7 +134,7 @@
         .auth-footer {
             margin-top: 24px;
             text-align: center;
-            color: #64748b;
+            color: #123666;
             font-size: 0.9rem;
         }
 
@@ -200,7 +200,8 @@
         }
 
         .tab.active {
-            color: #fff;
+            color: white !important;
+            font-weight: 600;
         }
 
         .tab::after {
@@ -269,75 +270,22 @@
 
 <body>
     <div class="auth-container">
-        <div class="tabs">
-            <button class="tab" onclick="login()">Sign In</button>
-            <button class="tab active" onclick="register()">Sign Up</button>
-        </div>
-
-        <div id="register-form" class="form-content active">
-            <div class="form-header">
-                <img src="https://img.icons8.com/fluency/96/airplane-take-off.png" alt="Register">
-                <h1 class="form-title">Create Account</h1>
-                <p class="form-subtitle">Start your journey with us</p>
-            </div>
-
-            @if ($errors->any())
-                <div class="error-notification">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            <form method="POST" action="{{ route('register') }}">
-                @csrf
-                <div class="input-group">
-                    <i class="fas fa-signature input-icon"></i>
-                    <input type="text" name="nama_mekanik" class="form-input" placeholder="Full Name"
-                        autocomplete="name">
-                </div>
-
-                <div class="input-group">
-                    <i class="fas fa-id-card-alt input-icon"></i>
-                    <input type="text" name="username" class="form-input" placeholder="Username"
-                        autocomplete="username">
-                </div>
-
-                <div class="input-group">
-                    <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" name="email" class="form-input" placeholder="Email Address"
-                        autocomplete="email">
-                </div>
-
-                <div class="input-group">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" name="password" class="form-input" placeholder="Password"
-                        autocomplete="new-password" pattern="(?=.*\d)(?=.*[a-z]).{8,}"
-                        title="Must contain at least one number, and at least 8 or more characters">
-                </div>
-
-                <button type="submit" name="submit" class="btn-primary">
-                    <i class="fas fa-user-plus"></i>
-                    Create Account
-                </button>
-            </form>
-
-            <div class="auth-footer">
-                Already have an account? <a href="#" class="auth-link" onclick="login()">Sign In</a>
-            </div>
-        </div>
+        @yield('auth-content')
     </div>
 
+    @yield('scripts')
     <script>
-        function login() {
-            document.location.href = "login";
-        }
-
-        function register() {
-            document.location.href = "register";
-        }
+        document.querySelectorAll('.tab').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                this.classList.add('active');
+                setTimeout(() => {
+                    window.location.href = this.getAttribute('data-route');
+                }, 300);
+            });
+        });
     </script>
 </body>
 

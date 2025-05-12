@@ -1,496 +1,407 @@
-<!DOCTYPE html>
-<html lang="id">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+    }
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aircraft Component Tracking</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-    <style>
-        .sidebar {
-            background-color: #0f2a4a;
-            color: white;
-            min-height: 100vh;
-            transition: all 0.3s;
-            z-index: 1000;
-        }
+    .in-progress {
+        background-color: #e0f7ee;
+        color: #0f5132;
+    }
 
-        .sidebar .nav-link {
-            color: white;
-            padding: 0.75rem 1rem;
-        }
+    .completed {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
 
-        .sidebar .nav-link:hover,
-        .sidebar .nav-link:focus {
-            background-color: #1a3a5f;
-        }
+    .not-started {
+        background-color: #e2e3e5;
+        color: #41464b;
+    }
 
-        .sidebar .nav-link.active {
-            background-color: #1a3a5f;
-        }
+    .action-btn {
+        color: #0d6efd;
+        cursor: pointer;
+        text-decoration: underline;
+    }
 
+    .dropdown-menu {
+        min-width: 120px;
+    }
 
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-        }
+    .dropdown-item {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+</style>
 
-        .in-progress {
-            background-color: #e0f7ee;
-            color: #0f5132;
-        }
+@extends('layouts.sidebar')
 
-        .completed {
-            background-color: #d1e7dd;
-            color: #0f5132;
-        }
+@section('content')
+    <!-- Main Content -->
+    <div class="col-md-9 col-lg-10 p-4">
+        <h2 class="mb-4">Proses Mekanik</h2>
 
-        .not-started {
-            background-color: #e2e3e5;
-            color: #41464b;
-        }
+        <!-- Filter Form -->
+        <div class="row mb-4 g-2">
+            <form action="{{ route('proses-mekanik') }}" method="GET" class="row g-2 w-100">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" name="no_wbs" placeholder="Nomor Komponen"
+                        value="{{ request('no_wbs') }}">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" class="form-control" name="teknisi" placeholder="Teknisi"
+                        value="{{ request('teknisi') }}">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" name="step" placeholder="Step Saat Ini"
+                        value="{{ request('step') }}">
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                </div>
+            </form>
+        </div>
 
-        .action-btn {
-            color: #0d6efd;
-            cursor: pointer;
-            text-decoration: underline;
-        }
+        <!-- Main Table -->
+        <div class="table-responsive mb-4">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Nomor Komponen</th>
+                        <th>Step Saat Ini</th>
+                        <th>Status</th>
+                        <th>Teknisi</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($parts as $part)
+                        @php
+                            $currentStep = $part->workProgres->where('is_completed', false)->first();
+                            $status = $currentStep ? 'In Progress' : 'Completed';
+                        @endphp
+                        <tr>
+                            <td>{{ $part->no_wbs }}</td>
+                            <td>{{ $currentStep ? $currentStep->step_name : 'Completed' }}</td>
+                            <td><span
+                                    class="status-badge {{ strtolower(str_replace(' ', '-', $status)) }}">{{ $status }}</span>
+                            </td>
+                            <td>{{ $part->akunMekanik->nama_mekanik }}</td>
+                            <td>
+                                @if ($currentStep)
+                                    <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal"
+                                        data-bs-target="#editModal" data-no-iwo="{{ $part->no_iwo }}"
+                                        data-step="{{ $currentStep->step_name }}" data-status="{{ $status }}">
+                                        <i class="fas fa-edit me-1"></i> Edit
+                                    </button>
+                                @endif
+                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                                    data-bs-target="#viewModal" data-no-iwo="{{ $part->no_iwo }}"
+                                    data-step="{{ $currentStep ? $currentStep->step_name : 'Completed' }}"
+                                    data-status="{{ $status }}"
+                                    data-teknisi="{{ $part->akunMekanik->nama_mekanik }}"
+                                    data-next-step="{{ $part->next_step }}">
+                                    <i class="fas fa-eye me-1"></i> View
+                                </button>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
-        .dropdown-menu {
-            min-width: 120px;
-        }
-
-        .dropdown-item {
-            padding: 8px 15px;
-            font-size: 14px;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                min-height: auto;
-            }
-
-            .action-buttons {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .action-buttons button {
-                margin-bottom: 5px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container-fluid p-0">
-        <div class="row g-0">
-            <!-- Sidebar -->
-            <div class="col-lg-2 px-0 sidebar" id="sidebar">
-                <div class="d-flex flex-column">
-                    <div class="p-3">
-                        <h5 class="fw-bold d-flex justify-content-between align-items-center">
-                            AIRCRAFT COMPONENT
-                            <button class="btn-close d-lg-none text-white" id="sidebarClose"></button>
-                        </h5>
+        <!-- Edit Modal for Mark as Complete -->
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Update Status Komponen</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/">
-                                <i class="bi bi-house me-2"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="komponen">
-                                <i class="bi bi-boxes me-2"></i> Komponen
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="proses-mekanik">
-                                <i class="bi bi-gear me-2"></i> Proses Mekanik
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-file-text me-2"></i> Dokumentasi
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-truck me-2"></i> Delivery
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Main Content -->
-            <div class="col-md-9 col-lg-10 p-4">
-                <h2 class="mb-4">Proses Mekanik</h2>
-
-                <!-- Filter Form -->
-                <div class="row mb-4 g-2">
-                    <form action="{{ route('proses-mekanik') }}" method="GET" class="row g-2 w-100">
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" name="no_wbs" placeholder="Nomor Komponen" value="{{ request('no_wbs') }}">
-                        </div>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" name="teknisi" placeholder="Teknisi" value="{{ request('teknisi') }}">
-                        </div>
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" name="step" placeholder="Step Saat Ini" value="{{ request('step') }}">
-                        </div>
-                        <div class="col-md-1">
-                            <button type="submit" class="btn btn-primary w-100">Filter</button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Main Table -->
-                <div class="table-responsive mb-4">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Nomor Komponen</th>
-                                <th>Step Saat Ini</th>
-                                <th>Status</th>
-                                <th>Teknisi</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($parts as $part)
-                                @php
-                                    $currentStep = $part->workProgres->where('is_completed', false)->first();
-                                    $status = $currentStep ? 'In Progress' : 'Completed';
-                                @endphp
-                                <tr>
-                                    <td>{{ $part->no_wbs }}</td>
-                                    <td>{{ $currentStep ? $currentStep->step_name : 'Completed' }}</td>
-                                    <td><span class="status-badge {{ strtolower(str_replace(' ', '-', $status)) }}">{{ $status }}</span></td>
-                                    <td>{{ $part->akunMekanik->nama_mekanik }}</td>
-                                    <td>
-                                        @if($currentStep)
-                                            <button class="btn btn-sm btn-outline-primary me-1" 
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#editModal" 
-                                                data-no-iwo="{{ $part->no_iwo }}"
-                                                data-step="{{ $currentStep->step_name }}"
-                                                data-status="{{ $status }}">
-                                                <i class="fas fa-edit me-1"></i> Edit
-                                            </button>
-                                        @endif
-                                        <button class="btn btn-sm btn-outline-secondary" 
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#viewModal" 
-                                            data-no-iwo="{{ $part->no_iwo }}"
-                                            data-step="{{ $currentStep ? $currentStep->step_name : 'Completed' }}"
-                                            data-status="{{ $status }}"
-                                            data-teknisi="{{ $part->akunMekanik->nama_mekanik }}"
-                                            data-next-step="{{ $part->next_step }}">
-                                            <i class="fas fa-eye me-1"></i> View
-                                        </button>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-
-    <!-- Edit Modal for Mark as Complete -->
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Update Status Komponen</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editForm">
-                        <input type="hidden" id="no_iwo" name="no_iwo">
-                        <div class="mb-3">
-                            <label for="komponenInfo" class="form-label">Nomor Komponen</label>
-                            <input type="text" class="form-control" id="komponenInfo" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="stepInfo" class="form-label">Step Saat Ini</label>
-                            <input type="text" class="form-control" id="stepInfo" readonly>
-                        </div>
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="markComplete">
-                            <label class="form-check-label" for="markComplete">Tandai sebagai Selesai</label>
-                        </div>
-                        <div class="mb-3">
-                            <label for="keterangan" class="form-label">Keterangan (opsional)</label>
-                            <textarea class="form-control" id="keterangan" name="keterangan" rows="3"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary" id="saveStatus">Simpan</button>
+                    <div class="modal-body">
+                        <form id="editForm">
+                            <input type="hidden" id="no_iwo" name="no_iwo">
+                            <div class="mb-3">
+                                <label for="komponenInfo" class="form-label">Nomor Komponen</label>
+                                <input type="text" class="form-control" id="komponenInfo" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="stepInfo" class="form-label">Step Saat Ini</label>
+                                <input type="text" class="form-control" id="stepInfo" readonly>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="markComplete">
+                                <label class="form-check-label" for="markComplete">Tandai sebagai
+                                    Selesai</label>
+                            </div>
+                            <div class="mb-3">
+                                <label for="keterangan" class="form-label">Keterangan (opsional)</label>
+                                <textarea class="form-control" id="keterangan" name="keterangan" rows="3"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-primary" id="saveStatus">Simpan</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- View Modal -->
-    <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="viewModalLabel">Detail Komponen</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-md-4 fw-bold">Nomor Komponen:</div>
-                        <div class="col-md-8" id="viewKomponen"></div>
+        <!-- View Modal -->
+        <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewModalLabel">Detail Komponen</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-md-4 fw-bold">Step Saat Ini:</div>
-                        <div class="col-md-8" id="viewStep"></div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Nomor Komponen:</div>
+                            <div class="col-md-8" id="viewKomponen"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Step Saat Ini:</div>
+                            <div class="col-md-8" id="viewStep"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Step Berikutnya:</div>
+                            <div class="col-md-8" id="viewNextStep"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Status:</div>
+                            <div class="col-md-8" id="viewStatus"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Teknisi:</div>
+                            <div class="col-md-8" id="viewTeknisi"></div>
+                        </div>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-md-4 fw-bold">Step Berikutnya:</div>
-                        <div class="col-md-8" id="viewNextStep"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-md-4 fw-bold">Status:</div>
-                        <div class="col-md-8" id="viewStatus"></div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-4 fw-bold">Teknisi:</div>
-                        <div class="col-md-8" id="viewTeknisi"></div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Create Modal -->
-    <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createModalLabel">Tambah Komponen Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="createForm">
-                        <div class="mb-3">
-                            <label for="newKomponenId" class="form-label">Nomor Komponen</label>
-                            <input type="text" class="form-control" id="newKomponenId" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="newStep" class="form-label">Step Saat Ini</label>
-                            <input type="text" class="form-control" id="newStep" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="newStatus" class="form-label">Status</label>
-                            <select class="form-select" id="newStatus" required>
-                                <option value="">Pilih Status</option>
-                                <option value="In Progress">In Progress</option>
-                                <option value="Completed">Completed</option>
-                                <option value="Not Started">Not Started</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="newTeknisi" class="form-label">Teknisi</label>
-                            <input type="text" class="form-control" id="newTeknisi">
-                        </div>
-                        <div class="mb-3">
-                            <label for="newKeterangan" class="form-label">Keterangan</label>
-                            <textarea class="form-control" id="newKeterangan" rows="3"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary" id="saveNew">Simpan</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Update Modal -->
-    <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="updateModalLabel">Update Komponen</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="updateForm">
-                        <input type="hidden" id="updateKomponenId" name="updateKomponenId">
-                        <div class="mb-3">
-                            <label for="updateKomponenNo" class="form-label">Nomor Komponen</label>
-                            <input type="text" class="form-control" id="updateKomponenNo" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="updateStep" class="form-label">Step Saat Ini</label>
-                            <input type="text" class="form-control" id="updateStep" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="updateStatus" class="form-label">Status</label>
-                            <select class="form-select" id="updateStatus" required>
-                                <option value="In Progress">In Progress</option>
-                                <option value="Completed">Completed</option>
-                                <option value="Not Started">Not Started</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="updateTeknisi" class="form-label">Teknisi</label>
-                            <input type="text" class="form-control" id="updateTeknisi">
-                        </div>
-                        <div class="mb-3">
-                            <label for="updateKeterangan" class="form-label">Keterangan</label>
-                            <textarea class="form-control" id="updateKeterangan" rows="3"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary" id="saveUpdate">Simpan</button>
+        <!-- Create Modal -->
+        <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createModalLabel">Tambah Komponen Baru</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="createForm">
+                            <div class="mb-3">
+                                <label for="newKomponenId" class="form-label">Nomor Komponen</label>
+                                <input type="text" class="form-control" id="newKomponenId" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="newStep" class="form-label">Step Saat Ini</label>
+                                <input type="text" class="form-control" id="newStep" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="newStatus" class="form-label">Status</label>
+                                <select class="form-select" id="newStatus" required>
+                                    <option value="">Pilih Status</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Not Started">Not Started</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="newTeknisi" class="form-label">Teknisi</label>
+                                <input type="text" class="form-control" id="newTeknisi">
+                            </div>
+                            <div class="mb-3">
+                                <label for="newKeterangan" class="form-label">Keterangan</label>
+                                <textarea class="form-control" id="newKeterangan" rows="3"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-primary" id="saveNew">Simpan</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Delete Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Konfirmasi Hapus</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Apakah Anda yakin ingin menghapus komponen <span id="deleteKomponenNo" class="fw-bold"></span>?
-                    </p>
-                    <p class="text-danger">Tindakan ini tidak dapat dibatalkan.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-danger" id="confirmDelete">Hapus</button>
+        <!-- Update Modal -->
+        <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateModalLabel">Update Komponen</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="updateForm">
+                            <input type="hidden" id="updateKomponenId" name="updateKomponenId">
+                            <div class="mb-3">
+                                <label for="updateKomponenNo" class="form-label">Nomor Komponen</label>
+                                <input type="text" class="form-control" id="updateKomponenNo" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="updateStep" class="form-label">Step Saat Ini</label>
+                                <input type="text" class="form-control" id="updateStep" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="updateStatus" class="form-label">Status</label>
+                                <select class="form-select" id="updateStatus" required>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Not Started">Not Started</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="updateTeknisi" class="form-label">Teknisi</label>
+                                <input type="text" class="form-control" id="updateTeknisi">
+                            </div>
+                            <div class="mb-3">
+                                <label for="updateKeterangan" class="form-label">Keterangan</label>
+                                <textarea class="form-control" id="updateKeterangan" rows="3"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-primary" id="saveUpdate">Simpan</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        // Edit Modal
-        document.getElementById('editModal').addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const noIwo = button.getAttribute('data-no-iwo');
-            const step = button.getAttribute('data-step');
-            const status = button.getAttribute('data-status');
+        <!-- Delete Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Konfirmasi Hapus</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Apakah Anda yakin ingin menghapus komponen <span id="deleteKomponenNo" class="fw-bold"></span>?
+                        </p>
+                        <p class="text-danger">Tindakan ini tidak dapat dibatalkan.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-danger" id="confirmDelete">Hapus</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            document.getElementById('no_iwo').value = noIwo;
-            document.getElementById('komponenInfo').value = noIwo;
-            document.getElementById('stepInfo').value = step;
-            document.getElementById('markComplete').checked = status === 'Completed';
-        });
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            // Edit Modal
+            document.getElementById('editModal').addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const noIwo = button.getAttribute('data-no-iwo');
+                const step = button.getAttribute('data-step');
+                const status = button.getAttribute('data-status');
 
-        // Save status changes with SweetAlert2
-        document.getElementById('saveStatus').addEventListener('click', function() {
-            const noIwo = document.getElementById('no_iwo').value;
-            const isComplete = document.getElementById('markComplete').checked;
-            const keterangan = document.getElementById('keterangan').value;
-
-            // Validate no_iwo is a valid UUID
-            if (!noIwo || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(noIwo)) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Invalid component number format'
-                });
-                return;
-            }
-
-            fetch('{{ route("proses-mekanik.update-step") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    no_iwo: noIwo,
-                    is_completed: isComplete,
-                    keterangan: keterangan
-                })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(data => {
-                        throw new Error(data.message || 'Server error');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Close modal
-                const editModal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
-                editModal.hide();
-
-                // Show success message with SweetAlert2
-                if (data.all_completed) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Selesai!',
-                        text: 'Semua step telah selesai! Komponen telah selesai diproses.',
-                        showConfirmButton: false,
-                        timer: 2000
-                    }).then(() => {
-                        window.location.reload();
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: 'Status berhasil diperbarui! Komponen telah dipindahkan ke step berikutnya.',
-                        showConfirmButton: false,
-                        timer: 2000
-                    }).then(() => {
-                        window.location.reload();
-                    });
-                }
-            })
-            .catch(error => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Terjadi kesalahan saat memperbarui status: ' + error.message
-                });
+                document.getElementById('no_iwo').value = noIwo;
+                document.getElementById('komponenInfo').value = noIwo;
+                document.getElementById('stepInfo').value = step;
+                document.getElementById('markComplete').checked = status === 'Completed';
             });
-        });
 
-        // View Modal
-        document.getElementById('viewModal').addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const noIwo = button.getAttribute('data-no-iwo');
-            const step = button.getAttribute('data-step');
-            const status = button.getAttribute('data-status');
-            const teknisi = button.getAttribute('data-teknisi');
-            const nextStep = button.getAttribute('data-next-step');
+            // Save status changes with SweetAlert2
+            document.getElementById('saveStatus').addEventListener('click', function() {
+                const noIwo = document.getElementById('no_iwo').value;
+                const isComplete = document.getElementById('markComplete').checked;
+                const keterangan = document.getElementById('keterangan').value;
 
-            document.getElementById('viewKomponen').textContent = noIwo;
-            document.getElementById('viewStep').textContent = step;
-            document.getElementById('viewNextStep').textContent = nextStep || 'Tidak ada step berikutnya';
-            document.getElementById('viewStatus').textContent = status;
-            document.getElementById('viewTeknisi').textContent = teknisi;
-        });
-    </script>
-</body>
+                // Validate no_iwo is a valid UUID
+                if (!noIwo || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(noIwo)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Invalid component number format'
+                    });
+                    return;
+                }
 
-</html>
+                fetch('{{ route('proses-mekanik.update-step') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            no_iwo: noIwo,
+                            is_completed: isComplete,
+                            keterangan: keterangan
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(data => {
+                                throw new Error(data.message || 'Server error');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Close modal
+                        const editModal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+                        editModal.hide();
+
+                        // Show success message with SweetAlert2
+                        if (data.all_completed) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Selesai!',
+                                text: 'Semua step telah selesai! Komponen telah selesai diproses.',
+                                showConfirmButton: false,
+                                timer: 2000
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: 'Status berhasil diperbarui! Komponen telah dipindahkan ke step berikutnya.',
+                                showConfirmButton: false,
+                                timer: 2000
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Terjadi kesalahan saat memperbarui status: ' + error.message
+                        });
+                    });
+            });
+
+            // View Modal
+            document.getElementById('viewModal').addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const noIwo = button.getAttribute('data-no-iwo');
+                const step = button.getAttribute('data-step');
+                const status = button.getAttribute('data-status');
+                const teknisi = button.getAttribute('data-teknisi');
+                const nextStep = button.getAttribute('data-next-step');
+
+                document.getElementById('viewKomponen').textContent = noIwo;
+                document.getElementById('viewStep').textContent = step;
+                document.getElementById('viewNextStep').textContent = nextStep || 'Tidak ada step berikutnya';
+                document.getElementById('viewStatus').textContent = status;
+                document.getElementById('viewTeknisi').textContent = teknisi;
+            });
+        </script>
+    @endsection
