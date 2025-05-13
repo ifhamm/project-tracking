@@ -6,6 +6,7 @@ use App\Models\part;
 use Illuminate\Http\Request;
 use App\Models\akun_mekanik;
 use Illuminate\Support\Str;
+use App\Helpers\DateHelper;
 
 class PartController extends Controller
 {
@@ -15,6 +16,7 @@ class PartController extends Controller
         $parts = part::with('akunMekanik')->get();
         return view('komponen', compact('mekanik', 'parts'));
     }
+
 
     public function store(Request $request)
     {
@@ -31,10 +33,14 @@ class PartController extends Controller
             'step_sequence.*' => 'required|integer|between:1,8',
         ]);
 
+        // Hitung deadline berdasarkan incoming_date
+        $deadline = DateHelper::calculateWorkingDeadline($validated['incoming_date']);
+
         $part = [
             'no_iwo' => Str::uuid(),
             'no_wbs' => $validated['no_wbs'],
             'incoming_date' => $validated['incoming_date'],
+            'priority_deadline_date' => $deadline,
             'part_name' => $validated['part_name'],
             'part_number' => $validated['part_number'],
             'no_seri' => $validated['no_seri'],
@@ -43,9 +49,9 @@ class PartController extends Controller
             'id_mekanik' => $validated['id_mekanik'],
         ];
 
-        $newPart = part::create($part);
+        $newPart = \App\Models\part::create($part);
 
-        // Create work progress entries for each step
+        // Buat work progres untuk setiap step
         $stepNames = [
             1 => 'Incoming',
             2 => 'Pre Test',
@@ -67,8 +73,9 @@ class PartController extends Controller
             ]);
         }
 
-        return redirect()->route('part.create')->with('success', 'Data part berhasil disimpan.');
+        return redirect()->route('part.create')->with('success', 'Data part berhasil disimpan dengan priority deadline.');
     }
+
 
     public function getByCustomer($customer)
     {
