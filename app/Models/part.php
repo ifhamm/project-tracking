@@ -5,33 +5,33 @@ namespace App\Models;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Laravel\Scout\Searchable;
+use Illuminate\Support\Str;
 
 class part extends Model
 {
-    use HasUuid, HasFactory, Searchable;
+    use HasUuid, HasFactory;
 
     protected $primaryKey = 'no_iwo';
 
     protected $fillable = [
         'no_wbs',
+        'customer',
         'incoming_date',
         'part_name',
         'part_number',
         'no_seri',
         'description',
+        'id_mekanik',
     ];
+    public $timestamps = false;
+    public $created_at = false;
 
-    public function toSearchableArray(): array
+    protected static function boot()
     {
-        return [
-            'no_wbs' => $this['no_wbs'],
-            'incoming_date' => $this['incoming_date'],
-            'part_name' => $this['part_name'],
-            'part_number' => $this['part_number'],
-            'no_seri' => $this['no_seri'],
-            'description' => $this['description'],
-        ];
+        parent::boot();
+        static::creating(function ($model) {
+            $model->no_iwo = (string) Str::uuid();
+        });
     }
 
     public function breakdownPart()
@@ -41,11 +41,11 @@ class part extends Model
 
     public function akunMekanik()
     {
-        return $this->belongsToMany(akun_mekanik::class);
+        return $this->belongsTo(akun_mekanik::class, 'id_mekanik', 'id_mekanik');
     }
 
     public function workProgres()
     {
-        return $this->hasMany(work_progres::class);
+        return $this->hasMany(work_progres::class, 'no_iwo', 'no_iwo');
     }
 }

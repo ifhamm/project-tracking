@@ -6,17 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::table('parts', function (Blueprint $table) {
-            $table->dropColumn('id_customer');
+            $table->string('customer')->after('no_wbs');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::table('parts', function (Blueprint $table) {
-            $table->uuid('id_customer')->nullable();
+            //
         });
     }
 };

@@ -5,11 +5,10 @@ namespace App\Models;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Laravel\Scout\Searchable;
 
 class breakdown_part extends Model
 {
-    use HasFactory, HasUuid, Searchable;
+    use HasFactory, HasUuid;
 
     protected $primaryKey = 'bdp_number';
 
