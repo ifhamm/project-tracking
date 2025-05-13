@@ -16,6 +16,11 @@ class ProsesMekanikController extends Controller
             $query->orderBy('step_order', 'asc');
         }]);
 
+        // Only show parts that have at least one incomplete step
+        $query->whereHas('workProgres', function ($q) {
+            $q->where('is_completed', false);
+        });
+
         // Search by component number
         if ($request->filled('no_wbs')) {
             $query->where('no_wbs', 'like', '%' . $request->no_wbs . '%');
