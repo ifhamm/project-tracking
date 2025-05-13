@@ -21,7 +21,7 @@ class part extends Model
         'part_number',
         'no_seri',
         'description',
-        'id_mekanik',
+        'id_credentials',
     ];
     public $timestamps = false;
     public $created_at = false;
@@ -41,7 +41,7 @@ class part extends Model
 
     public function akunMekanik()
     {
-        return $this->belongsTo(akun_mekanik::class, 'id_mekanik', 'id_mekanik');
+        return $this->belongsTo(akun_mekanik::class, 'id_credentials', 'id_credentials');
     }
 
     public function workProgres()
