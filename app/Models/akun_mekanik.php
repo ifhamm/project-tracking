@@ -5,21 +5,21 @@ namespace App\Models;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class akun_mekanik extends Model
 {
     use HasFactory, HasUuid;
 
-    protected $table = 'akun_mekaniks';
-    protected $primaryKey = 'id_mekanik';
+    protected $table = 'credentials';
+    protected $primaryKey = 'id_credentials';
 
     protected $fillable = [
-        'nama_mekanik',
-        'username',
+        'name',
         'email',
         'password',
+        'nik',
+        'role',
     ];
 
     protected static function boot()

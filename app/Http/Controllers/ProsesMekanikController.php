@@ -23,8 +23,8 @@ class ProsesMekanikController extends Controller
 
         // Search by technician
         if ($request->filled('teknisi')) {
-            $query->whereHas('akunMekanik', function ($q) use ($request) {
-                $q->where('nama_mekanik', 'like', '%' . $request->teknisi . '%');
+            $query->whereHas('credentials', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->teknisi . '%');
             });
         }
 
