@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
     .status-badge {
-        padding: 6px 12px;
+        padding: 4px 8px;
         border-radius: 20px;
         font-size: 14px;
     }
@@ -9,6 +9,7 @@
     .in-progress {
         background-color: #e0f7ee;
         color: #0f5132;
+        font-size: 12px;
     }
 
     .completed {
@@ -70,10 +71,16 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
+                        <th>Customer</th>
+                        <th>No IWO</th>
                         <th>Nomor Komponen</th>
+                        <th>Part Name</th>
+                        <th>Part Number</th>
+                        <th>Serial Number</th>
                         <th>Step Saat Ini</th>
                         <th>Status</th>
                         <th>Teknisi</th>
+                        <th>Priority</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -84,12 +91,28 @@
                             $status = $currentStep ? 'In Progress' : 'Completed';
                         @endphp
                         <tr>
+                            <td>{{ $part->customer }}</td>
+                            <td>{{ $part->no_iwo }}</td>
                             <td>{{ $part->no_wbs }}</td>
+                            <td>{{ $part->part_name }}</td>
+                            <td>{{ $part->part_number }}</td>
+                            <td>{{ $part->no_seri }}</td>
                             <td>{{ $currentStep ? $currentStep->step_name : 'Completed' }}</td>
                             <td><span
                                     class="status-badge {{ strtolower(str_replace(' ', '-', $status)) }}">{{ $status }}</span>
                             </td>
                             <td>{{ $part->akunMekanik->nama_mekanik }}</td>
+                            <td>
+                                @if ($part->urgency_icon === 'red')
+                                    <div class="text-center">
+                                        <i class="fas fa-exclamation-circle text-danger"></i>
+                                    </div>
+                                @elseif ($part->urgency_icon === 'yellow')
+                                    <div class="text-center">
+                                        <i class="fas fa-exclamation-circle text-warning"></i>
+                                    </div>
+                                @endif
+                            </td>
                             <td>
                                 @if ($currentStep)
                                     <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal"

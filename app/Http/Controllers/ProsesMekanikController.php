@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\part;
 use App\Models\work_progres;
 use Illuminate\Http\Request;
+use App\Helpers\DateHelper;
 use Illuminate\Support\Facades\DB;
 
 class ProsesMekanikController extends Controller
 {
     public function index(Request $request)
     {
-        $query = part::with(['akunMekanik', 'workProgres' => function($query) {
+        $query = part::with(['akunMekanik', 'workProgres' => function ($query) {
             $query->orderBy('step_order', 'asc');
         }]);
 
@@ -22,23 +23,23 @@ class ProsesMekanikController extends Controller
 
         // Search by technician
         if ($request->filled('teknisi')) {
-            $query->whereHas('akunMekanik', function($q) use ($request) {
+            $query->whereHas('akunMekanik', function ($q) use ($request) {
                 $q->where('nama_mekanik', 'like', '%' . $request->teknisi . '%');
             });
         }
 
         // Search by current step
         if ($request->filled('step')) {
-            $query->whereHas('workProgres', function($q) use ($request) {
+            $query->whereHas('workProgres', function ($q) use ($request) {
                 $q->where('step_name', 'like', '%' . $request->step . '%')
-                  ->where('is_completed', false);
+                    ->where('is_completed', false);
             });
         }
 
-        $parts = $query->get()->map(function($part) {
+        $parts = $query->get()->map(function ($part) {
             $currentStep = $part->workProgres->where('is_completed', false)->first();
             $nextStep = null;
-            
+
             if ($currentStep) {
                 $nextStep = $part->workProgres
                     ->where('step_order', '>', $currentStep->step_order)
@@ -46,8 +47,27 @@ class ProsesMekanikController extends Controller
             }
 
             $part->next_step = $nextStep ? $nextStep->step_name : null;
+
+            // === Urgency Logic ===
+            $part->urgency_icon = null;
+            $part->days_left = null;
+
+            if ($part->is_urgent) {
+                $part->urgency_icon = 'red'; 
+                $part->days_left = 0; 
+            } elseif ($part->incoming_date) {
+                $daysLeft = \App\Helpers\DateHelper::daysLeftUntilDeadline($part->incoming_date);
+                $part->days_left = $daysLeft;
+                if ($daysLeft <= 5) {
+                    $part->urgency_icon = 'yellow'; // tanda seru kuning
+                }
+            }
+
             return $part;
-        });
+        })->sortBy([
+            ['is_urgent', 'desc'], 
+            ['days_left', 'asc']   
+        ]);
 
         return view('proses_mekanik', compact('parts'));
     }
@@ -61,7 +81,7 @@ class ProsesMekanikController extends Controller
                 'keterangan' => 'nullable|string'
             ]);
 
-            $result = DB::transaction(function() use ($validated) {
+            $result = DB::transaction(function () use ($validated) {
                 // Get the current step
                 $currentStep = work_progres::where('no_iwo', $validated['no_iwo'])
                     ->where('is_completed', false)
@@ -114,4 +134,4 @@ class ProsesMekanikController extends Controller
             return response()->json(['message' => $e->getMessage()], 400);
         }
     }
-} 
+}

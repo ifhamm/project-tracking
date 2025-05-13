@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
-class loginController extends Controller
+class LoginController extends Controller
 {
     public function index()
     {
