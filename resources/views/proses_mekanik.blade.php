@@ -1,16 +1,22 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
     .status-badge {
-        padding: 4px 8px;
+        display: inline-block;
+        padding: 4px 12px;
         border-radius: 20px;
-        font-size: 14px;
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.4;
     }
 
     .in-progress {
         background-color: #e0f7ee;
         color: #0f5132;
-        font-size: 12px;
+        font-weight: 500;
     }
+
 
     .completed {
         background-color: #d1e7dd;
@@ -35,6 +41,44 @@
     .dropdown-item {
         padding: 8px 15px;
         font-size: 14px;
+    }
+
+    /* Pagination Styles */
+    .pagination {
+        margin: 0;
+        gap: 5px;
+    }
+
+    .pagination .page-item .page-link {
+        color: #0d6efd;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        color: white;
+    }
+
+    .pagination .page-item .page-link:hover {
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+        color: #0d6efd;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #6c757d;
+        pointer-events: none;
+        background-color: #fff;
+        border-color: #dee2e6;
+    }
+
+    .pagination .page-item:not(.active):not(.disabled) .page-link:focus {
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
     }
 </style>
 
@@ -134,6 +178,51 @@
                     @endforeach
                 </tbody>
             </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <div class="text-muted">
+                Showing {{ $parts->firstItem() ?? 0 }} to {{ $parts->lastItem() ?? 0 }} of {{ $parts->total() }} entries
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination mb-0">
+                    {{-- Previous Page Link --}}
+                    @if ($parts->onFirstPage())
+                        <li class="page-item disabled">
+                            <span class="page-link">Previous</span>
+                        </li>
+                    @else
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $parts->previousPageUrl() }}" rel="prev">Previous</a>
+                        </li>
+                    @endif
+
+                    {{-- Pagination Elements --}}
+                    @foreach ($parts->getUrlRange(1, $parts->lastPage()) as $page => $url)
+                        @if ($page == $parts->currentPage())
+                            <li class="page-item active">
+                                <span class="page-link">{{ $page }}</span>
+                            </li>
+                        @else
+                            <li class="page-item">
+                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                            </li>
+                        @endif
+                    @endforeach
+
+                    {{-- Next Page Link --}}
+                    @if ($parts->hasMorePages())
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $parts->nextPageUrl() }}" rel="next">Next</a>
+                        </li>
+                    @else
+                        <li class="page-item disabled">
+                            <span class="page-link">Next</span>
+                        </li>
+                    @endif
+                </ul>
+            </nav>
         </div>
 
         <!-- Edit Modal for Mark as Complete -->
