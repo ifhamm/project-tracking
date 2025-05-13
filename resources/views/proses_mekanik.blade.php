@@ -1,16 +1,22 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
     .status-badge {
-        padding: 4px 8px;
+        display: inline-block;
+        padding: 4px 12px;
         border-radius: 20px;
-        font-size: 14px;
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.4;
     }
 
     .in-progress {
         background-color: #e0f7ee;
         color: #0f5132;
-        font-size: 12px;
+        font-weight: 500;
     }
+
 
     .completed {
         background-color: #d1e7dd;
