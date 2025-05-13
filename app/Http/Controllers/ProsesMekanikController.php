@@ -41,7 +41,11 @@ class ProsesMekanikController extends Controller
             });
         }
 
-        $parts = $query->get()->map(function ($part) {
+        // Get paginated results
+        $parts = $query->paginate(10);
+
+        // Add additional data to each part
+        $parts->getCollection()->transform(function ($part) {
             $currentStep = $part->workProgres->where('is_completed', false)->first();
             $nextStep = null;
 
@@ -64,15 +68,12 @@ class ProsesMekanikController extends Controller
                 $daysLeft = \App\Helpers\DateHelper::daysLeftUntilDeadline($part->incoming_date);
                 $part->days_left = $daysLeft;
                 if ($daysLeft <= 5) {
-                    $part->urgency_icon = 'yellow'; // tanda seru kuning
+                    $part->urgency_icon = 'yellow';
                 }
             }
 
             return $part;
-        })->sortBy([
-            ['is_urgent', 'desc'], 
-            ['days_left', 'asc']   
-        ]);
+        });
 
         return view('proses_mekanik', compact('parts'));
     }
