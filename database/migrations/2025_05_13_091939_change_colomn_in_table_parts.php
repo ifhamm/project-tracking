@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('parts', function (Blueprint $table) {
-            $table->boolean('is_urgent')->default(false);
+            $table->renameColumn('id_mekanik', 'id_credentials')->change();
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('parts', function (Blueprint $table) {
-            $table->dropColumn('is_urgent');
+            $table->renameColumn('id_credentials', 'id_mekanik')->change();
         });
     }
 };

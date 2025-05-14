@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('parts', function (Blueprint $table) {
-            $table->boolean('is_urgent')->default(false);
+            $table->dropForeign('part_id_customer_foreign');
+            $table->dropColumn('id_customer');
         });
     }
 
@@ -22,7 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('parts', function (Blueprint $table) {
-            $table->dropColumn('is_urgent');
+            $table->uuid('id_customer');
+            $table->foreign('id_customer')->references('id_customer')->on('customers');
         });
     }
 };

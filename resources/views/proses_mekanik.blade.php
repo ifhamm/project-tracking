@@ -145,7 +145,7 @@
                             <td><span
                                     class="status-badge {{ strtolower(str_replace(' ', '-', $status)) }}">{{ $status }}</span>
                             </td>
-                            <td>{{ $part->akunMekanik->nama_mekanik }}</td>
+                            <td>{{ $part->akunMekanik->name }}</td>
                             <td>
                                 @if ($part->urgency_icon === 'red')
                                     <div class="text-center">
