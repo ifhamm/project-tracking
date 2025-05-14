@@ -13,7 +13,7 @@ class KomponenController extends Controller
         $validated = $request->validate([
             'no_wbs' => 'required|string|unique:parts,no_wbs',
             'no_iwo' => 'required|uuid|unique:parts,no_iwo',
-            'id_mekanik' => 'required|exists:akun_mekanik,id_mekanik'
+            'id_credentials' => 'required|exists:credentials,id_credentials',
         ]);
 
         $part = Part::create($validated);

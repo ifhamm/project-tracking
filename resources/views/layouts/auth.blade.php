@@ -139,7 +139,7 @@
         }
 
         .auth-link {
-            color: #818cf8;
+            color: #000000cc;
             text-decoration: none;
             font-weight: 500;
             transition: 0.3s;
@@ -284,6 +284,38 @@
                 setTimeout(() => {
                     window.location.href = this.getAttribute('data-route');
                 }, 300);
+            });
+        });
+
+        // Function to toggle between login forms and save state
+        function toggleLoginForm(role) {
+            const loginSuperAdmin = document.getElementById('loginSuperAdmin');
+            const loginUser = document.getElementById('loginUser');
+
+            if (role === 'ppc') {
+                loginSuperAdmin.style.display = 'none';
+                loginUser.style.display = 'block';
+                localStorage.setItem('loginForm', 'ppc');
+            } else {
+                loginSuperAdmin.style.display = 'block';
+                loginUser.style.display = 'none';
+                localStorage.setItem('loginForm', 'user');
+            }
+        }
+
+        // Initialize form state on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial form state from localStorage or default to user
+            const savedForm = localStorage.getItem('loginForm') || 'user';
+            toggleLoginForm(savedForm);
+
+            // Set active tab based on current route
+            const currentRoute = "{{ request()->is('register') ? 'register' : 'login' }}";
+            document.querySelectorAll('.tab').forEach(tab => {
+                const tabRoute = tab.getAttribute('data-route');
+                const isActive = (currentRoute === 'login' && tabRoute.includes('login')) ||
+                    (currentRoute === 'register' && tabRoute.includes('register'));
+                tab.classList.toggle('active', isActive);
             });
         });
     </script>
