@@ -48,3 +48,7 @@ Route::middleware([checkSession::class])->group(function () {
     // Logout route
     Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 })->withoutMiddleware([checkSession::class]);
+  
+  
+Route::get('/breakdown_parts', [BreakdownPartController::class, 'index'])->name('breakdown.parts.index');
+Route::post('/breakdown_parts', [BreakdownPartController::class, 'store'])->name('breakdown.parts.store');
