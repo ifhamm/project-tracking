@@ -111,24 +111,30 @@
                                     <i class="bi bi-boxes me-2"></i> Komponen
                                 </a>
                             </li>
+                        @endif
 
-                            <li class="nav-item">
-                                <a class="nav-link" href="proses-mekanik">
-                                    <i class="bi bi-gear me-2"></i> Proses Mekanik
-                                </a>
-                            </li>
+                        @if (in_array(Session::get('role'), ['superadmin', 'mekanik']))
+                        <li class="nav-item">
+                            <a class="nav-link" href="proses-mekanik">
+                                <i class="bi bi-gear me-2"></i> Proses Mekanik
+                            </a>
+                        </li>
+                        @endif
 
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <i class="bi bi-file-text me-2"></i> Dokumentasi
-                                </a>
-                            </li>
+                        @if (in_array(Session::get('role'), ['superadmin', 'mekanik']))
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-file-text me-2"></i> Dokumentasi
+                            </a>
+                        </li>
+                        @endif
 
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <i class="bi bi-truck me-2"></i> Delivery
-                                </a>
-                            </li>
+                        @if (in_array(Session::get('role'), ['superadmin', 'mekanik']))
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-truck me-2"></i> Delivery
+                            </a>
+                        </li>
                         @endif
 
                         <li class="nav-item">

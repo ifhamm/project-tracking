@@ -56,6 +56,7 @@
             </div>
         </div>
 
+        @if (in_array(Session::get('role'), ['superadmin']))
         <!-- Insert Button -->
         <div class="mb-3 text-end">
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#insertModal">
@@ -175,6 +176,8 @@
                 </div>
             </div>
         </div>
+        @endif
+        
         <!-- Table - Responsive -->
         <div class="card">
             <div class="card-body p-0">
