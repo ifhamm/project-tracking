@@ -142,7 +142,6 @@
                                 <i class="bi bi-box-arrow-right me-2"></i> Logout
                             </a>
                         </li>
-
                     </ul>
                 </div>
             </div>
