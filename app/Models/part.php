@@ -36,7 +36,7 @@ class part extends Model
 
     public function breakdownPart()
     {
-        return $this->hasMany(breakdown_part::class);
+        return $this->hasMany(work_progres::class, 'no_iwo', 'no_iwo');
     }
 
     public function akunMekanik()

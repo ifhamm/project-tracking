@@ -99,4 +99,10 @@ class PartController extends Controller
 
         return response()->json($parts);
     }
+
+    public function show($id)
+    {
+        $part = \App\Models\part::with('breakdownParts')->findOrFail($id);
+        return view('detail_komponen', compact('part'));
+    }
 }
