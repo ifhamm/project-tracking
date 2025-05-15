@@ -316,6 +316,7 @@
                                     </form>
                                 </div>
                             </div>
+                            
 
                             <!-- Table BDP -->
                             <div class="container mt-4">
@@ -323,7 +324,7 @@
                                 <table class="table table-striped mt-3">
                                     <thead class="table-dark">
                                         <tr>
-                                            <th>#</th>
+                                            <th>No IWO</th>
                                             <th>BDP Name</th>
                                             <th>BDP Number Eqv</th>
                                             <th>Qty</th>
@@ -337,12 +338,12 @@
                                             <th>Action</th>
                                         </tr>
                                     </thead>
-                                    {{-- <tbody>
+                                    <tbody>
                                         @foreach ($breakdownParts as $part)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $part->bdp_name }}</td>
-                                                <td>{{ $part->bdp_nunber_eqv }}</td>
+                                                <td>{{ $part->bdp_number_eqv }}</td>
                                                 <td>{{ $part->quantity }}</td>
                                                 <td>{{ $part->unit }}</td>
                                                 <td>{{ $part->op_number }}</td>
@@ -365,7 +366,7 @@
                                                 </td>
                                             </tr>
                                         @endforeach
-                                    </tbody> --}}
+                                    </tbody>
                                 </table>
                             </div>
 
