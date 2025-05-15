@@ -7,6 +7,7 @@ use App\Http\Controllers\PartController;
 use App\Http\Controllers\ProsesMekanikController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ChartController;
+use App\Http\Controllers\BreakdownPartController;
 
 // Route::get('/dashboard', function () {
 //     return view('dashboard_utama');
@@ -35,3 +36,8 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 
 Route::get('/part/create', [PartController::class, 'create'])->name('part.create');
 Route::post('/part/store', [PartController::class, 'store'])->name('part.store');
+
+Route::get('/breakdown_parts', [BreakdownPartController::class, 'index'])->name('breakdown.parts.index');
+Route::post('/breakdown_parts', [BreakdownPartController::class, 'store'])->name('breakdown.parts.store');
+// Route::put('/breakdown_parts/{bdp_number}', [BreakdownPartController::class, 'update'])->name('breakdown.parts.update');
+// Route::delete('/breakdown_parts/{bdp_number}', [BreakdownPartController::class, 'destroy'])->name('breakdown.parts.destroy');
