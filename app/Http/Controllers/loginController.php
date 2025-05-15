@@ -8,14 +8,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
-class loginController extends Controller
+class LoginController extends Controller
 {
     public function index()
     {
         return view('auth.login');
     }
 
-    public function login(Request $request)
+    public function loginSuperAdmin(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
@@ -28,11 +28,38 @@ class loginController extends Controller
             Session::put('logged_in', true);
             Session::put('id_mekanik', $mekanik->id_mekanik);
             Session::put('email', $mekanik->email);
+            Session::put('role', $mekanik->role); // Store role in session
             return redirect()->route('dashboard_utama');
         }
 
         return back()->withErrors([
-            'message' => 'Email atau password salah'
+            'message' => 'Incorrect email or password'
         ]);
+    }
+
+    public function loginUser(Request $request)
+    {
+        $request->validate([
+            'nik' => 'required|string|min:16'
+        ]);
+
+        $mekanik = akun_mekanik::where('nik', $request->nik)->first();
+
+        if ($mekanik) {
+            Session::put('logged_in', true);
+            Session::put('id_mekanik', $mekanik->id_mekanik);
+            Session::put('role', $mekanik->role); // Store role in session
+            return redirect()->route('dashboard_utama');
+        }
+
+        return back()->withErrors([
+            'message' => 'NIK not registered'
+        ]);
+    }
+
+    public function logout()
+    {
+        Session::flush();
+        return redirect()->route('login.show');
     }
 }

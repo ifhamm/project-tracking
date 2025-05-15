@@ -56,6 +56,7 @@
             </div>
         </div>
 
+        @if (in_array(Session::get('role'), ['superadmin']))
         <!-- Insert Button -->
         <div class="mb-3 text-end">
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#insertModal">
@@ -75,14 +76,14 @@
                         @csrf
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label for="id_mekanik" class="form-label">Pilih Mekanik</label>
-                                <select name="id_mekanik" class="form-control" required>
+                                <label for="id_credentials" class="form-label">Pilih Mekanik</label>
+                                <select name="id_credentials" class="form-control" required>
                                     <option value="">Pilih Mekanik</option>
                                     @foreach ($mekanik as $m)
-                                        <option value="{{ $m->id_mekanik }}">{{ $m->nama_mekanik }}</option>
+                                        <option value="{{ $m->id_credentials }}">{{ $m->name }}</option>
                                     @endforeach
                                 </select>
-                                @error('id_mekanik')
+                                @error('id_credentials')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -175,6 +176,8 @@
                 </div>
             </div>
         </div>
+        @endif
+        
         <!-- Table - Responsive -->
         <div class="card">
             <div class="card-body p-0">
@@ -200,7 +203,7 @@
                                     <td>{{ \Carbon\Carbon::parse($part->incoming_date)->format('M d, Y') }}
                                     </td>
                                     <td>{{ $part->customer }}</td>
-                                    <td>{{ $part->akunMekanik->nama_mekanik }}</td>
+                                    <td>{{ $part->akunMekanik->name }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <span class="status-badge bg-info bg-opacity-25 text-info me-2">In
