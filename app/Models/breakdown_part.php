@@ -45,4 +45,7 @@ class breakdown_part extends Model
     {
         return $this->belongsTo(part::class);
     }
+
+    public $timestamps = false;
+    public $created_at = false;
 }

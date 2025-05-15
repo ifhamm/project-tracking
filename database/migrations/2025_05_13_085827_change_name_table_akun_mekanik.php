@@ -11,9 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('parts', function (Blueprint $table) {
-            $table->boolean('is_urgent')->default(false);
-        });
+        schema::rename('akun_mekaniks', 'credentials');
     }
 
     /**
@@ -21,8 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('parts', function (Blueprint $table) {
-            $table->dropColumn('is_urgent');
-        });
+        schema::rename('credentials', 'akun_mekaniks');
     }
 };

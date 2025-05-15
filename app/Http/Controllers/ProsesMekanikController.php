@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Mail;
 use App\Models\part;
 use App\Models\work_progres;
 use Illuminate\Http\Request;
 use App\Helpers\DateHelper;
 use Illuminate\Support\Facades\DB;
+use App\Mail\KomponenSelesaiNotification;
+
 
 class ProsesMekanikController extends Controller
 {
@@ -28,8 +31,8 @@ class ProsesMekanikController extends Controller
 
         // Search by technician
         if ($request->filled('teknisi')) {
-            $query->whereHas('akunMekanik', function ($q) use ($request) {
-                $q->where('nama_mekanik', 'like', '%' . $request->teknisi . '%');
+            $query->whereHas('credentials', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->teknisi . '%');
             });
         }
 
@@ -62,8 +65,8 @@ class ProsesMekanikController extends Controller
             $part->days_left = null;
 
             if ($part->is_urgent) {
-                $part->urgency_icon = 'red'; 
-                $part->days_left = 0; 
+                $part->urgency_icon = 'red';
+                $part->days_left = 0;
             } elseif ($part->incoming_date) {
                 $daysLeft = \App\Helpers\DateHelper::daysLeftUntilDeadline($part->incoming_date);
                 $part->days_left = $daysLeft;
@@ -95,7 +98,18 @@ class ProsesMekanikController extends Controller
                     ->first();
 
                 if (!$currentStep) {
-                    throw new \Exception('No active step found');
+                    // Sebaliknya dari error, ini berarti semua step sudah selesai
+                    $komponen = part::where('no_iwo', $validated['no_iwo'])->first();
+                    if ($komponen) {
+                        Mail::to('muhamadilhamfauzi18@gmail.com')->send(new KomponenSelesaiNotification($komponen));
+                    }
+
+                    return [
+                        'message' => 'Semua langkah sudah selesai',
+                        'all_completed' => true,
+                        'current_step' => null,
+                        'next_step' => null
+                    ];
                 }
 
                 // Update current step
@@ -124,6 +138,15 @@ class ProsesMekanikController extends Controller
                 $allStepsCompleted = !work_progres::where('no_iwo', $validated['no_iwo'])
                     ->where('is_completed', false)
                     ->exists();
+
+                // Kirim email jika semua langkah selesai
+                if ($allStepsCompleted) {
+                    $komponen = part::where('no_iwo', $validated['no_iwo'])->first();
+
+                    if ($komponen) {
+                        Mail::to('muhamadilhamfauzi18@gmail.com')->send(new KomponenSelesaiNotification($komponen));
+                    }
+                }
 
                 return [
                     'message' => 'Step updated successfully',
