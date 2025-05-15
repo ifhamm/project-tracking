@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\akun_mekanik;
 use Illuminate\Support\Str;
 use App\Helpers\DateHelper;
+use App\Http\Middleware\RoleMiddleware;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 class PartController extends Controller
 {
@@ -28,7 +31,7 @@ class PartController extends Controller
             'no_seri' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'customer' => 'required|string|max:255',
-            'id_mekanik' => 'required|uuid',
+            'id_credentials' => 'required|uuid',
             'step_sequence' => 'required|array',
             'step_sequence.*' => 'required|integer|between:1,8',
         ]);
@@ -46,7 +49,7 @@ class PartController extends Controller
             'no_seri' => $validated['no_seri'],
             'description' => $validated['description'],
             'customer' => $validated['customer'],
-            'id_mekanik' => $validated['id_mekanik'],
+            'id_credentials' => $validated['id_credentials'],
         ];
 
         $newPart = \App\Models\part::create($part);
@@ -73,7 +76,7 @@ class PartController extends Controller
             ]);
         }
 
-        return redirect()->route('part.create')->with('success', 'Data part berhasil disimpan dengan priority deadline.');
+        return redirect()->route('komponen')->with('success', 'Data part berhasil disimpan dengan priority deadline.');
     }
 
 
