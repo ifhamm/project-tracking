@@ -245,6 +245,129 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-secondary mt-3" data-bs-toggle="modal"
+                                data-bs-target="#addBDPModal">
+                                Add Break Down Part
+                            </button>
+
+                            <!-- Modal for Adding BDP -->
+                            <div class="modal fade" id="addBDPModal" tabindex="-1" aria-labelledby="addBDPModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <form action="{{ route('breakdown.parts.store') }}" method="POST">
+                                        @csrf
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addBDPModalLabel">Add Break Down Part</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body row g-3">
+                                                <input type="hidden" name="No_IWO" value="COMP-001">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">BDP Name</label>
+                                                    <input type="text" class="form-control" name="BDP_Name"
+                                                        required>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">BDP Number Eqv</label>
+                                                    <input type="text" class="form-control" name="BDP_Number_Eqv">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Quantity</label>
+                                                    <input type="number" class="form-control" name="Quantity">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Unit</label>
+                                                    <input type="text" class="form-control" name="Unit">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Defect</label>
+                                                    <input type="text" class="form-control" name="Defect">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">OP Number</label>
+                                                    <input type="text" class="form-control" name="OP_Number">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">OP Date</label>
+                                                    <input type="date" class="form-control" name="OP_Date">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">MT Number</label>
+                                                    <input type="text" class="form-control" name="MT_Number">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">MT QTY</label>
+                                                    <input type="number" class="form-control" name="MT_QTY">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">MT Date</label>
+                                                    <input type="date" class="form-control" name="MT_Date">
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-primary">Save BDP</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Table BDP -->
+                            <div class="container mt-4">
+                                <h4>Break Down Part List</h4>
+                                <table class="table table-striped mt-3">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>BDP Name</th>
+                                            <th>BDP Number Eqv</th>
+                                            <th>Qty</th>
+                                            <th>Unit</th>
+                                            <th>OP Number</th>
+                                            <th>OP Date</th>
+                                            <th>Defect</th>
+                                            <th>MT Number</th>
+                                            <th>MT Qty</th>
+                                            <th>MT Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    {{-- <tbody>
+                                        @foreach ($breakdownParts as $part)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $part->bdp_name }}</td>
+                                                <td>{{ $part->bdp_nunber_eqv }}</td>
+                                                <td>{{ $part->quantity }}</td>
+                                                <td>{{ $part->unit }}</td>
+                                                <td>{{ $part->op_number }}</td>
+                                                <td>{{ $part->op_date }}</td>
+                                                <td>{{ $part->defect }}</td>
+                                                <td>{{ $part->mt_number }}</td>
+                                                <td>{{ $part->mt_quantity }}</td>
+                                                <td>{{ $part->mt_date }}</td>
+                                                <td>
+                                                    <a href="{{ route('breakdown.parts.edit', $part->bdp_number) }}"
+                                                        class="btn btn-sm btn-primary">Edit</a>
+                                                    <form
+                                                        action="{{ route('breakdown.parts.destroy', $part->bdp_number) }}"
+                                                        method="POST" style="display:inline;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="btn btn-sm btn-danger">Delete</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody> --}}
+                                </table>
+                            </div>
 
                             <hr class="my-4">
 
