@@ -13,8 +13,9 @@ class breakdown_part extends Model
     protected $primaryKey = 'bdp_number';
 
     protected $fillable = [
+        'no_iwo',
         'bdp_name',
-        'bdp_nunber_eqv',
+        'bdp_number_eqv',
         'quantity',
         'unit',
         'op_number',
@@ -29,7 +30,7 @@ class breakdown_part extends Model
     {
         return [
             'bdp_name' => $this['bdp_name'],
-            'bdp_nunber_eqv' => $this['bdp_nunber_eqv'],
+            'bdp_number_eqv' => $this['bdp_number_eqv'],
             'quantity' => $this['quantity'],
             'unit' => $this['unit'],
             'op_number' => $this['op_number'],
@@ -43,7 +44,7 @@ class breakdown_part extends Model
 
     public function part()
     {
-        return $this->belongsTo(part::class);
+        return $this->belongsTo(part::class, 'no_iwo', 'no_iwo');
     }
 
     public $timestamps = false;

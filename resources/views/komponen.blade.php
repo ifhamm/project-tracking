@@ -1,4 +1,3 @@
-
 <style>
     .status-badge {
         border-radius: 20px;
@@ -222,12 +221,27 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <a href="{{ route('detail.komponen', ['id' => $part->id]) }}"
+                                        <a href="{{ route('detail.komponen', ['id' => $part->no_iwo]) }}"
                                             class="btn btn-sm btn-primary">
                                             Detail
                                         </a>
                                     </td>
                                 </tr>
+                                @foreach ($part->breakdownPart as $bdp)
+                                    <tr>
+                                        <td>{{ $bdp->bdp_name }}</td>
+                                        <td>{{ $bdp->bdp_number_eqv }}</td>
+                                        <td>{{ $bdp->quantity }}</td>
+                                        <td>{{ $bdp->unit }}</td>
+                                        <td>{{ $bdp->op_number }}</td>
+                                        <td>{{ $bdp->op_date }}</td>
+                                        <td>{{ $bdp->defect }}</td>
+                                        <td>{{ $bdp->mt_number }}</td>
+                                        <td>{{ $bdp->mt_quantity }}</td>
+                                        <td>{{ $bdp->mt_date }}</td>
+                                        <!-- dst -->
+                                    </tr>
+                                @endforeach
                             @endforeach
                         </tbody>
                     </table>
