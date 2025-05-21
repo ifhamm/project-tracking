@@ -33,7 +33,7 @@ Route::middleware([checkSession::class])->group(function () {
         Route::get('/komponen', [PartController::class, 'create'])->name('komponen');
         Route::get('/proses-mekanik', [ProsesMekanikController::class, 'index'])->name('proses-mekanik');
         Route::get('/breakdown_parts', [BreakdownPartController::class, 'index'])->name('breakdown.parts.index');
-        Route::get('/detail-proses/{no_iwo}', [PartController::class, 'show'])->name('detail.komponen');
+        Route::get('/detail-proses/{no_iwo}', [PartController::class, 'show'])->name('detail.show');
     });
 
     // superadmin-only routes

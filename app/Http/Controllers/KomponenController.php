@@ -20,4 +20,13 @@ class KomponenController extends Controller
 
         return redirect()->route('proses-mekanik')->with('success', 'Komponen berhasil ditambahkan');
     }
+
+    public function index()
+{
+    $parts = Part::with('akunMekanik')
+        ->orderBy('created_at', 'desc')
+        ->paginate(10); // 10 items per page
+    
+    return view('komponen', compact('parts'));
+}
 } 

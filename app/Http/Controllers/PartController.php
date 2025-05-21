@@ -15,8 +15,22 @@ class PartController extends Controller
 {
     public function create()
     {
-        $mekanik = akun_mekanik::all();
-        $parts = part::with('akunMekanik')->get();
+        $mekanik = akun_mekanik::select('id_credentials', 'name')->get();
+        $parts = part::with(['akunMekanik', 'workProgres' => function($query) {
+            $query->orderBy('step_order', 'asc');
+        }])
+        ->select([
+            'no_iwo',
+            'no_wbs',
+            'part_name',
+            'part_number',
+            'incoming_date',
+            'customer',
+            'id_credentials'
+        ])
+        ->orderBy('incoming_date', 'desc')
+        ->paginate(10);
+        
         return view('komponen', compact('mekanik', 'parts'));
     }
 

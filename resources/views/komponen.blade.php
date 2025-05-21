@@ -227,26 +227,56 @@
                                         </a>
                                     </td>
                                 </tr>
-                                @foreach ($part->breakdownParts as $bdp)
-                                    <tr>
-                                        <td>{{ $bdp->bdp_name }}</td>
-                                        <td>{{ $bdp->bdp_number_eqv }}</td>
-                                        <td>{{ $bdp->quantity }}</td>
-                                        <td>{{ $bdp->unit }}</td>
-                                        <td>{{ $bdp->op_number }}</td>
-                                        <td>{{ $bdp->op_date }}</td>
-                                        <td>{{ $bdp->defect }}</td>
-                                        <td>{{ $bdp->mt_number }}</td>
-                                        <td>{{ $bdp->mt_quantity }}</td>
-                                        <td>{{ $bdp->mt_date }}</td>
-                                        <!-- dst -->
-                                    </tr>
-                                @endforeach
                             @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+        
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <div class="text-muted">
+            Showing {{ $parts->firstItem() ?? 0 }} to {{ $parts->lastItem() ?? 0 }} of {{ $parts->total() }} entries
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination mb-0">
+                {{-- Previous Page Link --}}
+                @if ($parts->onFirstPage())
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                @else
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $parts->previousPageUrl() }}" rel="prev">Previous</a>
+                    </li>
+                @endif
+
+                {{-- Pagination Elements --}}
+                @foreach ($parts->getUrlRange(1, $parts->lastPage()) as $page => $url)
+                    @if ($page == $parts->currentPage())
+                        <li class="page-item active">
+                            <span class="page-link">{{ $page }}</span>
+                        </li>
+                    @else
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                        </li>
+                    @endif
+                @endforeach
+
+                {{-- Next Page Link --}}
+                @if ($parts->hasMorePages())
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $parts->nextPageUrl() }}" rel="next">Next</a>
+                    </li>
+                @else
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                @endif
+            </ul>
+        </nav>
+    </div>
     </div>
 @endsection
