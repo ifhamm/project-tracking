@@ -196,7 +196,6 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize any JavaScript functionality here
     });
 </script>
 @endsection
