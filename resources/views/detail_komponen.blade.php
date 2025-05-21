@@ -193,7 +193,7 @@
                         <td>{{ $bdp->mt_number }}</td>
                         <td>{{ $bdp->mt_quantity }}</td>
                         <td>{{ \Carbon\Carbon::parse($bdp->mt_date)->format('M d, Y') }}</td>
-                        <td>
+                        {{-- <td>
                             <a href="{{ route('breakdown.parts.edit', $bdp->bdp_number_eqv) }}"
                                 class="btn btn-sm btn-primary">Edit</a>
                             <form action="{{ route('breakdown.parts.destroy', $bdp->bdp_number_eqv) }}" method="POST"
@@ -203,7 +203,7 @@
                                 <button type="submit" class="btn btn-sm btn-danger"
                                     onclick="return confirm('Yakin ingin hapus data ini?')">Delete</button>
                             </form>
-                        </td>
+                        </td> --}}
                     </tr>
                 @empty
                     <tr>
