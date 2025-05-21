@@ -15,37 +15,38 @@ class BreakdownPartController extends Controller
 
     public function store(Request $request)
     {
+
         $validated = $request->validate([
-            'No_IWO' => ['required', 'string', 'max:255'],
-            'BDP_Name' => 'required|string|max:255',
-            'BDP_Number_Eqv' => 'nullable|string|max:255',
-            'Quantity' => 'nullable|integer',
-            'Unit' => 'nullable|string|max:50',
-            'Defect' => 'nullable|string|max:255',
-            'OP_Number' => 'nulla   ble|string|max:255',
-            'OP_Date' => 'nullable|date',
-            'MT_Number' => 'nullable|string|max:255',
-            'MT_QTY' => 'nullable|integer',
-            'MT_Date' => 'nullable|date',
+            'no_iwo' => ['required', 'string', 'max:255'],
+            'bdp_name' => 'required|string|max:255',
+            'bdp_number_eqv' => 'nullable|string|max:255',
+            'quantity' => 'nullable|integer',
+            'unit' => 'nullable|string|max:50',
+            'defect' => 'nullable|string|max:255',
+            'op_number' => 'nullable|string|max:255',
+            'op_date' => 'nullable|date',
+            'mt_number' => 'nullable|string|max:255',
+            'mt_quantity' => 'nullable|integer',
+            'mt_date' => 'nullable|date',
         ]);
 
         $data = [
-            'no_iwo' => $validated['No_IWO'],
-            'bdp_name' => $validated['BDP_Name'],
-            'bdp_number_eqv' => $validated['BDP_Number_Eqv'],
-            'quantity' => $validated['Quantity'],
-            'unit' => $validated['Unit'],
-            'defect' => $validated['Defect'],
-            'op_number' => $validated['OP_Number'],
-            'op_date' => $validated['OP_Date'],
-            'mt_number' => $validated['MT_Number'],
-            'mt_quantity' => $validated['MT_QTY'],
-            'mt_date' => $validated['MT_Date'],
+            'no_iwo' => $validated['no_iwo'],
+            'bdp_name' => $validated['bdp_name'],
+            'bdp_number_eqv' => $validated['bdp_number_eqv'],
+            'quantity' => $validated['quantity'],
+            'unit' => $validated['unit'],
+            'defect' => $validated['defect'],
+            'op_number' => $validated['op_number'],
+            'op_date' => $validated['op_date'],
+            'mt_number' => $validated['mt_number'],
+            'mt_quantity' => $validated['mt_quantity'],
+            'mt_date' => $validated['mt_date'],
         ];
 
         breakdown_part::create($data);
 
-        return redirect()->route('detail.komponen', ['id' => $validated['No_IWO']])
+        return redirect()->route('detail.komponen', ['id' => $validated['no_iwo']])
             ->with('success', 'Breakdown Part Added Successfully');
     }
 
@@ -81,7 +82,7 @@ class BreakdownPartController extends Controller
     {
         $no_iwo = $request->query('id'); // dari parameter `?id=...`
 
-        $part = part::with('akunMekanik')->where('no_iwo', $no_iwo)->firstOrFail();
+        $part = part::with('akunMekanik', 'breakdownParts')->where('no_iwo', $no_iwo)->firstOrFail();
 
         return view('detail_komponen', compact('part'));
     }
