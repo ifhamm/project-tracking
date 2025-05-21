@@ -84,9 +84,11 @@ class PartController extends Controller
     {
         $parts = part::where('customer', $customer)
             ->select('no_wbs', 'part_name', 'incoming_date')
-            ->with(['workProgres' => function ($query) {
-                $query->orderByDesc('step_order')->limit(1);
-            }])
+            ->with([
+                'workProgres' => function ($query) {
+                    $query->orderByDesc('step_order')->limit(1);
+                }
+            ])
             ->get()
             ->map(function ($part) {
                 return [
@@ -100,9 +102,9 @@ class PartController extends Controller
         return response()->json($parts);
     }
 
-    public function show($id)
+    public function show($no_iwo)
     {
-        $part = \App\Models\part::with('breakdownParts')->findOrFail($id);
+        $part = part::with('breakdownParts', 'akunMekanik')->findOrFail($no_iwo);   
         return view('detail_komponen', compact('part'));
     }
 }

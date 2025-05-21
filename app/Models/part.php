@@ -34,7 +34,7 @@ class part extends Model
         });
     }
 
-    public function breakdownPart()
+    public function breakdownParts()
     {
         return $this->hasMany(work_progres::class, 'no_iwo', 'no_iwo');
     }
