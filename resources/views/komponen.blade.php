@@ -227,7 +227,7 @@
                                         </a>
                                     </td>
                                 </tr>
-                                @foreach ($part->breakdownPart as $bdp)
+                                @foreach ($part->breakdownParts as $bdp)
                                     <tr>
                                         <td>{{ $bdp->bdp_name }}</td>
                                         <td>{{ $bdp->bdp_number_eqv }}</td>

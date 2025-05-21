@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\breakdown_part;
+use App\Models\part;
 use Illuminate\Http\Request;
 
 class BreakdownPartController extends Controller
@@ -69,11 +70,19 @@ class BreakdownPartController extends Controller
         return redirect()->route('breakdown.parts.index')->with('success', 'Breakdown Part Updated Successfully');
     }
 
-    public function destroy($id)
-    {
-        $breakdownPart = breakdown_part::findOrFail($id);
-        $breakdownPart->delete();
+    // public function destroy($id)
+    // {
+    //     $breakdownPart = breakdown_part::findOrFail($id);
+    //     $breakdownPart->delete();
 
-        return redirect()->route('breakdown.parts.index')->with('success', 'Breakdown Part Deleted Successfully');
+    //     return redirect()->route('breakdown.parts.index')->with('success', 'Breakdown Part Deleted Successfully');
+    // }
+    public function show(Request $request)
+    {
+        $no_iwo = $request->query('id'); // dari parameter `?id=...`
+
+        $part = part::with('akunMekanik')->where('no_iwo', $no_iwo)->firstOrFail();
+
+        return view('detail_komponen', compact('part'));
     }
 }
