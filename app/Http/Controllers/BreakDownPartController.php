@@ -50,37 +50,38 @@ class BreakdownPartController extends Controller
             ->with('success', 'Breakdown Part Added Successfully');
     }
 
-    public function update(Request $request, $bdp_number)
+    public function update(Request $request, $no_iwo)
     {
         $validated = $request->validate([
-            'BDP_Name' => 'required|string|max:255',
-            'BDP_Number_Eqv' => 'nullable|string|max:255',
-            'Quantity' => 'nullable|integer',
-            'Unit' => 'nullable|string|max:50',
-            'Defect' => 'nullable|string|max:255',
-            'OP_Number' => 'nullable|string|max:255',
-            'OP_Date' => 'nullable|date',
-            'MT_Number' => 'nullable|string|max:255',
-            'MT_QTY' => 'nullable|integer',
-            'MT_Date' => 'nullable|date',
+            'bdp_name' => 'required|string|max:255',
+            'bdp_number_eqv' => 'nullable|string|max:255',
+            'quantity' => 'nullable|integer',
+            'unit' => 'nullable|string|max:50',
+            'defect' => 'nullable|string|max:255',
+            'op_number' => 'nullable|string|max:255',
+            'op_date' => 'nullable|date',
+            'mt_number' => 'nullable|string|max:255',
+            'mt_quantity' => 'nullable|integer',
+            'mt_date' => 'nullable|date',
         ]);
 
-        $breakdownPart = breakdown_part::findOrFail($bdp_number);
+        $breakdownPart = breakdown_part::where('no_iwo', $no_iwo)->firstOrFail();
         $breakdownPart->update($validated);
 
-        return redirect()->route('breakdown.parts.index')->with('success', 'Breakdown Part Updated Successfully');
+        return redirect()->back()->with('success', 'Breakdown Part Updated Successfully');
     }
 
-    // public function destroy($id)
-    // {
-    //     $breakdownPart = breakdown_part::findOrFail($id);
-    //     $breakdownPart->delete();
+    public function destroy($no_iwo)
+    {
+        $breakdownPart = breakdown_part::where('no_iwo', $no_iwo)->firstOrFail();
+        $breakdownPart->delete();
 
-    //     return redirect()->route('breakdown.parts.index')->with('success', 'Breakdown Part Deleted Successfully');
-    // }
+        return redirect()->back()->with('success', 'Breakdown Part Deleted Successfully');
+    }
+
     public function show(Request $request)
     {
-        $no_iwo = $request->query('id'); // dari parameter `?id=...`
+        $no_iwo = $request->query('id'); 
 
         $part = part::with('akunMekanik', 'breakdownParts')->where('no_iwo', $no_iwo)->firstOrFail();
 
