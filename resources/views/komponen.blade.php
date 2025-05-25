@@ -57,127 +57,128 @@
         </div>
 
         @if (in_array(Session::get('role'), ['superadmin']))
-        <!-- Insert Button -->
-        <div class="mb-3 text-end">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#insertModal">
-                <i class="bi bi-plus-circle"></i> Insert Component
-            </button>
-        </div>
+            <!-- Insert Button -->
+            <div class="mb-3 text-end">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#insertModal">
+                    <i class="bi bi-plus-circle"></i> Insert Component
+                </button>
+            </div>
 
-        <!-- Modal Insert Component -->
-        <div class="modal fade" id="insertModal" tabindex="-1" aria-labelledby="insertModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="insertModalLabel">Tambah Komponen</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <!-- Modal Insert Component -->
+            <div class="modal fade" id="insertModal" tabindex="-1" aria-labelledby="insertModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="insertModalLabel">Tambah Komponen</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{{ route('part.store') }}" method="POST">
+                            @csrf
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="id_credentials" class="form-label">Pilih Mekanik</label>
+                                    <select name="id_credentials" class="form-control" required>
+                                        <option value="">Pilih Mekanik</option>
+                                        @foreach ($mekanik as $m)
+                                            <option value="{{ $m->id_credentials }}">{{ $m->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('id_credentials')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="mb-3">
+                                    <label for="no_wbs" class="form-label">No WBS</label>
+                                    <input type="text" class="form-control @error('no_wbs') is-invalid @enderror"
+                                        id="no_wbs" name="no_wbs" value="{{ old('no_wbs') }}" required>
+                                    @error('no_wbs')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="incoming_date" class="form-label">Tanggal Masuk</label>
+                                    <input type="date" class="form-control @error('incoming_date') is-invalid @enderror"
+                                        id="incoming_date" name="incoming_date" value="{{ old('incoming_date') }}" required>
+                                    @error('incoming_date')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="part_name" class="form-label">Nama Part</label>
+                                    <input type="text" class="form-control @error('part_name') is-invalid @enderror"
+                                        id="part_name" name="part_name" value="{{ old('part_name') }}" required>
+                                    @error('part_name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="part_number" class="form-label">Nomor Part</label>
+                                    <input type="text" class="form-control @error('part_number') is-invalid @enderror"
+                                        id="part_number" name="part_number" value="{{ old('part_number') }}" required>
+                                    @error('part_number')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="no_seri" class="form-label">Nomor Seri (Opsional)</label>
+                                    <input type="text" class="form-control @error('no_seri') is-invalid @enderror"
+                                        id="no_seri" name="no_seri" value="{{ old('no_seri') }}">
+                                    @error('no_seri')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Deskripsi (Opsional)</label>
+                                    <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description">{{ old('description') }}</textarea>
+                                    @error('description')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="step_sequence" class="form-label">Urutan Step</label>
+                                    <select class="form-select @error('step_sequence') is-invalid @enderror"
+                                        id="step_sequence" name="step_sequence[]" multiple required>
+                                        <option value="1">Incoming</option>
+                                        <option value="2">Pre Test</option>
+                                        <option value="3">Disassembly</option>
+                                        <option value="4">Check + Stripping</option>
+                                        <option value="5">Cleaning</option>
+                                        <option value="6">Assembly + Repair</option>
+                                        <option value="7">Post Test</option>
+                                        <option value="8">Final Inspection</option>
+                                    </select>
+                                    <small class="form-text text-muted">Pilih urutan step yang akan dilakukan (gunakan
+                                        Ctrl/Cmd
+                                        untuk memilih multiple)</small>
+                                    @error('step_sequence')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="customer" class="form-label">Customer</label>
+                                    <textarea class="form-control @error('customer') is-invalid @enderror" id="customer" name="customer">{{ old('customer') }}</textarea>
+                                    @error('customer')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" class="btn btn-primary">Simpan</button>
+                            </div>
+                        </form>
                     </div>
-                    <form action="{{ route('part.store') }}" method="POST">
-                        @csrf
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="id_credentials" class="form-label">Pilih Mekanik</label>
-                                <select name="id_credentials" class="form-control" required>
-                                    <option value="">Pilih Mekanik</option>
-                                    @foreach ($mekanik as $m)
-                                        <option value="{{ $m->id_credentials }}">{{ $m->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('id_credentials')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="mb-3">
-                                <label for="no_wbs" class="form-label">No WBS</label>
-                                <input type="text" class="form-control @error('no_wbs') is-invalid @enderror"
-                                    id="no_wbs" name="no_wbs" value="{{ old('no_wbs') }}" required>
-                                @error('no_wbs')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="incoming_date" class="form-label">Tanggal Masuk</label>
-                                <input type="date" class="form-control @error('incoming_date') is-invalid @enderror"
-                                    id="incoming_date" name="incoming_date" value="{{ old('incoming_date') }}" required>
-                                @error('incoming_date')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="part_name" class="form-label">Nama Part</label>
-                                <input type="text" class="form-control @error('part_name') is-invalid @enderror"
-                                    id="part_name" name="part_name" value="{{ old('part_name') }}" required>
-                                @error('part_name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="part_number" class="form-label">Nomor Part</label>
-                                <input type="text" class="form-control @error('part_number') is-invalid @enderror"
-                                    id="part_number" name="part_number" value="{{ old('part_number') }}" required>
-                                @error('part_number')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="no_seri" class="form-label">Nomor Seri (Opsional)</label>
-                                <input type="text" class="form-control @error('no_seri') is-invalid @enderror"
-                                    id="no_seri" name="no_seri" value="{{ old('no_seri') }}">
-                                @error('no_seri')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="description" class="form-label">Deskripsi (Opsional)</label>
-                                <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description">{{ old('description') }}</textarea>
-                                @error('description')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="step_sequence" class="form-label">Urutan Step</label>
-                                <select class="form-select @error('step_sequence') is-invalid @enderror"
-                                    id="step_sequence" name="step_sequence[]" multiple required>
-                                    <option value="1">Incoming</option>
-                                    <option value="2">Pre Test</option>
-                                    <option value="3">Disassembly</option>
-                                    <option value="4">Check + Stripping</option>
-                                    <option value="5">Cleaning</option>
-                                    <option value="6">Assembly + Repair</option>
-                                    <option value="7">Post Test</option>
-                                    <option value="8">Final Inspection</option>
-                                </select>
-                                <small class="form-text text-muted">Pilih urutan step yang akan dilakukan (gunakan Ctrl/Cmd
-                                    untuk memilih multiple)</small>
-                                @error('step_sequence')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="customer" class="form-label">Customer</label>
-                                <textarea class="form-control @error('customer') is-invalid @enderror" id="customer" name="customer">{{ old('customer') }}</textarea>
-                                @error('customer')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
-                        </div>
-                    </form>
                 </div>
             </div>
-        </div>
         @endif
-        
+
         <!-- Table - Responsive -->
         <div class="card">
             <div class="card-body p-0">
@@ -192,6 +193,7 @@
                                 <th>Customer</th>
                                 <th>Mekanik</th>
                                 <th>Progress</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -218,6 +220,12 @@
                                             </div>
                                         </div>
                                     </td>
+                                    <td>
+                                        <a href="{{ route('detail.komponen', ['id' => $part->no_iwo]) }}"
+                                            class="btn btn-sm btn-primary">
+                                            Detail
+                                        </a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -225,5 +233,50 @@
                 </div>
             </div>
         </div>
+        
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <div class="text-muted">
+            Showing {{ $parts->firstItem() ?? 0 }} to {{ $parts->lastItem() ?? 0 }} of {{ $parts->total() }} entries
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination mb-0">
+                {{-- Previous Page Link --}}
+                @if ($parts->onFirstPage())
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                @else
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $parts->previousPageUrl() }}" rel="prev">Previous</a>
+                    </li>
+                @endif
+
+                {{-- Pagination Elements --}}
+                @foreach ($parts->getUrlRange(1, $parts->lastPage()) as $page => $url)
+                    @if ($page == $parts->currentPage())
+                        <li class="page-item active">
+                            <span class="page-link">{{ $page }}</span>
+                        </li>
+                    @else
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                        </li>
+                    @endif
+                @endforeach
+
+                {{-- Next Page Link --}}
+                @if ($parts->hasMorePages())
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $parts->nextPageUrl() }}" rel="next">Next</a>
+                    </li>
+                @else
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                @endif
+            </ul>
+        </nav>
+    </div>
     </div>
 @endsection

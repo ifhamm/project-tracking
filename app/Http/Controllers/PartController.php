@@ -15,8 +15,22 @@ class PartController extends Controller
 {
     public function create()
     {
-        $mekanik = akun_mekanik::all();
-        $parts = part::with('akunMekanik')->get();
+        $mekanik = akun_mekanik::select('id_credentials', 'name')->get();
+        $parts = part::with(['akunMekanik', 'workProgres' => function($query) {
+            $query->orderBy('step_order', 'asc');
+        }])
+        ->select([
+            'no_iwo',
+            'no_wbs',
+            'part_name',
+            'part_number',
+            'incoming_date',
+            'customer',
+            'id_credentials'
+        ])
+        ->orderBy('incoming_date', 'desc')
+        ->paginate(10);
+        
         return view('komponen', compact('mekanik', 'parts'));
     }
 
@@ -84,9 +98,11 @@ class PartController extends Controller
     {
         $parts = part::where('customer', $customer)
             ->select('no_wbs', 'part_name', 'incoming_date')
-            ->with(['workProgres' => function ($query) {
-                $query->orderByDesc('step_order')->limit(1);
-            }])
+            ->with([
+                'workProgres' => function ($query) {
+                    $query->orderByDesc('step_order')->limit(1);
+                }
+            ])
             ->get()
             ->map(function ($part) {
                 return [
@@ -98,5 +114,11 @@ class PartController extends Controller
             });
 
         return response()->json($parts);
+    }
+
+    public function show($no_iwo)
+    {
+        $part = part::with('breakdownParts', 'akunMekanik')->findOrFail($no_iwo);   
+        return view('detail_komponen', compact('part'));
     }
 }

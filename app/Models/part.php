@@ -34,9 +34,9 @@ class part extends Model
         });
     }
 
-    public function breakdownPart()
+    public function breakdownParts()
     {
-        return $this->hasMany(breakdown_part::class);
+        return $this->hasMany(breakdown_part::class, 'no_iwo', 'no_iwo');
     }
 
     public function akunMekanik()
