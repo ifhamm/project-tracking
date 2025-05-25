@@ -20,32 +20,31 @@
             <h2 class="mb-4">Dashboard</h2>
 
             <!-- Stats Cards -->
-            <div class="row g-3 mb-4">
-
+            <div class="d-flex gap-2 mb-4 flex-wrap align-items-center">
                 <!-- <div class="col-12 col-md-4">
-                                    <div class="card h-100">
-                                        <div class="card-body">
-                                            <h6 class="card-subtitle mb-2 text-muted">Total Masuk</h6>
-                                            <h2 class="card-title">12</h2>
+                                            <div class="card h-100">
+                                                <div class="card-body">
+                                                    <h6 class="card-subtitle mb-2 text-muted">Total Masuk</h6>
+                                                    <h2 class="card-title">12</h2>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <div class="card h-100">
-                                        <div class="card-body">
-                                            <h6 class="card-subtitle mb-2 text-muted">Dalam Proses</h6>
-                                            <h2 class="card-title">5</h2>
+                                        <div class="col-12 col-md-4">
+                                            <div class="card h-100">
+                                                <div class="card-body">
+                                                    <h6 class="card-subtitle mb-2 text-muted">Dalam Proses</h6>
+                                                    <h2 class="card-title">5</h2>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <div class="card h-100">
-                                        <div class="card-body">
-                                            <h6 class="card-subtitle mb-2 text-muted">Selesai</h6>
-                                            <h2 class="card-title">7</h2>
-                                        </div>
-                                    </div>
-                                </div> -->
+                                        <div class="col-12 col-md-4">
+                                            <div class="card h-100">
+                                                <div class="card-body">
+                                                    <h6 class="card-subtitle mb-2 text-muted">Selesai</h6>
+                                                    <h2 class="card-title">7</h2>
+                                                </div>
+                                            </div>
+                                        </div> -->
 
                 <div class="mb-3">
                     <label for="customer" class="form-label">Pilih Customer</label>
@@ -59,7 +58,11 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-
+                <div class="mb-3">
+                    <button class="btn btn-primary">
+                        <i class="bi bi-file-earmark-arrow-down" href="export"></i> Export
+                    </button>
+                </div>
             </div>
 
             <!-- Charts Section -->

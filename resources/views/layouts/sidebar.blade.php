@@ -100,7 +100,7 @@
                     </div>
                     <ul class="nav flex-column" id="sidebarNav">
                         <li class="nav-item">
-                            <a class="nav-link" href="dashboard">
+                            <a class="nav-link" href="/">
                                 <i class="bi bi-house me-2"></i> Dashboard
                             </a>
                         </li>
