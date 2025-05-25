@@ -43,6 +43,7 @@ Route::middleware([checkSession::class])->group(function () {
     Route::middleware([RoleMiddleware::class . ':superadmin'])->group(function () {
         Route::post('/part/store', [PartController::class, 'store'])->name('part.store');
         Route::post('/breakdown_parts', [BreakdownPartController::class, 'store'])->name('breakdown.parts.store');
+        Route::get('/detail-proses', [BreakdownPartController::class, 'show'])->name('detail.komponen');
     });
 
     // Mekanik-only routes
@@ -50,6 +51,5 @@ Route::middleware([checkSession::class])->group(function () {
         Route::post('/proses-mekanik/update-step', [ProsesMekanikController::class, 'updateStep'])->name('proses-mekanik.update-step');
     });
 
-    // Logout route
     Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 })->withoutMiddleware([checkSession::class]);

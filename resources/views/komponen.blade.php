@@ -211,13 +211,7 @@
                                             <span class="status-badge bg-info bg-opacity-25 text-info me-2">In
                                                 Progress</span>
                                             <div class="flex-grow-1">
-                                                <div class="progress">
-                                                    <div class="progress-bar bg-info" role="progressbar"
-                                                        style="width: 45%;" aria-valuenow="45" aria-valuemin="0"
-                                                        aria-valuemax="100"></div>
-                                                </div>
-                                                <div class="text-end mt-1"><small>45%</small></div>
-                                            </div>
+                                               
                                         </div>
                                     </td>
                                     <td>
