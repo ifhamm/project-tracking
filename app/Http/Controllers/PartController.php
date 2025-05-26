@@ -121,4 +121,40 @@ class PartController extends Controller
         $part = part::with('breakdownParts', 'akunMekanik')->findOrFail($no_iwo);   
         return view('detail_komponen', compact('part'));
     }
+
+    public function edit($no_iwo)
+    {
+        $part = part::where('no_iwo', $no_iwo)->firstOrFail();
+        $mekanik = \App\Models\akun_mekanik::where('role', 'mekanik')->get();
+        return view('komponen-edit', compact('part', 'mekanik'));
+    }
+
+    public function update(Request $request, $no_iwo)
+    {
+        $part = part::where('no_iwo', $no_iwo)->firstOrFail();
+        
+        $validated = $request->validate([
+            'no_wbs' => 'required|string|unique:parts,no_wbs,' . $part->no_iwo . ',no_iwo',
+            'id_credentials' => 'required|exists:credentials,id_credentials',
+            'part_name' => 'required|string',
+            'part_number' => 'required|string',
+            'no_seri' => 'nullable|string',
+            'description' => 'nullable|string',
+            'customer' => 'required|string',
+            'incoming_date' => 'required|date',
+            'step_sequence' => 'required|array'
+        ]);
+
+        $part->update($validated);
+
+        return redirect()->route('komponen')->with('success', 'Komponen berhasil diperbarui');
+    }
+
+    public function destroy($no_iwo)
+    {
+        $part = part::where('no_iwo', $no_iwo)->firstOrFail();
+        $part->delete();
+
+        return redirect()->route('komponen')->with('success', 'Komponen berhasil dihapus');
+    }
 }

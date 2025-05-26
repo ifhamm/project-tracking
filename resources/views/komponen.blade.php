@@ -219,6 +219,114 @@
                                             class="btn btn-sm btn-primary">
                                             Detail
                                         </a>
+                                        @if (in_array(Session::get('role'), ['superadmin']))
+                                            <button type="button" class="btn btn-sm btn-warning"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editModal{{ $part->no_iwo }}">
+                                                Edit
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteModal{{ $part->no_iwo }}">
+                                                Delete
+                                            </button>
+
+                                            <!-- Delete Confirmation Modal -->
+                                            <div class="modal fade" id="deleteModal{{ $part->no_iwo }}" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Konfirmasi Hapus</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Apakah Anda yakin ingin menghapus komponen ini?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                            <form action="{{ route('part.destroy', ['no_iwo' => $part->no_iwo]) }}" method="POST" class="d-inline">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-danger">Hapus</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Edit Modal -->
+                                            <div class="modal fade" id="editModal{{ $part->no_iwo }}" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <form action="{{ route('part.update', ['no_iwo' => $part->no_iwo]) }}" method="POST">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Edit Komponen</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="mb-3">
+                                                                    <label for="id_credentials{{ $part->no_iwo }}" class="form-label">Pilih Mekanik</label>
+                                                                    <select name="id_credentials" class="form-control" required>
+                                                                        <option value="">Pilih Mekanik</option>
+                                                                        @foreach ($mekanik as $m)
+                                                                            <option value="{{ $m->id_credentials }}" {{ $part->id_credentials == $m->id_credentials ? 'selected' : '' }}>{{ $m->name }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="no_wbs{{ $part->no_iwo }}" class="form-label">No WBS</label>
+                                                                    <input type="text" class="form-control" id="no_wbs{{ $part->no_iwo }}" name="no_wbs" value="{{ $part->no_wbs }}" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="incoming_date{{ $part->no_iwo }}" class="form-label">Tanggal Masuk</label>
+                                                                    <input type="date" class="form-control" id="incoming_date{{ $part->no_iwo }}" name="incoming_date" value="{{ $part->incoming_date }}" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="part_name{{ $part->no_iwo }}" class="form-label">Nama Part</label>
+                                                                    <input type="text" class="form-control" id="part_name{{ $part->no_iwo }}" name="part_name" value="{{ $part->part_name }}" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="part_number{{ $part->no_iwo }}" class="form-label">Nomor Part</label>
+                                                                    <input type="text" class="form-control" id="part_number{{ $part->no_iwo }}" name="part_number" value="{{ $part->part_number }}" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="no_seri{{ $part->no_iwo }}" class="form-label">Nomor Seri (Opsional)</label>
+                                                                    <input type="text" class="form-control" id="no_seri{{ $part->no_iwo }}" name="no_seri" value="{{ $part->no_seri }}">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="description{{ $part->no_iwo }}" class="form-label">Deskripsi (Opsional)</label>
+                                                                    <textarea class="form-control" id="description{{ $part->no_iwo }}" name="description">{{ $part->description }}</textarea>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="step_sequence{{ $part->no_iwo }}" class="form-label">Urutan Step</label>
+                                                                    <select class="form-select" id="step_sequence{{ $part->no_iwo }}" name="step_sequence[]" multiple required>
+                                                                        <option value="1" {{ (is_array($part->step_sequence) && in_array(1, $part->step_sequence)) ? 'selected' : '' }}>Incoming</option>
+                                                                        <option value="2" {{ (is_array($part->step_sequence) && in_array(2, $part->step_sequence)) ? 'selected' : '' }}>Pre Test</option>
+                                                                        <option value="3" {{ (is_array($part->step_sequence) && in_array(3, $part->step_sequence)) ? 'selected' : '' }}>Disassembly</option>
+                                                                        <option value="4" {{ (is_array($part->step_sequence) && in_array(4, $part->step_sequence)) ? 'selected' : '' }}>Check + Stripping</option>
+                                                                        <option value="5" {{ (is_array($part->step_sequence) && in_array(5, $part->step_sequence)) ? 'selected' : '' }}>Cleaning</option>
+                                                                        <option value="6" {{ (is_array($part->step_sequence) && in_array(6, $part->step_sequence)) ? 'selected' : '' }}>Assembly + Repair</option>
+                                                                        <option value="7" {{ (is_array($part->step_sequence) && in_array(7, $part->step_sequence)) ? 'selected' : '' }}>Post Test</option>
+                                                                        <option value="8" {{ (is_array($part->step_sequence) && in_array(8, $part->step_sequence)) ? 'selected' : '' }}>Final Inspection</option>
+                                                                    </select>
+                                                                    <small class="form-text text-muted">Pilih urutan step yang akan dilakukan (gunakan Ctrl/Cmd untuk memilih multiple)</small>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="customer{{ $part->no_iwo }}" class="form-label">Customer</label>
+                                                                    <textarea class="form-control" id="customer{{ $part->no_iwo }}" name="customer">{{ $part->customer }}</textarea>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
