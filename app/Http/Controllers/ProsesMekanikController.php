@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Helpers\DateHelper;
 use Illuminate\Support\Facades\DB;
 use App\Mail\KomponenSelesaiNotification;
-
+use App\Models\akun_mekanik;
 
 class ProsesMekanikController extends Controller
 {
@@ -31,7 +31,7 @@ class ProsesMekanikController extends Controller
 
         // Search by technician
         if ($request->filled('teknisi')) {
-            $query->whereHas('credentials', function ($q) use ($request) {
+            $query->whereHas('akunMekanik', function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->teknisi . '%');
             });
         }
