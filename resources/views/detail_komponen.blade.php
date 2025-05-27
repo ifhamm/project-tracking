@@ -6,8 +6,11 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card shadow-sm">
-                        <div class="card-header bg-white py-3">
+                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">Detail Komponen</h5>
+                            <a href="/komponen" class="btn btn-secondary btn-sm">
+                                <i class="bi bi-arrow-left"></i> Kembali
+                            </a>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -106,7 +109,8 @@
                                                             <i class="bi bi-pencil"></i>
                                                         </button>
                                                         {{-- Form Delete --}}
-                                                        <form action="{{ route('breakdown.parts.destroy', ['no_iwo' => $bdp->no_iwo]) }}"
+                                                        <form
+                                                            action="{{ route('breakdown.parts.destroy', ['no_iwo' => $bdp->no_iwo]) }}"
                                                             method="POST"
                                                             onsubmit="return confirm('Yakin ingin menghapus data ini?')"
                                                             style="display:inline;">
@@ -344,15 +348,18 @@
 
                     // Mengisi form modal edit dengan data yang diambil dari data-attributes
                     document.getElementById('edit_bdp_name').value = this.dataset.bdp_name;
-                    document.getElementById('edit_bdp_number_eqv').value = this.dataset.bdp_number_eqv;
+                    document.getElementById('edit_bdp_number_eqv').value = this.dataset
+                        .bdp_number_eqv;
                     document.getElementById('edit_quantity').value = this.dataset.quantity;
                     document.getElementById('edit_unit').value = this.dataset.unit;
                     document.getElementById('edit_op_number').value = this.dataset.op_number;
-                    document.getElementById('edit_op_date').value = this.dataset.op_date ? this.dataset.op_date.split(' ')[0] : '';
+                    document.getElementById('edit_op_date').value = this.dataset.op_date ? this
+                        .dataset.op_date.split(' ')[0] : '';
                     document.getElementById('edit_defect').value = this.dataset.defect;
                     document.getElementById('edit_mt_number').value = this.dataset.mt_number;
                     document.getElementById('edit_mt_quantity').value = this.dataset.mt_quantity;
-                    document.getElementById('edit_mt_date').value = this.dataset.mt_date ? this.dataset.mt_date.split(' ')[0] : '';
+                    document.getElementById('edit_mt_date').value = this.dataset.mt_date ? this
+                        .dataset.mt_date.split(' ')[0] : '';
 
                     // Mengatur action form edit
                     const editForm = document.getElementById('editBdpForm');
