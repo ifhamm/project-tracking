@@ -8,6 +8,7 @@ use App\Http\Controllers\ProsesMekanikController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\BreakdownPartController;
+use App\Http\Controllers\DokumentasiMekanikController;
 use App\Http\Middleware\CheckSession;
 use App\Http\Middleware\RoleMiddleware;
 
@@ -18,6 +19,10 @@ Route::post('/loginSuperadmin', [LoginController::class, 'loginSuperAdmin'])->na
 Route::post('/loginUser', [LoginController::class, 'loginUser'])->name('loginUser');
 Route::get('/register', [RegisterController::class, 'index'])->name('register.show');
 Route::post('/register', [RegisterController::class, 'register'])->name('register');
+
+Route::get('/dokumentasi-mekanik', [DokumentasiMekanikController::class, 'index'])->name('dokumentasi-mekanik');
+Route::post('/dokumentasi-mekanik/upload', [DokumentasiMekanikController::class, 'upload'])->name('dokumentasi.upload');
+
 
 // Protected routes
 Route::middleware([checkSession::class])->group(function () {
