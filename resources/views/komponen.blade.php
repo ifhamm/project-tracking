@@ -215,14 +215,34 @@
                                     </td>
                                     <td>{{ $part->customer }}</td>
                                     <td>{{ $part->akunMekanik->name }}</td>
+                                    @php
+                                        $totalSteps = $part->workProgres->count();
+                                        $completedSteps = $part->workProgres->where('is_completed', 1)->count();
+                                    @endphp
+
+                                    @php
+                                        $totalSteps = $part->workProgres->count();
+                                        $completedSteps = $part->workProgres->where('is_completed', 1)->count();
+                                    @endphp
+
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <span class="status-badge bg-info bg-opacity-25 text-info me-2">In
-                                                Progress</span>
-                                            <div class="flex-grow-1">
-                                            </div>
+                                            @if ($totalSteps === 0)
+                                                <span class="status-badge bg-secondary bg-opacity-25 text-secondary me-2">
+                                                    Belum Diproses
+                                                </span>
+                                            @elseif ($completedSteps < $totalSteps)
+                                                <span class="status-badge bg-warning bg-opacity-25 text-dark me-2">
+                                                    Sedang Proses ({{ $completedSteps }}/{{ $totalSteps }})
+                                                </span>
+                                            @else
+                                                <span class="status-badge bg-success text-white me-2">
+                                                    Selesai
+                                                </span>
+                                            @endif
                                         </div>
                                     </td>
+
                                     <td class="table-action-cell">
                                         <a href="{{ route('detail.komponen', ['id' => $part->no_iwo]) }}"
                                             class="btn btn-info btn-sm" title="Lihat Detail (BDP)">
