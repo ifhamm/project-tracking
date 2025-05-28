@@ -3,20 +3,21 @@
 namespace App\Helpers;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Http;
+use App\Services\HolidayService;
 
 class DateHelper
 {
-    public static function calculateWorkingDeadline($startDate, $workingDays = 20)
+    protected HolidayService $holidayService;
+
+    public function __construct(HolidayService $holidayService)
+    {
+        $this->holidayService = $holidayService;
+    }
+
+    public function calculateWorkingDeadline($startDate, $workingDays = 20)
     {
         $date = Carbon::parse($startDate);
-        $holidays = collect();
-
-        $year = $date->year;
-        $response = Http::get("https://dayoffapi.vercel.app/api?year={$year}");
-        if ($response->successful()) {
-            $holidays = collect($response->json())->pluck('tanggal')->map(fn($d) => Carbon::parse($d)->format('Y-m-d'));
-        }
+        $holidays = $this->holidayService->getHolidays($date->year);
 
         $count = 0;
         while ($count < $workingDays) {
@@ -29,11 +30,13 @@ class DateHelper
         return $date;
     }
 
-    public static function daysLeftUntilDeadline($incomingDate)
+    public function daysLeftUntilDeadline($incomingDate)
     {
-        $deadline = self::calculateWorkingDeadline($incomingDate);
+        $deadline = $this->calculateWorkingDeadline($incomingDate);
         $today = Carbon::today();
 
-        return $today->diffInWeekdays($deadline, false);
+        return $today->diffInDaysFiltered(function ($date) use ($deadline) {
+            return $date->isWeekday();
+        }, $deadline);
     }
 }

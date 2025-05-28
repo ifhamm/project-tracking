@@ -20,6 +20,12 @@ class work_progres extends Model
         'completed_at',
     ];
 
+    protected $casts = [
+        'completed_at' => 'datetime',
+    ];
+
+
+
     public function part()
     {
         return $this->belongsTo(part::class, 'no_iwo', 'no_iwo');

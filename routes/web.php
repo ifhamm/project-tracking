@@ -44,8 +44,13 @@ Route::middleware([checkSession::class])->group(function () {
     // superadmin-only routes
     Route::middleware([RoleMiddleware::class . ':superadmin'])->group(function () {
         Route::post('/part/store', [PartController::class, 'store'])->name('part.store');
+        Route::get('/part/edit/{no_iwo}', [PartController::class, 'edit'])->name('part.edit');
+        Route::put('/part/update/{no_iwo}', [PartController::class, 'update'])->name('part.update');
+        Route::delete('/part/delete/{no_iwo}', [PartController::class, 'destroy'])->name('part.destroy');
         Route::post('/breakdown_parts', [BreakdownPartController::class, 'store'])->name('breakdown.parts.store');
         Route::get('/detail-proses', [BreakdownPartController::class, 'show'])->name('detail.komponen');
+        Route::put('/breakdown_parts/{no_iwo}', [BreakdownPartController::class, 'update'])->name('breakdown.parts.update');
+        Route::delete('/breakdown_parts/{no_iwo}', [BreakdownPartController::class, 'destroy'])->name('breakdown.parts.destroy');
     });
 
     // Mekanik-only routes
@@ -53,6 +58,5 @@ Route::middleware([checkSession::class])->group(function () {
         Route::post('/proses-mekanik/update-step', [ProsesMekanikController::class, 'updateStep'])->name('proses-mekanik.update-step');
     });
 
-    // Logout route
     Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 })->withoutMiddleware([checkSession::class]);

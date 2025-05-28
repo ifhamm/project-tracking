@@ -3,16 +3,15 @@
 namespace App\Observers;
 
 use App\Models\Part;
+use App\Helpers\DateHelper;
 
 class PartObserver
 {
-    /**
-     * Handle the Part "created" event.
-     */
     public function creating(Part $part)
     {
-        if ($part->incoming_date && !$part->priority_date) {
-            $part->priority_deadline_date = \App\Helpers\DateHelper::calculateWorkingDeadline($part->incoming_date);
+        if ($part->incoming_date && !$part->priority_deadline_date) {
+            $dateHelper = app(DateHelper::class); // Resolve dari container
+            $part->priority_deadline_date = $dateHelper->calculateWorkingDeadline($part->incoming_date);
         }
     }
 
