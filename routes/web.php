@@ -2,12 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PartController;
 use App\Http\Controllers\ProsesMekanikController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\BreakdownPartController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\DokumentasiMekanikController;
 use App\Http\Middleware\CheckSession;
 use App\Http\Middleware\RoleMiddleware;
@@ -17,12 +17,6 @@ use App\Http\Middleware\RoleMiddleware;
 Route::get('/login', [LoginController::class, 'index'])->name('login.show');
 Route::post('/loginSuperadmin', [LoginController::class, 'loginSuperAdmin'])->name('loginSuperAdmin');
 Route::post('/loginUser', [LoginController::class, 'loginUser'])->name('loginUser');
-Route::get('/register', [RegisterController::class, 'index'])->name('register.show');
-Route::post('/register', [RegisterController::class, 'register'])->name('register');
-
-Route::get('/dokumentasi-mekanik', [DokumentasiMekanikController::class, 'index'])->name('dokumentasi-mekanik');
-Route::post('/dokumentasi-mekanik/upload', [DokumentasiMekanikController::class, 'upload'])->name('dokumentasi.upload');
-
 
 // Protected routes
 Route::middleware([checkSession::class])->group(function () {
@@ -33,12 +27,15 @@ Route::middleware([checkSession::class])->group(function () {
     Route::get('/api/chart-data/{customer}', [ChartController::class, 'getData']);
     Route::get('/api/parts-by-customer/{customer}', [PartController::class, 'getByCustomer']);
 
+    Route::get('/export/pdf', [ExportController::class, 'exportPdf'])->name('export.pdf');
+
     // Superadmin & Mekanik routes
     Route::middleware([RoleMiddleware::class . ':superadmin,mekanik'])->group(function () {
         Route::get('/komponen', [PartController::class, 'create'])->name('komponen');
         Route::get('/proses-mekanik', [ProsesMekanikController::class, 'index'])->name('proses-mekanik');
         Route::get('/breakdown_parts', [BreakdownPartController::class, 'index'])->name('breakdown.parts.index');
         Route::get('/detail-proses/{no_iwo}', [PartController::class, 'show'])->name('detail.show');
+        Route::get('/detail-proses', [BreakdownPartController::class, 'show'])->name('detail.komponen');
     });
 
     // superadmin-only routes
