@@ -15,8 +15,6 @@ return new class extends Migration
             $table->uuid('no_iwo')->primary();
             $table->string('no_wbs');
             $table->date('incoming_date');
-            $table->uuid('id_customer');
-            $table->foreign('id_customer')->references('id_customer')->on('customer');
             $table->string('part_name');
             $table->string('part_number');
             $table->string('no_seri');

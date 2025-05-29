@@ -106,7 +106,7 @@
                                                             <i class="bi bi-pencil"></i>
                                                         </button>
                                                         {{-- Form Delete --}}
-                                                        <form action="{{ route('breakdown.parts.destroy', ['no_iwo' => $bdp->no_iwo]) }}"
+                                                        {{-- <form action="{{ route('breakdown.parts.destroy', ['no_iwo' => $bdp->no_iwo]) }}"
                                                             method="POST"
                                                             onsubmit="return confirm('Yakin ingin menghapus data ini?')"
                                                             style="display:inline;">
@@ -115,7 +115,7 @@
                                                             <button type="submit" class="btn btn-sm btn-outline-danger">
                                                                 <i class="bi bi-trash"></i>
                                                             </button>
-                                                        </form>
+                                                        </form> --}}
                                                     </div>
                                                 </td>
                                             </tr>

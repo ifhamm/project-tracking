@@ -17,8 +17,6 @@ use App\Http\Middleware\RoleMiddleware;
 Route::get('/login', [LoginController::class, 'index'])->name('login.show');
 Route::post('/loginSuperadmin', [LoginController::class, 'loginSuperAdmin'])->name('loginSuperAdmin');
 Route::post('/loginUser', [LoginController::class, 'loginUser'])->name('loginUser');
-Route::get('/register', [RegisterController::class, 'index'])->name('register.show');
-Route::post('/register', [RegisterController::class, 'register'])->name('register');
 
 // Protected routes
 Route::middleware([checkSession::class])->group(function () {
@@ -28,7 +26,8 @@ Route::middleware([checkSession::class])->group(function () {
     // API routes
     Route::get('/api/chart-data/{customer}', [ChartController::class, 'getData']);
     Route::get('/api/parts-by-customer/{customer}', [PartController::class, 'getByCustomer']);
-    Route::get('/parts/customer/{customer}/export-pdf', [DashboardController::class, 'export'])->name('export');
+
+    Route::get('/export/pdf', [ExportController::class, 'exportPdf'])->name('export.pdf');
 
     // Superadmin & Mekanik routes
     Route::middleware([RoleMiddleware::class . ':superadmin,mekanik'])->group(function () {

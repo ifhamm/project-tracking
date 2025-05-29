@@ -1,11 +1,11 @@
 @extends('layouts.auth')
 
 @section('auth-content')
-    <div class="tabs">
+    {{-- <div class="tabs">
         <button class="tab {{ request()->is('login') ? 'active' : '' }}" data-route="{{ route('loginUser') }}">Sign In</button>
         <button class="tab {{ request()->is('register') ? 'active' : '' }}" data-route="{{ route('register') }}">Sign
             Up</button>
-    </div>
+    </div> --}}
 
     <div class="form-content active" id="loginSuperAdmin">
         <div class="form-header">
