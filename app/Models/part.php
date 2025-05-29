@@ -48,4 +48,9 @@ class part extends Model
     {
         return $this->hasMany(work_progres::class, 'no_iwo', 'no_iwo');
     }
+
+    public function dokumentasiMekanik()
+{
+    return $this->hasMany(\App\Models\dokumentasi_mekanik::class, 'no_iwo', 'no_iwo');
+}
 }

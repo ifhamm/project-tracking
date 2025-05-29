@@ -257,7 +257,10 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="button" class="btn btn-primary" id="saveStatus">Simpan</button>
+                        <button type="button" class="btn btn-primary" id="saveStatus">
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            <span class="btn-text">Simpan</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -428,6 +431,7 @@
 
             // Save status changes with SweetAlert2
             document.getElementById('saveStatus').addEventListener('click', function() {
+                const button = this;
                 const noIwo = document.getElementById('no_iwo').value;
                 const isComplete = document.getElementById('markComplete').checked;
                 const keterangan = document.getElementById('keterangan').value;
@@ -441,6 +445,13 @@
                     });
                     return;
                 }
+
+                // Show loading state
+                const spinner = button.querySelector('.spinner-border');
+                const buttonText = button.querySelector('.btn-text');
+                spinner.classList.remove('d-none');
+                buttonText.textContent = 'Menyimpan...';
+                button.disabled = true;
 
                 fetch('{{ route('proses-mekanik.update-step') }}', {
                         method: 'POST',
@@ -492,6 +503,11 @@
                         }
                     })
                     .catch(error => {
+                        // Reset button state
+                        spinner.classList.add('d-none');
+                        buttonText.textContent = 'Simpan';
+                        button.disabled = false;
+
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
