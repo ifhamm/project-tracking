@@ -8,7 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\BreakdownPartController;
 use App\Http\Controllers\ExportController;
-use App\Http\Controllers\DokumentasiMekanikController; 
+use App\Http\Controllers\DokumentasiMekanikController;
 use App\Http\Middleware\CheckSession;
 use App\Http\Middleware\RoleMiddleware;
 
@@ -46,6 +46,8 @@ Route::middleware([checkSession::class])->group(function () {
         Route::delete('/part/delete/{no_iwo}', [PartController::class, 'destroy'])->name('part.destroy');
         Route::post('/breakdown_parts', [BreakdownPartController::class, 'store'])->name('breakdown.parts.store');
         Route::get('/detail-proses', [BreakdownPartController::class, 'show'])->name('detail.komponen');
+        Route::put('/breakdown_parts/{no_iwo}', [BreakdownPartController::class, 'update'])->name('breakdown.parts.update');
+        Route::delete('/breakdown_parts/{no_iwo}', [BreakdownPartController::class, 'destroy'])->name('breakdown.parts.destroy');
     });
 
     // Mekanik-only routes

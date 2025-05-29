@@ -22,29 +22,29 @@
             <!-- Stats Cards -->
             <div>
                 <!-- <div class="col-12 col-md-4">
-                                                                                        <div class="card h-100">
-                                                                                            <div class="card-body">
-                                                                                                <h6 class="card-subtitle mb-2 text-muted">Total Masuk</h6>
-                                                                                                <h2 class="card-title">12</h2>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div class="col-12 col-md-4">
-                                                                                        <div class="card h-100">
-                                                                                            <div class="card-body">
-                                                                                                <h6 class="card-subtitle mb-2 text-muted">Dalam Proses</h6>
-                                                                                                <h2 class="card-title">5</h2>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div class="col-12 col-md-4">
-                                                                                        <div class="card h-100">
-                                                                                            <div class="card-body">
-                                                                                                <h6 class="card-subtitle mb-2 text-muted">Selesai</h6>
-                                                                                                <h2 class="card-title">7</h2>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div> -->
+                                                                                                            <div class="card h-100">
+                                                                                                                <div class="card-body">
+                                                                                                                    <h6 class="card-subtitle mb-2 text-muted">Total Masuk</h6>
+                                                                                                                    <h2 class="card-title">12</h2>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                        <div class="col-12 col-md-4">
+                                                                                                            <div class="card h-100">
+                                                                                                                <div class="card-body">
+                                                                                                                    <h6 class="card-subtitle mb-2 text-muted">Dalam Proses</h6>
+                                                                                                                    <h2 class="card-title">5</h2>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                        <div class="col-12 col-md-4">
+                                                                                                            <div class="card h-100">
+                                                                                                                <div class="card-body">
+                                                                                                                    <h6 class="card-subtitle mb-2 text-muted">Selesai</h6>
+                                                                                                                    <h2 class="card-title">7</h2>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div> -->
 
                 <div class="mb-3">
                     <label for="customer" class="form-label">Pilih Customer</label>
@@ -60,7 +60,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <a href="#" id="exportButton" class="btn btn-primary">
+                    <a href="#" id="exportButton" class="btn btn-primary disabled">
                         <i class="bi bi-file-earmark-arrow-down"></i> Export PDF
                     </a>
                 </div>
@@ -253,11 +253,37 @@
                 }
             });
 
-            document.addEventListener('DOMContentLoaded', function() {
-                const exportButton = document.getElementById('exportButton');
-                const customerName = document.getElementById('customerSelect').value;
+            // Inisialisasi saat halaman dimuat
+            $(document).ready(function() {
+                // Inisialisasi Select2
+                $('#customerSelect').select2({
+                    placeholder: 'Cari atau pilih customer',
+                    allowClear: true
+                });
 
-                exportButton.href = '{{ route('export.pdf') }}' + '?customer=' + encodeURIComponent(customerName);
+                // Fungsi untuk mengupdate tombol export
+                function updateExportButton() {
+                    const customer = $('#customerSelect').val();
+                    const exportButton = $('#exportButton');
+
+                    if (customer) {
+                        exportButton.attr('href', '{{ route('export.pdf') }}?customer=' + encodeURIComponent(customer));
+                        exportButton.removeClass('disabled');
+                    } else {
+                        exportButton.attr('href', '#');
+                        exportButton.addClass('disabled');
+                    }
+                }
+
+                // Inisialisasi awal tombol
+                updateExportButton();
+
+                // Update tombol saat customer berubah
+                $('#customerSelect').on('change', function() {
+                    updateExportButton();
+
+                    // Kode lainnya untuk chart dan tabel...
+                });
             });
         </script>
     @endsection
