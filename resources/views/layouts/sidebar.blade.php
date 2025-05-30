@@ -106,27 +106,35 @@
                         </li>
 
                         @if (in_array(Session::get('role'), ['superadmin', 'mekanik']))
-                        <li class="nav-item">
-                            <a class="nav-link" href="komponen">
-                                <i class="bi bi-boxes me-2"></i> Komponen
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="komponen">
+                                    <i class="bi bi-boxes me-2"></i> Komponen
+                                </a>
+                            </li>
                         @endif
 
                         @if (in_array(Session::get('role'), ['superadmin', 'mekanik']))
-                        <li class="nav-item">
-                            <a class="nav-link" href="proses-mekanik">
-                                <i class="bi bi-gear me-2"></i> Proses Mekanik
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="proses-mekanik">
+                                    <i class="bi bi-gear me-2"></i> Proses Mekanik
+                                </a>
+                            </li>
                         @endif
 
                         @if (in_array(Session::get('role'), ['superadmin', 'mekanik']))
-                        <li class="nav-item">
-                            <a class="nav-link" href="dokumentasi-mekanik">
-                                <i class="bi bi-file-text me-2"></i> Dokumentasi
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="dokumentasi-mekanik">
+                                    <i class="bi bi-file-text me-2"></i> Dokumentasi
+                                </a>
+                            </li>
+                        @endif
+
+                        @if (in_array(Session::get('role'), ['superadmin']))
+                            <li class="nav-item">
+                                <a class="nav-link" href="add-mekanik-PM">
+                                    <i class="bi bi-person-gear me-2"></i> Tambah Mekanik & PM
+                                </a>
+                            </li>
                         @endif
 
                         <li class="nav-item">

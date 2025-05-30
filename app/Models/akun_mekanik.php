@@ -26,7 +26,7 @@ class akun_mekanik extends Model
     {
         parent::boot();
         static::creating(function ($model) {
-            $model->id_mekanik = (string) Str::uuid();
+            $model->id_credentials = (string) Str::uuid();
         });
     }
 
