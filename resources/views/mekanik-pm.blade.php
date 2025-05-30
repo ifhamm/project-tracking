@@ -30,6 +30,7 @@
 
     .btn-add i {
         margin-right: 10px;
+        color: white
     }
 
     .btn-warning {
@@ -84,6 +85,7 @@
         padding: 15px 20px;
         border-top: 1px solid #e3e6f0;
         border-bottom: 2px solid #e3e6f0;
+        text-align: center;
     }
 
     .table td {
@@ -91,6 +93,14 @@
         vertical-align: middle;
         border-top: 1px solid #e3e6f0;
         transition: background-color 0.2s;
+        text-align: center;
+    }
+    .status-badge {
+        border-radius: 20px;
+        padding: 5px 12px;
+        font-size: 0.85rem;
+        display: inline-block;
+        min-width: 100px;
     }
 
     .modal-content {
@@ -162,6 +172,17 @@
         animation: fadeIn 0.4s ease-out;
         animation-fill-mode: both;
     }
+
+    .table-action-cell {
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    .table-action-cell .btn {
+        padding: 6px 12px;
+        font-size: 0.875rem;
+        min-width: 80px;
+    }
 </style>
 
 @extends('layouts.sidebar')
@@ -170,7 +191,7 @@
     <div class="col-lg-10 content-wrapper px-3 px-md-4 py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="mb-0">Mekanik & PM</h2>
-            <button type="button" class="btn btn-add" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            <button type="button" class="btn btn-add text-white" data-bs-toggle="modal" data-bs-target="#addUserModal">
                 <i class="bi bi-plus-circle me-2"></i> Tambah Baru
             </button>
         </div>
@@ -196,18 +217,24 @@
                                     <td>{{ $credential->name }}</td>
                                     <td>{{ $credential->nik }}</td>
                                     <td>
-                                        <span
-                                            class="badge rounded-pill 
-                                            {{ $credential->role === 'mekanik' ? 'bg-primary' : 'bg-success' }}">
-                                            {{ ucfirst($credential->role) }}
-                                        </span>
+                                        <div class="d-flex justify-content-center">
+                                            @if ($credential->role === 'mekanik')
+                                                <span class="status-badge bg-primary text-white me-2">
+                                                    Mekanik
+                                                </span>
+                                            @else
+                                                <span class="status-badge bg-success text-white me-2">
+                                                    PM
+                                                </span>
+                                            @endif
+                                        </div>
                                     </td>
-                                    <td class="d-flex align-items-center gap-2">
+                                    <td class="table-action-cell">
                                         <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                             data-bs-target="#editModal{{ $credential->id_credentials }}" title="Edit">
                                             <i class="bi bi-pencil"></i> Edit
                                         </button>
-
+                                   
                                         <form action="{{ route('add-mekanik-PM.destroy', $credential->id_credentials) }}"
                                             method="POST" class="d-inline">
                                             @csrf
@@ -234,8 +261,7 @@
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                             </div>
-                                            <form
-                                                action="{{ route('add-mekanik-PM.update', $credential->id_credentials) }}"
+                                            <form action="{{ route('add-mekanik-PM.update', $credential->id_credentials) }}"
                                                 method="POST" class="edit-form">
                                                 @csrf
                                                 @method('PUT')
