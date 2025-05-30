@@ -7,10 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\akun_mekanik;
 use Illuminate\Support\Str;
 use App\Helpers\DateHelper;
-use App\Http\Middleware\RoleMiddleware;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
-
 
 class PartController extends Controller
 {
@@ -24,7 +20,7 @@ class PartController extends Controller
 
     public function create()
     {
-        $mekanik = akun_mekanik::select('id_credentials', 'name')->get();
+        $mekanik = akun_mekanik::select('id_credentials', 'name')->where('role', 'mekanik')->get();
         $parts = part::with(['akunMekanik', 'workProgres' => function ($query) {
             $query->orderBy('step_order', 'asc');
         }])

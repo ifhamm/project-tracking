@@ -84,7 +84,7 @@
                                 <div class="mb-3">
                                     <label for="id_credentials" class="form-label">Pilih Mekanik</label>
                                     <select name="id_credentials" class="form-control" required>
-                                        <option value="">Pilih Mekanik</option>
+                                        <option value="" disabled selected>Pilih Mekanik</option>
                                         @foreach ($mekanik as $m)
                                             <option value="{{ $m->id_credentials }}">{{ $m->name }}</option>
                                         @endforeach

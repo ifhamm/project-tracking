@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddMekanikPmController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PartController;
@@ -36,6 +37,7 @@ Route::middleware([checkSession::class])->group(function () {
         Route::get('/breakdown_parts', [BreakdownPartController::class, 'index'])->name('breakdown.parts.index');
         Route::get('/detail-proses/{no_iwo}', [PartController::class, 'show'])->name('detail.show');
         Route::get('/detail-proses', [BreakdownPartController::class, 'show'])->name('detail.komponen');
+
     });
 
     // superadmin-only routes
@@ -48,6 +50,11 @@ Route::middleware([checkSession::class])->group(function () {
         Route::get('/detail-proses', [BreakdownPartController::class, 'show'])->name('detail.komponen');
         Route::put('/breakdown_parts/{no_iwo}', [BreakdownPartController::class, 'update'])->name('breakdown.parts.update');
         Route::delete('/breakdown_parts/{no_iwo}', [BreakdownPartController::class, 'destroy'])->name('breakdown.parts.destroy');
+        Route::get('/add-mekanik-PM', [AddMekanikPmController::class, 'index'])->name('add-mekanik-PM');
+        Route::post('/add-mekanik-PM/add', [AddMekanikPmController::class, 'store'])->name('add-mekanik-PM.store');
+        Route::delete('/add-mekanik-PM/destroy/{id_credentials}', [AddMekanikPmController::class, 'destroy'])->name('add-mekanik-PM.destroy');
+        Route::get('/add-mekanik-PM/edit/{id_credentials}', [AddMekanikPmController::class, 'edit'])->name('add-mekanik-PM.edit');
+        Route::put('/add-mekanik-PM/update/{id_credentials}', [AddMekanikPmController::class, 'update'])->name('add-mekanik-PM.update');
     });
 
     // Mekanik-only routes
