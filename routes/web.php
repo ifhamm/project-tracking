@@ -19,6 +19,7 @@ Route::get('/login', [LoginController::class, 'index'])->name('login.show');
 Route::post('/loginSuperadmin', [LoginController::class, 'loginSuperAdmin'])->name('loginSuperAdmin');
 Route::post('/loginUser', [LoginController::class, 'loginUser'])->name('loginUser');
 
+
 // Protected routes
 Route::middleware([checkSession::class])->group(function () {
     // Dashboard - accessible to all roles
@@ -30,6 +31,9 @@ Route::middleware([checkSession::class])->group(function () {
 
     Route::get('/export/pdf', [ExportController::class, 'exportPdf'])->name('export.pdf');
 
+    Route::get('/dokumentasi-mekanik', [DokumentasiMekanikController::class, 'index'])->name('dokumentasi-mekanik');
+    Route::post('/dokumentasi-mekanik/upload', [DokumentasiMekanikController::class, 'upload'])->name('dokumentasi.upload');
+
     // Superadmin & Mekanik routes
     Route::middleware([RoleMiddleware::class . ':superadmin,mekanik'])->group(function () {
         Route::get('/komponen', [PartController::class, 'create'])->name('komponen');
@@ -37,7 +41,6 @@ Route::middleware([checkSession::class])->group(function () {
         Route::get('/breakdown_parts', [BreakdownPartController::class, 'index'])->name('breakdown.parts.index');
         Route::get('/detail-proses/{no_iwo}', [PartController::class, 'show'])->name('detail.show');
         Route::get('/detail-proses', [BreakdownPartController::class, 'show'])->name('detail.komponen');
-
     });
 
     // superadmin-only routes
