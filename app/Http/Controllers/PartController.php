@@ -7,30 +7,35 @@ use Illuminate\Http\Request;
 use App\Models\akun_mekanik;
 use Illuminate\Support\Str;
 use App\Helpers\DateHelper;
-use App\Http\Middleware\RoleMiddleware;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 
 class PartController extends Controller
 {
+
+    protected DateHelper $dateHelper;
+
+    public function __construct(DateHelper $dateHelper)
+    {
+        $this->dateHelper = $dateHelper;
+    }
+
     public function create()
     {
-        $mekanik = akun_mekanik::select('id_credentials', 'name')->get();
-        $parts = part::with(['akunMekanik', 'workProgres' => function($query) {
+        $mekanik = akun_mekanik::select('id_credentials', 'name')->where('role', 'mekanik')->get();
+        $parts = part::with(['akunMekanik', 'workProgres' => function ($query) {
             $query->orderBy('step_order', 'asc');
         }])
-        ->select([
-            'no_iwo',
-            'no_wbs',
-            'part_name',
-            'part_number',
-            'incoming_date',
-            'customer',
-            'id_credentials'
-        ])
-        ->orderBy('incoming_date', 'desc')
-        ->paginate(10);
-        
+            ->select([
+                'no_iwo',
+                'no_wbs',
+                'part_name',
+                'part_number',
+                'incoming_date',
+                'customer',
+                'id_credentials'
+            ])
+            ->orderBy('incoming_date', 'desc')
+            ->paginate(10);
+
         return view('komponen', compact('mekanik', 'parts'));
     }
 
@@ -51,7 +56,7 @@ class PartController extends Controller
         ]);
 
         // Hitung deadline berdasarkan incoming_date
-        $deadline = DateHelper::calculateWorkingDeadline($validated['incoming_date']);
+        $deadline = $this->dateHelper->calculateWorkingDeadline($validated['incoming_date']);
 
         $part = [
             'no_iwo' => Str::uuid(),
@@ -118,7 +123,7 @@ class PartController extends Controller
 
     public function show($no_iwo)
     {
-        $part = part::with('breakdownParts', 'akunMekanik')->findOrFail($no_iwo);   
+        $part = part::with('breakdownParts', 'akunMekanik')->findOrFail($no_iwo);
         return view('detail_komponen', compact('part'));
     }
 
@@ -132,7 +137,7 @@ class PartController extends Controller
     public function update(Request $request, $no_iwo)
     {
         $part = part::where('no_iwo', $no_iwo)->firstOrFail();
-        
+
         $validated = $request->validate([
             'no_wbs' => 'required|string|unique:parts,no_wbs,' . $part->no_iwo . ',no_iwo',
             'id_credentials' => 'required|exists:credentials,id_credentials',
@@ -158,3 +163,4 @@ class PartController extends Controller
         return redirect()->route('komponen')->with('success', 'Komponen berhasil dihapus');
     }
 }
+

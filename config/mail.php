@@ -115,4 +115,8 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    'notify_admin' => env('MAIL_NOTIFY_ADMIN', 'admin@example.com'),
+    'timezone' => 'Asia/Jakarta',
+
+
 ];

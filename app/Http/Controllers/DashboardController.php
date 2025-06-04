@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\part;
+use Illuminate\Support\Str;
+use Spatie\LaravelPdf\Facades\Pdf;
+use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {

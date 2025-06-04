@@ -100,7 +100,7 @@
                     </div>
                     <ul class="nav flex-column" id="sidebarNav">
                         <li class="nav-item">
-                            <a class="nav-link" href="dashboard">
+                            <a class="nav-link" href="/">
                                 <i class="bi bi-house me-2"></i> Dashboard
                             </a>
                         </li>
@@ -114,27 +114,27 @@
                         @endif
 
                         @if (in_array(Session::get('role'), ['superadmin', 'mekanik']))
-                        <li class="nav-item">
-                            <a class="nav-link" href="proses-mekanik">
-                                <i class="bi bi-gear me-2"></i> Proses Mekanik
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="proses-mekanik">
+                                    <i class="bi bi-gear me-2"></i> Proses Mekanik
+                                </a>
+                            </li>
                         @endif
 
                         @if (in_array(Session::get('role'), ['superadmin', 'mekanik']))
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-file-text me-2"></i> Dokumentasi
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="dokumentasi-mekanik">
+                                    <i class="bi bi-file-text me-2"></i> Dokumentasi
+                                </a>
+                            </li>
                         @endif
 
-                        @if (in_array(Session::get('role'), ['superadmin', 'mekanik']))
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-truck me-2"></i> Delivery
-                            </a>
-                        </li>
+                        @if (in_array(Session::get('role'), ['superadmin']))
+                            <li class="nav-item">
+                                <a class="nav-link" href="add-mekanik-PM">
+                                    <i class="bi bi-person-gear me-2"></i> Tambah Mekanik & PM
+                                </a>
+                            </li>
                         @endif
 
                         <li class="nav-item">
