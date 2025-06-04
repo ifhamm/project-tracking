@@ -19,6 +19,7 @@ class DokumentasiMekanikController extends Controller
         return view('dokumentasi', compact('parts'));
     }
 
+
     public function upload(Request $request)
     {
         $request->validate([
@@ -27,20 +28,53 @@ class DokumentasiMekanikController extends Controller
             'komponen' => 'required|string',
             'step_name' => 'required|string',
             'tanggal' => 'required|date',
-            'foto' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'foto' => 'required|array|min:1',
+            'foto.*' => 'required|image|mimes:jpg,jpeg,png|max:5120',
         ]);
 
-        $path = $request->file('foto')->store('dokumentasi', 'public');
 
-        dokumentasi_mekanik::create([
-            'no_iwo' => $request->no_iwo,
-            'no_wbs' => $request->no_wbs,
-            'komponen' => $request->komponen,
-            'step_name' => $request->step_name,
-            'tanggal' => $request->tanggal,
-            'foto' => $path,
-        ]);
 
-        return back()->with('success', 'Dokumentasi berhasil diunggah.');
+        // Simpan semua foto
+        foreach ($request->file('foto') as $file) {
+            $path = $file->store('dokumentasi', 'public');
+
+            dokumentasi_mekanik::create([
+                'no_iwo' => $request->no_iwo,
+                'no_wbs' => $request->no_wbs,
+                'komponen' => $request->komponen,
+                'step_name' => $request->step_name,
+                'tanggal' => $request->tanggal,
+                'foto' => $path,
+            ]);
+        }
+
+        return back()->with('success', 'Foto dokumentasi berhasil diunggah.');
     }
+
+
+
+    // public function upload(Request $request)
+    // {
+    //     $request->validate([
+    //         'no_iwo' => 'required|string',
+    //         'no_wbs' => 'required|string',
+    //         'komponen' => 'required|string',
+    //         'step_name' => 'required|string',
+    //         'tanggal' => 'required|date',
+    //         'foto' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+    //     ]);
+
+    //     $path = $request->file('foto')->store('dokumentasi', 'public');
+
+    //     dokumentasi_mekanik::create([
+    //         'no_iwo' => $request->no_iwo,
+    //         'no_wbs' => $request->no_wbs,
+    //         'komponen' => $request->komponen,
+    //         'step_name' => $request->step_name,
+    //         'tanggal' => $request->tanggal,
+    //         'foto' => $path,
+    //     ]);
+
+    //     return back()->with('success', 'Dokumentasi berhasil diunggah.');
+    // }
 }

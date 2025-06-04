@@ -29,6 +29,17 @@
     <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
+
     <!-- Table -->
     <div class="table-responsive mb-4">
         <table class="table table-bordered">
@@ -50,11 +61,11 @@
                 @foreach ($parts as $part)
                 @php
                 $allSteps = $part->workProgres;
-                $existingDocs = $part->dokumentasiMekanik()->get()->keyBy('step_name');
+                $existingDocs = $part->dokumentasiMekanik()->get()->groupBy('step_name');
                 @endphp
                 @php
                 $allSteps = $part->workProgres->pluck('step_name');
-                $existingDocs = $part->dokumentasiMekanik()->get()->keyBy('step_name');
+                $existingDocs = $part->dokumentasiMekanik()->get()->groupBy('step_name');
 
                 // Ambil step pertama yang belum ada dokumentasinya
                 $currentStepName = $allSteps->first(function ($stepName) use ($existingDocs) {
@@ -63,6 +74,14 @@
 
                 $status = $currentStepName ? 'In Progress' : 'Completed';
                 @endphp
+
+                @php
+                $currentStepName = $allSteps->first(function ($stepName) use ($existingDocs) {
+                return !$existingDocs->has($stepName);
+                });
+                $status = $currentStepName ? 'In Progress' : 'Completed';
+                @endphp
+
                 <!-- @php
                 $currentStep = $part->workProgres->where('is_completed', false)->first();
                 $status = $currentStep ? 'In Progress' : 'Completed';
@@ -89,15 +108,18 @@
                         @php $currentStepName = $currentStep?->step_name; @endphp
 
                         @if ($existingDocs->has($currentStepName))
-                        <img src="{{ asset('storage/' . $existingDocs[$currentStepName]->foto) }}" width="100" class="img-thumbnail">
-                        @else
-
-                        <div class="alert alert-info">
-                            Step saat ini (yang belum ada dokumentasi): {{ $currentStepName }}
+                        <div clas="mb-2">
+                            @foreach ($existingDocs[$currentStepName] as $doc)
+                            <img src="{{ asset('storage/' . $doc->foto) }}" width="100" class="img-thumbnail me-1 mb-1">
+                            @endforeach
                         </div>
 
+                        <!-- <div class="alert alert-info">
+                            Step saat ini (yang belum ada dokumentasi): {{ $currentStepName }}
+                        </div> -->
 
-                        <form action="{{ route('dokumentasi.upload') }}" method="POST" enctype="multipart/form-data">
+
+                        <form action="{{ route('dokumentasi.upload') }}" method="POST" enctype="multipart/form-data" class="mt-2">
                             @csrf
                             <input type="hidden" name="no_iwo" value="{{ $part->no_iwo }}">
                             <input type="hidden" name="no_wbs" value="{{ $part->no_wbs }}">
@@ -105,25 +127,31 @@
                             <input type="hidden" name="step_name" value="{{ $currentStepName }}">
                             <input type="hidden" name="tanggal" value="{{ \Carbon\Carbon::now()->toDateString() }}">
 
-                            <input type="file" name="foto" class="form-control form-control-sm mb-1" required>
+                            <input type="file" name="foto[]" class="form-control form-control-sm mb-1" multiple required accept="image/*">
+                            <small class="text-muted">*Upload 1 atau lebih foto dokumentasi</small>
+
                             <button type="submit" class="btn btn-sm btn-primary">Upload</button>
                         </form>
                         @endif
 
                         <!-- Expandable Previous Steps -->
                         @if ($existingDocs->count() > 0)
-                        <button class="btn btn-sm btn-secondary mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSteps{{ $part->id }}">
+                        <button class="btn btn-sm btn-secondary mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSteps{{ $part->no_iwo }}">
                             Lihat Step Sebelumnya
                         </button>
-                        <div class="collapse mt-2" id="collapseSteps{{ $part->id }}">
-                            @foreach ($existingDocs as $step => $doc)
+                        <div class="collapse mt-2" id="collapseSteps{{ $part->no_iwo }}">
+                            @foreach ($existingDocs as $step => $docs)
+
                             @if ($step !== $currentStepName)
                             <div class="mb-2">
                                 <strong>{{ $step }}</strong><br>
-                                <img src="{{ asset('storage/' . $doc->foto) }}" width="100" class="img-thumbnail">
+                                @foreach ($docs as $doc)
+                                <img src="{{ asset('storage/' . $doc->foto) }}" width="100" class="img-thumbnail me-1 mb-1">
+                                @endforeach
                             </div>
                             @endif
                             @endforeach
+
                         </div>
                         @endif
                     </td>
