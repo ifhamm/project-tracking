@@ -50,7 +50,6 @@ Route::middleware([checkSession::class])->group(function () {
         Route::put('/part/update/{no_iwo}', [PartController::class, 'update'])->name('part.update');
         Route::delete('/part/delete/{no_iwo}', [PartController::class, 'destroy'])->name('part.destroy');
         Route::post('/breakdown_parts', [BreakdownPartController::class, 'store'])->name('breakdown.parts.store');
-        Route::get('/detail-proses', [BreakdownPartController::class, 'show'])->name('detail.komponen');
         Route::put('/breakdown_parts/{no_iwo}', [BreakdownPartController::class, 'update'])->name('breakdown.parts.update');
         Route::delete('/breakdown_parts/{no_iwo}', [BreakdownPartController::class, 'destroy'])->name('breakdown.parts.destroy');
         Route::get('/add-mekanik-PM', [AddMekanikPmController::class, 'index'])->name('add-mekanik-PM');

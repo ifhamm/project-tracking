@@ -163,3 +163,4 @@ class PartController extends Controller
         return redirect()->route('komponen')->with('success', 'Komponen berhasil dihapus');
     }
 }
+
