@@ -33,6 +33,8 @@ Route::middleware([checkSession::class])->group(function () {
 
     Route::get('/dokumentasi-mekanik', [DokumentasiMekanikController::class, 'index'])->name('dokumentasi-mekanik');
     Route::post('/dokumentasi-mekanik/upload', [DokumentasiMekanikController::class, 'upload'])->name('dokumentasi.upload');
+    Route::get('/dokumentasi/filter', [DokumentasiMekanikController::class, 'filter'])->name('dokumentasi.filter');
+
 
     // Superadmin & Mekanik routes
     Route::middleware([RoleMiddleware::class . ':superadmin,mekanik'])->group(function () {

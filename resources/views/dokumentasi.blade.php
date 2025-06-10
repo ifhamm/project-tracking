@@ -14,28 +14,26 @@
         overflow: hidden;
     }
 
-.modal-img-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.9);
-}
+    .modal-img-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.9);
+    }
 
 
-.modal-img {
-    max-width: 100%;
-    max-height: 80vh;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    display: block;
-    margin: auto;
-    border-radius: 8px;
-}
-
-
+    .modal-img {
+        max-width: 100%;
+        max-height: 80vh;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        display: block;
+        margin: auto;
+        border-radius: 8px;
+    }
 </style>
 
 
@@ -48,18 +46,18 @@
 
     <!-- Filter Form -->
     <div class="row mb-4 g-2">
-        <form action="{{ route('proses-mekanik') }}" method="GET" class="row g-2 w-100">
-            <div class="col-md-4">
-                <input type="text" class="form-control" name="no_wbs" placeholder="Customer"
-                    value="{{ request('customer') }}">
-            </div>
-            <div class="col-md-4">
-                <input type="text" class="form-control" name="teknisi" placeholder="Teknisi"
-                    value="{{ request('teknisi') }}">
+        <form action="{{ route('dokumentasi.filter') }}" method="GET" class="row g-2 w-100">
+            <div class="col-md-3">
+                <input type="text" class="form-control" name="no_wbs" placeholder="Nomor WBS"
+                    value="{{ request('no_wbs') }}">
             </div>
             <div class="col-md-3">
-                <input type="text" class="form-control" name="step" placeholder="Step Saat Ini"
-                    value="{{ request('step') }}">
+                <input type="text" class="form-control" name="customer" placeholder="Customer"
+                    value="{{ request('customer') }}">
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control" name="teknisi" placeholder="Teknisi"
+                    value="{{ request('teknisi') }}">
             </div>
             <div class="col-md-1">
                 <button type="submit" class="btn btn-primary w-100">Filter</button>
@@ -158,7 +156,7 @@
                         @if ($docsForCurrentStep->isNotEmpty())
                         <div class="mb-2">
                             @foreach ($docsForCurrentStep as $doc)
-                            <img src="{{ asset('storage/' . $doc->foto) }}" width="100" class="img-thumbnail me-1 mb-1 previewable-image">
+                            <img src="{{ asset('storage/' . $doc->foto) }}" width="100" class="img-thumbnail me-1 mb-1 previewable-image" style="cursor: pointer;">
                             @endforeach
                         </div>
                         @endif
@@ -221,9 +219,52 @@
             </tbody>
         </table>
     </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-4">
+            <div class="text-muted">
+                Showing {{ $parts->firstItem() ?? 0 }} to {{ $parts->lastItem() ?? 0 }} of {{ $parts->total() }} entries
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination mb-0">
+                    {{-- Previous Page Link --}}
+                    @if ($parts->onFirstPage())
+                        <li class="page-item disabled">
+                            <span class="page-link">Previous</span>
+                        </li>
+                    @else
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $parts->previousPageUrl() }}" rel="prev">Previous</a>
+                        </li>
+                    @endif
+
+                    {{-- Pagination Elements --}}
+                    @foreach ($parts->getUrlRange(1, $parts->lastPage()) as $page => $url)
+                        @if ($page == $parts->currentPage())
+                            <li class="page-item active">
+                                <span class="page-link">{{ $page }}</span>
+                            </li>
+                        @else
+                            <li class="page-item">
+                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                            </li>
+                        @endif
+                    @endforeach
+
+                    {{-- Next Page Link --}}
+                    @if ($parts->hasMorePages())
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $parts->nextPageUrl() }}" rel="next">Next</a>
+                        </li>
+                    @else
+                        <li class="page-item disabled">
+                            <span class="page-link">Next</span>
+                        </li>
+                    @endif
+                </ul>
+            </nav>
+        </div>
 </div>
 
-<!-- Modal Preview Gambar -->
 <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -251,9 +292,8 @@
     });
 
     document.getElementById('imagePreviewModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        bootstrap.Modal.getInstance(this).hide();
-    }
-});
-
+        if (e.target === this) {
+            bootstrap.Modal.getInstance(this).hide();
+        }
+    });
 </script>
