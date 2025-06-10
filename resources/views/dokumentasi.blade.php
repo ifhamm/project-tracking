@@ -1,3 +1,45 @@
+<style>
+    .modal-dialog {
+        margin: 0;
+        max-width: 100vw;
+    }
+
+    .modal-content {
+        background-color: #000;
+        border: none;
+        height: 80vh;
+        display: flex;
+        /* align-items: center; */
+        justify-content: center;
+        overflow: hidden;
+    }
+
+.modal-img-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+
+.modal-img {
+    max-width: 100%;
+    max-height: 80vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: auto;
+    border-radius: 8px;
+}
+
+
+</style>
+
+
+
 @extends('layouts.sidebar')
 
 @section('content')
@@ -8,8 +50,8 @@
     <div class="row mb-4 g-2">
         <form action="{{ route('proses-mekanik') }}" method="GET" class="row g-2 w-100">
             <div class="col-md-4">
-                <input type="text" class="form-control" name="no_wbs" placeholder="Nomor Komponen"
-                    value="{{ request('no_wbs') }}">
+                <input type="text" class="form-control" name="no_wbs" placeholder="Customer"
+                    value="{{ request('customer') }}">
             </div>
             <div class="col-md-4">
                 <input type="text" class="form-control" name="teknisi" placeholder="Teknisi"
@@ -46,11 +88,11 @@
             <thead>
                 <tr>
                     <th>Customer</th>
-                    <th>No IWO</th>
-                    <th>Nomor Komponen</th>
+                    <!-- <th>No IWO</th> -->
+                    <th>No WBS</th>
                     <th>Part Name</th>
-                    <th>Part Number</th>
-                    <th>Serial Number</th>
+                    <!-- <th>Part Number</th> -->
+                    <!-- <th>Serial Number</th> -->
                     <th>Step Saat Ini</th>
                     <th>Status</th>
                     <th>Teknisi</th>
@@ -91,11 +133,11 @@
                 @endphp -->
                 <tr>
                     <td>{{ $part->customer }}</td>
-                    <td>{{ $part->no_iwo }}</td>
+                    <!-- <td>{{ $part->no_iwo }}</td> -->
                     <td>{{ $part->no_wbs }}</td>
                     <td>{{ $part->part_name }}</td>
-                    <td>{{ $part->part_number }}</td>
-                    <td>{{ $part->no_seri }}</td>
+                    <!-- <td>{{ $part->part_number }}</td> -->
+                    <!-- <td>{{ $part->no_seri }}</td> -->
                     <td>{{ $currentStep?->step_name ?? 'Completed' }}</td>
                     <td>
                         <span class="status-badge {{ strtolower(str_replace(' ', '-', $status)) }}">
@@ -107,17 +149,19 @@
                         <!-- Current Step Upload/Display -->
                         @php $currentStepName = $currentStep?->step_name; @endphp
 
-                        @if ($existingDocs->has($currentStepName))
-                        <div clas="mb-2">
-                            @foreach ($existingDocs[$currentStepName] as $doc)
-                            <img src="{{ asset('storage/' . $doc->foto) }}" width="100" class="img-thumbnail me-1 mb-1">
+
+                        @if ($currentStepName)
+                        @php
+                        $docsForCurrentStep = $existingDocs[$currentStepName] ?? collect();
+                        @endphp
+
+                        @if ($docsForCurrentStep->isNotEmpty())
+                        <div class="mb-2">
+                            @foreach ($docsForCurrentStep as $doc)
+                            <img src="{{ asset('storage/' . $doc->foto) }}" width="100" class="img-thumbnail me-1 mb-1 previewable-image">
                             @endforeach
                         </div>
-
-                        <!-- <div class="alert alert-info">
-                            Step saat ini (yang belum ada dokumentasi): {{ $currentStepName }}
-                        </div> -->
-
+                        @endif
 
                         <form action="{{ route('dokumentasi.upload') }}" method="POST" enctype="multipart/form-data" class="mt-2">
                             @csrf
@@ -134,26 +178,42 @@
                         </form>
                         @endif
 
+
+                        <!-- Expandable Previous Steps -->
                         <!-- Expandable Previous Steps -->
                         @if ($existingDocs->count() > 0)
-                        <button class="btn btn-sm btn-secondary mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSteps{{ $part->no_iwo }}">
+                        <!-- Tombol untuk buka modal -->
+                        <button class="btn btn-sm btn-secondary mt-2" type="button" data-bs-toggle="modal" data-bs-target="#modalSteps{{ $part->no_iwo }}">
                             Lihat Step Sebelumnya
                         </button>
-                        <div class="collapse mt-2" id="collapseSteps{{ $part->no_iwo }}">
-                            @foreach ($existingDocs as $step => $docs)
 
-                            @if ($step !== $currentStepName)
-                            <div class="mb-2">
-                                <strong>{{ $step }}</strong><br>
-                                @foreach ($docs as $doc)
-                                <img src="{{ asset('storage/' . $doc->foto) }}" width="100" class="img-thumbnail me-1 mb-1">
-                                @endforeach
+                        <!-- Modal -->
+                        <div class="modal fade" id="modalSteps{{ $part->no_iwo }}" tabindex="-1" aria-labelledby="modalStepsLabel{{ $part->no_iwo }}" aria-hidden="true">
+                            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalStepsLabel{{ $part->no_iwo }}">Dokumentasi Step Sebelumnya - {{ $part->no_wbs }} - {{ $part->part_name }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        @foreach ($existingDocs as $step => $docs)
+                                        @if ($step !== $currentStepName)
+                                        <div class="mb-4">
+                                            <h6 class="mb-2">{{ $step }}</h6>
+                                            <div class="d-flex flex-wrap">
+                                                @foreach ($docs as $doc)
+                                                <img src="{{ asset('storage/' . $doc->foto) }}" width="100" class="img-thumbnail me-1 mb-1 previewable-image" style="cursor: pointer;">
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                        @endif
+                                        @endforeach
+                                    </div>
+                                </div>
                             </div>
-                            @endif
-                            @endforeach
-
                         </div>
                         @endif
+
                     </td>
 
                 </tr>
@@ -162,4 +222,38 @@
         </table>
     </div>
 </div>
+
+<!-- Modal Preview Gambar -->
+<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-body p-0">
+                <img id="previewImage" src="" alt="Preview" class="modal-img">
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @endsection
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = new bootstrap.Modal(document.getElementById('imagePreviewModal'));
+        const modalImage = document.getElementById('previewImage');
+
+        document.querySelectorAll('.previewable-image').forEach(img => {
+            img.addEventListener('click', function() {
+                modalImage.src = this.src;
+                modal.show();
+            });
+        });
+    });
+
+    document.getElementById('imagePreviewModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        bootstrap.Modal.getInstance(this).hide();
+    }
+});
+
+</script>
