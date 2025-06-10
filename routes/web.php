@@ -34,6 +34,9 @@ Route::middleware([checkSession::class])->group(function () {
     Route::get('/dokumentasi-mekanik', [DokumentasiMekanikController::class, 'index'])->name('dokumentasi-mekanik');
     Route::post('/dokumentasi-mekanik/upload', [DokumentasiMekanikController::class, 'upload'])->name('dokumentasi.upload');
     Route::get('/dokumentasi/filter', [DokumentasiMekanikController::class, 'filter'])->name('dokumentasi.filter');
+    Route::delete('/dokumentasi/{id}', [DokumentasiMekanikController::class, 'destroy'])->name('dokumentasi.delete');
+
+
 
 
     // Superadmin & Mekanik routes

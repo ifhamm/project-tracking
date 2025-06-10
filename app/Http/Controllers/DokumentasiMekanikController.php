@@ -80,4 +80,20 @@ class DokumentasiMekanikController extends Controller
 
         return view('dokumentasi', compact('parts'));
     }
+
+    public function destroy($id)
+{
+    $doc = dokumentasi_mekanik::findOrFail($id);
+
+    // Hapus file dari storage
+    if ($doc->foto && Storage::exists('public/' . $doc->foto)) {
+        Storage::delete('public/' . $doc->foto);
+    }
+
+    // Hapus dari database
+    $doc->delete();
+
+    return back()->with('success', 'Foto berhasil dihapus.');
+}
+
 }
