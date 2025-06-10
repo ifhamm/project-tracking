@@ -34,6 +34,157 @@
         margin: auto;
         border-radius: 8px;
     }
+
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+}
+
+.modal-dialog-scrollable {
+    max-height: 90vh;
+}
+
+.modal-content {
+    background: #121212;
+    color: #fff;
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+}
+
+
+.modal-header {
+    background: linear-gradient(135deg, #0f2a4a,rgb(22, 47, 131));
+    color: #f8fafc;
+    border-bottom: 1px solid #333;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    padding: 1rem 1.5rem;
+}
+
+.modal-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+}
+
+.modal-body {
+    padding: 1.5rem;
+    background-color: #f8fafc;
+}
+
+/* Step section */
+.modal-body h6 {
+    color: black;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* grid */
+.modal-body .d-flex.flex-wrap {
+    gap: 0.5rem;
+}
+
+/* Thumbnail style */
+.previewable-image {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #444;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.previewable-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+}
+
+
+    /* --- Modal Styling --- */
+
+
+#imagePreviewModal .modal-content {
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    animation: zoomIn 0.3s ease-in-out;
+    position: relative;
+    padding: 0;
+    background-color: transparent;
+}
+
+/* --- Image Styling --- */
+#imagePreviewModal .modal-img {
+    /* max-width: 100%; */
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 12px;
+    margin: auto;
+    display: block;
+    transition: transform 0.3s ease;
+    background-color: transparent;
+}
+
+/* --- Close Button --- */
+#imagePreviewModal .close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 1.8rem;
+    color: black;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    line-height: 36px;
+    text-align: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: background 0.3s ease;
+}
+
+#imagePreviewModal .close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- Zoom Animation --- */
+@keyframes zoomIn {
+    from {
+        transform: scale(0.85);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* --- Responsive Fix --- */
+@media (max-width: 768px) {
+    #imagePreviewModal .modal-img {
+        max-height: 60vh;
+    }
+    #imagePreviewModal .close-btn {
+        top: 12px;
+        right: 12px;
+        width: 36px;
+        height: 36px;
+        font-size: 1.5rem;
+    }
+}
+
+
 </style>
 
 
@@ -154,11 +305,26 @@
                         @endphp
 
                         @if ($docsForCurrentStep->isNotEmpty())
-                        <div class="mb-2">
+                        <!-- <div class="mb-2">
                             @foreach ($docsForCurrentStep as $doc)
                             <img src="{{ asset('storage/' . $doc->foto) }}" width="100" class="img-thumbnail me-1 mb-1 previewable-image" style="cursor: pointer;">
                             @endforeach
-                        </div>
+                        </div> -->
+                        <div class="d-flex flex-wrap">
+@foreach ($docsForCurrentStep as $doc)
+    <div class="position-relative me-2 mb-2">
+        <img src="{{ asset('storage/' . $doc->foto) }}" width="100" class="img-thumbnail">
+
+        {{-- Tombol hapus --}}
+        <form action="{{ route('dokumentasi.delete', $doc->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus foto ini?')" class="position-absolute top-0 end-0">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-sm btn-danger px-1 py-0" style="font-size:12px;">&times;</button>
+        </form>
+    </div>
+@endforeach
+</div>
+
                         @endif
 
                         <form action="{{ route('dokumentasi.upload') }}" method="POST" enctype="multipart/form-data" class="mt-2">
@@ -265,15 +431,18 @@
         </div>
 </div>
 
-<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewLabel" aria-hidden="true">
+
+<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-body p-0">
+        <div class="modal-content position-relative">
+            <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+            <div class="modal-body p-0 d-flex justify-content-center align-items-center">
                 <img id="previewImage" src="" alt="Preview" class="modal-img">
             </div>
         </div>
     </div>
 </div>
+
 
 
 @endsection
