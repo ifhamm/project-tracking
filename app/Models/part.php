@@ -50,7 +50,7 @@ class part extends Model
     }
 
     public function dokumentasiMekanik()
-{
-    return $this->hasMany(\App\Models\dokumentasi_mekanik::class, 'no_iwo', 'no_iwo');
-}
+    {
+        return $this->hasMany(dokumentasi_mekanik::class, 'no_iwo', 'no_iwo');
+    }
 }

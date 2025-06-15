@@ -18,6 +18,8 @@ use App\Http\Middleware\RoleMiddleware;
 Route::get('/login', [LoginController::class, 'index'])->name('login.show');
 Route::post('/loginSuperadmin', [LoginController::class, 'loginSuperAdmin'])->name('loginSuperAdmin');
 Route::post('/loginUser', [LoginController::class, 'loginUser'])->name('loginUser');
+Route::get('/dashboard/chart-data', [DashboardController::class, 'getChartData']);
+
 
 
 // Protected routes
@@ -28,11 +30,19 @@ Route::middleware([checkSession::class])->group(function () {
     // API routes
     Route::get('/api/chart-data/{customer}', [ChartController::class, 'getData']);
     Route::get('/api/parts-by-customer/{customer}', [PartController::class, 'getByCustomer']);
+    Route::get('/api/chart-data/{customer}', [DashboardController::class, 'chartData']);
+    Route::get('/dashboard/chart-data', [DashboardController::class, 'getChartData']);
+
 
     Route::get('/export/pdf', [ExportController::class, 'exportPdf'])->name('export.pdf');
 
     Route::get('/dokumentasi-mekanik', [DokumentasiMekanikController::class, 'index'])->name('dokumentasi-mekanik');
     Route::post('/dokumentasi-mekanik/upload', [DokumentasiMekanikController::class, 'upload'])->name('dokumentasi.upload');
+    Route::get('/dokumentasi/filter', [DokumentasiMekanikController::class, 'filter'])->name('dokumentasi.filter');
+    Route::delete('/dokumentasi/{id}', [DokumentasiMekanikController::class, 'destroy'])->name('dokumentasi.delete');
+
+
+
 
     // Superadmin & Mekanik routes
     Route::middleware([RoleMiddleware::class . ':superadmin,mekanik'])->group(function () {
