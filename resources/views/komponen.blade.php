@@ -64,7 +64,7 @@
             </div>
         </div>
 
-        @if (in_array(Session::get('role'), ['superadmin']))
+        @if (in_array(Session::get('role'), ['superadmin','ppc']))
             <div class="mb-3 text-end">
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#insertModal">
                     <i class="bi bi-plus-circle"></i> Insert Component
@@ -249,7 +249,7 @@
                                             <i class="bi bi-info-circle"></i> Detail
                                         </a>
                                     </td>
-                                    @if (in_array(Session::get('role'), ['superadmin']))
+                                    @if (in_array(Session::get('role'), ['superadmin','ppc']))
                                         <td class="table-action-cell">
                                             <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#editModal{{ $part->no_iwo }}" title="Edit Komponen">

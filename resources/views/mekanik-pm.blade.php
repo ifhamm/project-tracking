@@ -95,6 +95,7 @@
         transition: background-color 0.2s;
         text-align: center;
     }
+
     .status-badge {
         border-radius: 20px;
         padding: 5px 12px;
@@ -190,7 +191,7 @@
 @section('content')
     <div class="col-lg-10 content-wrapper px-3 px-md-4 py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="mb-0">Mekanik & PM</h2>
+            <h2 class="mb-0">Akun</h2>
             <button type="button" class="btn btn-add text-white" data-bs-toggle="modal" data-bs-target="#addUserModal">
                 <i class="bi bi-plus-circle me-2"></i> Tambah Baru
             </button>
@@ -222,6 +223,10 @@
                                                 <span class="status-badge bg-primary text-white me-2">
                                                     Mekanik
                                                 </span>
+                                            @elseif ($credential->role === 'ppc')
+                                                <span class="status-badge bg-warning text-white me-2">
+                                                    PPC
+                                                </span>
                                             @else
                                                 <span class="status-badge bg-success text-white me-2">
                                                     PM
@@ -234,7 +239,7 @@
                                             data-bs-target="#editModal{{ $credential->id_credentials }}" title="Edit">
                                             <i class="bi bi-pencil"></i> Edit
                                         </button>
-                                   
+
                                         <form action="{{ route('add-mekanik-PM.destroy', $credential->id_credentials) }}"
                                             method="POST" class="d-inline">
                                             @csrf
@@ -256,7 +261,7 @@
                                             <div class="modal-header">
                                                 <h5 class="modal-title"
                                                     id="editModalLabel{{ $credential->id_credentials }}">
-                                                    Edit Mekanik / PM
+                                                    Edit Credential
                                                 </h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
@@ -352,6 +357,7 @@
                             <label for="role" class="form-label">Role</label>
                             <select class="form-select" id="role" name="role" required>
                                 <option value="" selected disabled>Pilih Role</option>
+                                <option value="ppc" {{ old('role') == 'ppc' ? 'selected' : '' }}>PPC</option>
                                 <option value="mekanik" {{ old('role') == 'mekanik' ? 'selected' : '' }}>Mekanik</option>
                                 <option value="pm" {{ old('role') == 'pm' ? 'selected' : '' }}>PM</option>
                             </select>

@@ -12,6 +12,30 @@
             padding: 5px 10px;
             font-size: 0.85rem;
         }
+
+        .priority-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .priority-urgent {
+            background-color: #dc3545;
+        }
+
+        /* Merah */
+        .priority-warning {
+            background-color: #ffc107;
+        }
+
+        /* Kuning */
+        .priority-normal {
+            background-color: #28a745;
+        }
+
+        /* Hijau */
     </style>
     @extends('layouts.sidebar')
     @section('content')
@@ -22,29 +46,29 @@
             <!-- Stats Cards -->
             <div>
                 <!-- <div class="col-12 col-md-4">
-                                                                                                            <div class="card h-100">
-                                                                                                                <div class="card-body">
-                                                                                                                    <h6 class="card-subtitle mb-2 text-muted">Total Masuk</h6>
-                                                                                                                    <h2 class="card-title">12</h2>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div class="col-12 col-md-4">
-                                                                                                            <div class="card h-100">
-                                                                                                                <div class="card-body">
-                                                                                                                    <h6 class="card-subtitle mb-2 text-muted">Dalam Proses</h6>
-                                                                                                                    <h2 class="card-title">5</h2>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div class="col-12 col-md-4">
-                                                                                                            <div class="card h-100">
-                                                                                                                <div class="card-body">
-                                                                                                                    <h6 class="card-subtitle mb-2 text-muted">Selesai</h6>
-                                                                                                                    <h2 class="card-title">7</h2>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div> -->
+                                                                                                                                                                                                        <div class="card h-100">
+                                                                                                                                                                                                            <div class="card-body">
+                                                                                                                                                                                                                <h6 class="card-subtitle mb-2 text-muted">Total Masuk</h6>
+                                                                                                                                                                                                                <h2 class="card-title">12</h2>
+                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                    <div class="col-12 col-md-4">
+                                                                                                                                                                                                        <div class="card h-100">
+                                                                                                                                                                                                            <div class="card-body">
+                                                                                                                                                                                                                <h6 class="card-subtitle mb-2 text-muted">Dalam Proses</h6>
+                                                                                                                                                                                                                <h2 class="card-title">5</h2>
+                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                    <div class="col-12 col-md-4">
+                                                                                                                                                                                                        <div class="card h-100">
+                                                                                                                                                                                                            <div class="card-body">
+                                                                                                                                                                                                                <h6 class="card-subtitle mb-2 text-muted">Selesai</h6>
+                                                                                                                                                                                                                <h2 class="card-title">7</h2>
+                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                    </div> -->
 
                 <div class="mb-3">
                     <label for="customer" class="form-label">Pilih Customer</label>
@@ -126,44 +150,62 @@
                                     <th>Nama</th>
                                     <th>Status</th>
                                     <th>Tanggal Masuk</th>
+                                    <th class="text-center">Priority</th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>COMP-001</td>
-                                    <td>Adroulic Pump</td>
-                                    <td><span class="status-badge bg-info bg-opacity-25 text-info">In
-                                            Progress</span></td>
-                                    <td>01/04/2025</td>
-                                </tr>
-                                <tr>
-                                    <td>COMP-002</td>
-                                    <td>Electrical Generator</td>
-                                    <td><span class="status-badge bg-success bg-opacity-25 text-success">Completed</span>
-                                    </td>
-                                    <td>02/04/2025</td>
-                                </tr>
-                                <tr>
-                                    <td>COMP-003</td>
-                                    <td>Fuel Control Unit</td>
-                                    <td><span class="status-badge bg-info bg-opacity-25 text-info">In
-                                            Progress</span></td>
-                                    <td>03/04/2025</td>
-                                </tr>
-                                <tr>
-                                    <td>COMP-004</td>
-                                    <td>Hydraulic Actuator</td>
-                                    <td><span class="status-badge bg-success bg-opacity-25 text-success">Completed</span>
-                                    </td>
-                                    <td>03/04/2025</td>
-                                </tr>
-                                <tr>
-                                    <td>COMP-005</td>
-                                    <td>Aircraft Brake</td>
-                                    <td><span class="status-badge bg-info bg-opacity-25 text-info">In
-                                            Progress</span></td>
-                                    <td>04/04/2025</td>
-                                </tr>
+                                @forelse ($parts as $part)
+                                    @php
+                                        // Hitung progress
+                                        $totalSteps = $part->workProgres->count();
+                                        $completedSteps = $part->workProgres->where('is_completed', 1)->count();
+                                    @endphp
+                                    <tr style="position: relative;">
+                                        <td>{{ $part->no_wbs }}</td>
+                                        <td>{{ $part->part_name }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @if ($totalSteps === 0)
+                                                    <span
+                                                        class="status-badge bg-secondary bg-opacity-25 text-secondary me-2">
+                                                        Belum Diproses
+                                                    </span>
+                                                @elseif ($completedSteps < $totalSteps)
+                                                    <span class="status-badge bg-warning bg-opacity-25 text-dark me-2">
+                                                        Sedang Proses ({{ $completedSteps }}/{{ $totalSteps }})
+                                                    </span>
+                                                @else
+                                                    <span class="status-badge bg-success text-white me-2">
+                                                        Selesai
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td>{{ $part->incoming_date }}</td>
+                                        <td class="text-center">
+                                            <span
+                                                class="priority-dot {{ $part->is_urgent ? 'bg-danger' : 'bg-success' }}"></span>
+                                        </td>
+                                        <td class="table-action-cell">
+                                            @if (!$part->is_urgent)
+                                                <button type="button" class="btn btn-danger btn-sm set-priority"
+                                                    data-part-no_iwo="{{ $part->no_iwo }}" title="Set Priority">
+                                                    <i class="bi bi-exclamation-triangle-fill"></i> Set Priority
+                                                </button>
+                                            @else
+                                                <button type="button" class="btn btn-success btn-sm set-priority"
+                                                    data-part-no_iwo="{{ $part->no_iwo }}" title="Set Priority">
+                                                    <i class="bi bi-x-circle"></i> Unset Priority
+                                                </button>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center">Tidak ada data komponen</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -200,21 +242,46 @@
 
                         if (parts.length === 0) {
                             tbody.append(
-                                '<tr><td colspan="4" class="text-center">Tidak ada komponen</td></tr>');
+                            '<tr><td colspan="6" class="text-center">Tidak ada komponen</td></tr>');
                         } else {
                             parts.forEach(part => {
                                 const statusClass = part.status === 'Final Inspection' ?
                                     'bg-success bg-opacity-25 text-success' :
                                     'bg-info bg-opacity-25 text-info';
 
+                                let priorityClass = 'priority-normal';
+                                if (part.is_urgent) {
+                                    priorityClass = 'priority-urgent';
+                                } else if (part.deadline) {
+                                    const deadline = new Date(part.deadline);
+                                    const today = new Date();
+                                    const diffDays = Math.ceil((deadline - today) / (1000 * 60 * 60 *
+                                        24));
+                                    if (diffDays <= 5) priorityClass = 'priority-warning';
+                                }
+
+                                // Use JavaScript ternary for button condition
+                                const priorityButton = part.is_urgent ?
+                                    `<button type="button" class="btn btn-danger btn-sm set-priority" 
+                                        data-part-no_iwo="${part.no_iwo}" title="Set Priority">
+                                            <i class="bi bi-exclamation-triangle-fill"></i> Set Priority
+                                     </button>` :
+                                    `<button type="button" class="btn btn-success btn-sm set-priority" 
+                                        data-part-no_iwo="${part.no_iwo}" title="Unset Priority">
+                                            <i class="bi bi-x-circle"></i> Unset Priority
+                                    </button>`;
+
                                 const row = `
-                        <tr>
-                            <td>${part.no_wbs}</td>
-                            <td>${part.part_name}</td>
-                            <td><span class="status-badge ${statusClass}">${part.status}</span></td>
-                            <td>${part.incoming_date}</td>
-                        </tr>
-                    `;
+                                <tr>
+                                    <td>${part.no_wbs}</td>
+                                    <td>${part.part_name}</td>
+                                    <td><span class="status-badge ${statusClass}">${part.status}</span></td>
+                                    <td>${part.incoming_date}</td>
+                                    <td><span class="priority-dot ${part.priorityClass ? 'bg-danger' : 'bg-success'}"></span></td>
+                                    <td class="table-action-cell">
+                                        ${priorityButton}
+                                    </td>
+                                </tr>`;
                                 tbody.append(row);
                             });
                         }
@@ -267,7 +334,8 @@
                     const exportButton = $('#exportButton');
 
                     if (customer) {
-                        exportButton.attr('href', '{{ route('export.pdf') }}?customer=' + encodeURIComponent(customer));
+                        exportButton.attr('href', '{{ route('export.pdf') }}?customer=' + encodeURIComponent(
+                            customer));
                         exportButton.removeClass('disabled');
                     } else {
                         exportButton.attr('href', '#');
@@ -283,6 +351,43 @@
                     updateExportButton();
 
                     // Kode lainnya untuk chart dan tabel...
+                });
+            });
+
+            document.querySelectorAll('.set-priority').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const no_iwo = this.getAttribute('data-part-no_iwo');
+                    const url = `/parts/${encodeURIComponent(no_iwo)}/set-priority`;
+
+                    fetch(url, {
+                            method: 'PUT',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(err => {
+                                    throw err;
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.status) {
+                                // Reload halaman untuk update urutan
+                                location.reload();
+                            } else {
+                                alert('Failed to update: ' + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred: ' + (error.message || 'Unknown error'));
+                        });
                 });
             });
         </script>
