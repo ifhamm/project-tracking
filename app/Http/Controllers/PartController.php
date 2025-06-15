@@ -99,28 +99,19 @@ class PartController extends Controller
     }
 
 
-    public function getByCustomer($customer)
+    public function getByCustomer($customer = null)
     {
-        $parts = part::where('customer', $customer)
-            ->select('no_wbs', 'part_name', 'incoming_date')
-            ->with([
-                'workProgres' => function ($query) {
-                    $query->orderByDesc('step_order')->limit(1);
-                }
-            ])
-            ->get()
-            ->map(function ($part) {
-                return [
-                    'no_wbs' => $part->no_wbs,
-                    'part_name' => $part->part_name,
-                    'incoming_date' => $part->incoming_date,
-                    'status' => $part->workProgres->first()?->step_name ?? 'Belum Diproses',
-                ];
-            });
+        $query = Part::query();
+
+        if ($customer && $customer !== 'all') {
+            $query->where('customer', $customer);
+        }
+
+        $parts = $query->select('no_wbs', 'part_name', 'incoming_date', 'is_urgent')
+            ->get();
 
         return response()->json($parts);
     }
-
     public function show($no_iwo)
     {
         $part = part::with('breakdownParts', 'akunMekanik')->findOrFail($no_iwo);
@@ -163,4 +154,3 @@ class PartController extends Controller
         return redirect()->route('komponen')->with('success', 'Komponen berhasil dihapus');
     }
 }
-

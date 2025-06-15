@@ -44,7 +44,7 @@
         </form>
 
         <div class="auth-footer">
-            Are you a Mekanik or PM? <a href="#" onclick="toggleLoginForm('ppc')" class="auth-link">Click here</a>
+            Are you a PPC or Mekanik or PM? <a href="#" onclick="toggleLoginForm('ppc')" class="auth-link">Click here</a>
         </div>
     </div>
 
@@ -80,7 +80,7 @@
         </form>
 
         <div class="auth-footer">
-            Are you a Super Admin or PPC? <a href="#" onclick="toggleLoginForm('user')" class="auth-link">Click here</a>
+            Are you a Super Admin? <a href="#" onclick="toggleLoginForm('user')" class="auth-link">Click here</a>
         </div>
     </div>
 @endsection
