@@ -19,32 +19,38 @@ Route::get('/login', [LoginController::class, 'index'])->name('login.show');
 Route::post('/loginSuperadmin', [LoginController::class, 'loginSuperAdmin'])->name('loginSuperAdmin');
 Route::post('/loginUser', [LoginController::class, 'loginUser'])->name('loginUser');
 
-
 // Protected routes
 Route::middleware([checkSession::class])->group(function () {
     // Dashboard - accessible to all roles
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard_utama');
+    Route::get('/dashboard/chart-data', [DashboardController::class, 'getChartData']);
 
     // API routes
     Route::get('/api/chart-data/{customer}', [ChartController::class, 'getData']);
-    Route::get('/api/parts-by-customer/{customer}', [PartController::class, 'getByCustomer']);
+    Route::get('/api/chart-data/{customer}', [DashboardController::class, 'chartData']);
+    Route::get('/api/parts-by-customer/{customer?}', [PartController::class, 'getByCustomer']);
+    Route::get('/dashboard/chart-data', [DashboardController::class, 'getChartData']);
+
 
     Route::get('/export/pdf', [ExportController::class, 'exportPdf'])->name('export.pdf');
 
     Route::get('/dokumentasi-mekanik', [DokumentasiMekanikController::class, 'index'])->name('dokumentasi-mekanik');
     Route::post('/dokumentasi-mekanik/upload', [DokumentasiMekanikController::class, 'upload'])->name('dokumentasi.upload');
+    Route::get('/dokumentasi/filter', [DokumentasiMekanikController::class, 'filter'])->name('dokumentasi.filter');
+    Route::delete('/dokumentasi/{id}', [DokumentasiMekanikController::class, 'destroy'])->name('dokumentasi.delete');
 
     // Superadmin & Mekanik routes
-    Route::middleware([RoleMiddleware::class . ':superadmin,mekanik'])->group(function () {
+    Route::middleware([RoleMiddleware::class . ':superadmin,mekanik,ppc'])->group(function () {
         Route::get('/komponen', [PartController::class, 'create'])->name('komponen');
         Route::get('/proses-mekanik', [ProsesMekanikController::class, 'index'])->name('proses-mekanik');
         Route::get('/breakdown_parts', [BreakdownPartController::class, 'index'])->name('breakdown.parts.index');
         Route::get('/detail-proses/{no_iwo}', [PartController::class, 'show'])->name('detail.show');
         Route::get('/detail-proses', [BreakdownPartController::class, 'show'])->name('detail.komponen');
+        Route::post('/proses-mekanik/update-step', [ProsesMekanikController::class, 'updateStep'])->name('proses-mekanik.update-step');
     });
 
-    // superadmin-only routes
-    Route::middleware([RoleMiddleware::class . ':superadmin'])->group(function () {
+    // superadmin & ppc routes
+    Route::middleware([RoleMiddleware::class . ':superadmin,ppc'])->group(function () {
         Route::post('/part/store', [PartController::class, 'store'])->name('part.store');
         Route::get('/part/edit/{no_iwo}', [PartController::class, 'edit'])->name('part.edit');
         Route::put('/part/update/{no_iwo}', [PartController::class, 'update'])->name('part.update');
@@ -52,6 +58,10 @@ Route::middleware([checkSession::class])->group(function () {
         Route::post('/breakdown_parts', [BreakdownPartController::class, 'store'])->name('breakdown.parts.store');
         Route::put('/breakdown_parts/{no_iwo}', [BreakdownPartController::class, 'update'])->name('breakdown.parts.update');
         Route::delete('/breakdown_parts/{no_iwo}', [BreakdownPartController::class, 'destroy'])->name('breakdown.parts.destroy');
+    });
+
+    // superadmin-only routes
+    Route::middleware([RoleMiddleware::class . ':superadmin,ppc'])->group(function () {
         Route::get('/add-mekanik-PM', [AddMekanikPmController::class, 'index'])->name('add-mekanik-PM');
         Route::post('/add-mekanik-PM/add', [AddMekanikPmController::class, 'store'])->name('add-mekanik-PM.store');
         Route::delete('/add-mekanik-PM/destroy/{id_credentials}', [AddMekanikPmController::class, 'destroy'])->name('add-mekanik-PM.destroy');
@@ -61,7 +71,7 @@ Route::middleware([checkSession::class])->group(function () {
 
     // Mekanik-only routes
     Route::middleware([RoleMiddleware::class . ':mekanik'])->group(function () {
-        Route::post('/proses-mekanik/update-step', [ProsesMekanikController::class, 'updateStep'])->name('proses-mekanik.update-step');
+        // Route::post('/proses-mekanik/update-step', [ProsesMekanikController::class, 'updateStep'])->name('proses-mekanik.update-step');
     });
 
     Route::get('/logout', [LoginController::class, 'logout'])->name('logout');

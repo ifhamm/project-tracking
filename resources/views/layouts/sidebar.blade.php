@@ -105,7 +105,7 @@
                             </a>
                         </li>
 
-                        @if (in_array(Session::get('role'), ['superadmin', 'mekanik']))
+                        @if (in_array(Session::get('role'), ['superadmin', 'mekanik', 'ppc']))
                             <li class="nav-item">
                                 <a class="nav-link" href="komponen">
                                     <i class="bi bi-boxes me-2"></i> Komponen
@@ -113,7 +113,7 @@
                             </li>
                         @endif
 
-                        @if (in_array(Session::get('role'), ['superadmin', 'mekanik']))
+                        @if (in_array(Session::get('role'), ['superadmin', 'mekanik', 'ppc']))
                             <li class="nav-item">
                                 <a class="nav-link" href="proses-mekanik">
                                     <i class="bi bi-gear me-2"></i> Proses Mekanik
@@ -121,7 +121,7 @@
                             </li>
                         @endif
 
-                        @if (in_array(Session::get('role'), ['superadmin', 'mekanik']))
+                        @if (in_array(Session::get('role'), ['superadmin', 'mekanik', 'ppc']))
                             <li class="nav-item">
                                 <a class="nav-link" href="dokumentasi-mekanik">
                                     <i class="bi bi-file-text me-2"></i> Dokumentasi
@@ -132,7 +132,7 @@
                         @if (in_array(Session::get('role'), ['superadmin']))
                             <li class="nav-item">
                                 <a class="nav-link" href="add-mekanik-PM">
-                                    <i class="bi bi-person-gear me-2"></i> Tambah Mekanik & PM
+                                    <i class="bi bi-person-gear me-2"></i> Tambah Akun
                                 </a>
                             </li>
                         @endif

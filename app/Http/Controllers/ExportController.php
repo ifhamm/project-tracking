@@ -10,10 +10,25 @@ class ExportController extends Controller
 {
     public function exportPdf(Request $request)
     {
-        $customer = $request->input('customer');
-        $parts = Part::where('customer', $customer)->get();
+        $customer = $request->query('customer'); // Gunakan query() untuk GET parameter
+        
+        // Jika customer adalah 'all', ambil semua data
+        if ($customer === 'all') {
+            $parts = Part::all();
+            $customerName = 'Semua Customer';
+        } 
+        // Jika customer ada nilainya tapi bukan 'all'
+        else if ($customer) {
+            $parts = Part::where('customer', $customer)->get();
+            $customerName = $customer;
+        } 
+        // Jika tidak ada customer yang dipilih
+        else {
+            $parts = Part::all();
+            $customerName = 'Semua Customer';
+        }
     
-        $pdf = Pdf::html(view('export.ExportPart', compact('parts')));
-        return $pdf->download("komponen-{$customer}.pdf");
+        return Pdf::html(view('export.ExportPart', compact('parts', 'customerName')))
+            ->download("komponen-{$customerName}.pdf");
     }
 }

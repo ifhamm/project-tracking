@@ -322,7 +322,7 @@
         <div class="report-info">
             <div class="info-card">
                 <h3>Nama Pelanggan</h3>
-                <p>{{ $parts->first()->customer ?? 'Customer' }}</p>
+                <p>{{ $customerName }}</p> <!-- Diubah dari $parts->first()->customer -->
             </div>
             <div class="info-card">
                 <h3>Tanggal Laporan</h3>
@@ -345,6 +345,7 @@
                     <tr>
                         <th>No. WBS</th>
                         <th>Tanggal Masuk</th>
+                        <th>Customer</th> <!-- Kolom baru -->
                         <th>No. Part</th>
                         <th>Nama Part</th>
                         <th>No. Seri</th>
@@ -356,6 +357,7 @@
                         <tr>
                             <td>{{ $part->no_wbs }}</td>
                             <td>{{ $part->incoming_date }}</td>
+                            <td>{{ $part->customer }}</td> <!-- Kolom baru -->
                             <td>{{ $part->part_number }}</td>
                             <td>{{ $part->part_name }}</td>
                             <td>{{ $part->no_seri }}</td>
@@ -363,7 +365,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center">Tidak ada data</td>
+                            <td colspan="7" class="text-center">Tidak ada data</td>
                         </tr>
                     @endforelse
                 </tbody>

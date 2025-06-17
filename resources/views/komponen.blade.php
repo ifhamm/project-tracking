@@ -64,7 +64,7 @@
             </div>
         </div>
 
-        @if (in_array(Session::get('role'), ['superadmin']))
+         @if (in_array(Session::get('role'), ['superadmin','ppc']))
             <div class="mb-3 text-end">
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#insertModal">
                     <i class="bi bi-plus-circle"></i> Insert Component
@@ -72,7 +72,7 @@
             </div>
 
             <div class="modal fade" id="insertModal" tabindex="-1" aria-labelledby="insertModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="insertModalLabel">Tambah Komponen</h5>
@@ -80,7 +80,7 @@
                         </div>
                         <form action="{{ route('part.store') }}" method="POST">
                             @csrf
-                            <div class="modal-body">
+                            <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
                                 <div class="mb-3">
                                     <label for="id_credentials" class="form-label">Pilih Mekanik</label>
                                     <select name="id_credentials" class="form-control" required>
@@ -249,7 +249,7 @@
                                             <i class="bi bi-info-circle"></i> Detail
                                         </a>
                                     </td>
-                                    @if (in_array(Session::get('role'), ['superadmin']))
+                                     @if (in_array(Session::get('role'), ['superadmin','ppc']))
                                         <td class="table-action-cell">
                                             <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#editModal{{ $part->no_iwo }}" title="Edit Komponen">

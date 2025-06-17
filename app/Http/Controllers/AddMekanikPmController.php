@@ -20,7 +20,7 @@ class AddMekanikPmController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'nik' => 'required|string|max:16|min:16|unique:credentials,nik',
-            'role' => 'required|in:mekanik,pm',
+            'role' => 'required|in:mekanik,pm,ppc',
         ]);
 
         akun_mekanik::create([
