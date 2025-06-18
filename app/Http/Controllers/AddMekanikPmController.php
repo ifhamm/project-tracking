@@ -11,7 +11,7 @@ class AddMekanikPmController extends Controller
 {
     public function index()
     {
-        $credentials = akun_mekanik::where('role', '!=', 'superadmin')->get();
+        $credentials = akun_mekanik::where('role', '!=', 'superadmin')->paginate(10);
         return view('mekanik-pm', compact('credentials'));
     }
 

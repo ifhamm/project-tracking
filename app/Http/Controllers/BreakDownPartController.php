@@ -5,7 +5,7 @@ use App\Models\breakdown_part;
 use App\Models\part;
 use Illuminate\Http\Request;
 
-class BreakdownPartController extends Controller
+class BreakDownPartController extends Controller
 {
     public function index()
     {

@@ -12,10 +12,12 @@ class DokumentasiMekanikController extends Controller
 {
     public function index(Request $request)
     {
-        $parts = Part::with(['workProgres' => function ($query) {
-            $query->where('is_completed', false);
-        }, 'akunMekanik'])->paginate(5);
+        $query = Part::with(['workProgres', 'akunMekanik', 'dokumentasiMekanik'])
+            ->whereHas('workProgres', function ($query) {
+                $query->where('is_completed', false);
+            });
 
+        $parts = $query->paginate(10);
 
         return view('dokumentasi', compact('parts'));
     }
@@ -53,7 +55,10 @@ class DokumentasiMekanikController extends Controller
 
     public function filter(Request $request)
     {
-        $query = Part::query();
+        $query = Part::with(['workProgres', 'akunMekanik', 'dokumentasiMekanik'])
+            ->whereHas('workProgres', function ($query) {
+                $query->where('is_completed', false);
+            });
 
         if ($request->filled('customer')) {
             $query->where('customer', 'like', '%' . $request->customer . '%');
@@ -69,31 +74,42 @@ class DokumentasiMekanikController extends Controller
             });
         }
 
-        $parts = $query->with([
-            'workProgres' => function ($query) {
-                $query->where('is_completed', false);
-            },
-            'akunMekanik',
-            'dokumentasiMekanik'
-        ])->paginate(5);
-
+        $parts = $query->paginate(10);
 
         return view('dokumentasi', compact('parts'));
     }
 
     public function destroy($id)
-{
-    $doc = dokumentasi_mekanik::findOrFail($id);
+    {
+        $doc = dokumentasi_mekanik::findOrFail($id);
 
-    // Hapus file dari storage
-    if ($doc->foto && Storage::exists('public/' . $doc->foto)) {
-        Storage::delete('public/' . $doc->foto);
+        // Hapus file dari storage
+        if ($doc->foto && Storage::exists('public/' . $doc->foto)) {
+            Storage::delete('public/' . $doc->foto);
+        }
+
+        // Hapus dari database
+        $doc->delete();
+
+        return back()->with('success', 'Foto berhasil dihapus.');
     }
 
-    // Hapus dari database
-    $doc->delete();
+    public function show($no_iwo)
+    {
+        $part = Part::with(['workProgres' => function ($query) {
+            $query->orderBy('step_order', 'asc');
+        }, 'akunMekanik', 'dokumentasiMekanik'])->where('no_iwo', $no_iwo)->firstOrFail();
 
-    return back()->with('success', 'Foto berhasil dihapus.');
-}
+        // Kelompokkan dokumentasi berdasarkan step
+        $dokumentasiByStep = $part->dokumentasiMekanik->groupBy('step_name');
 
+        // Debug: Log dokumentasi data
+        \Log::info('Dokumentasi data for part ' . $no_iwo, [
+            'total_docs' => $part->dokumentasiMekanik->count(),
+            'docs_by_step' => $dokumentasiByStep->toArray(),
+            'sample_doc' => $part->dokumentasiMekanik->first()
+        ]);
+
+        return view('dokumentasi_detail', compact('part', 'dokumentasiByStep'));
+    }
 }

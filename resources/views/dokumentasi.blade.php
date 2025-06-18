@@ -192,277 +192,343 @@
 @extends('layouts.sidebar')
 
 @section('content')
-<div class="container-fluid col-md-9 col-lg-10 p-4">
-    <h2 class="mb-4">Dokumentasi Proses Mekanik</h2>
+<div class="p-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">
+                <i class="bi bi-file-text me-3"></i>
+                Dokumentasi Proses Mekanik
+            </h1>
+            <p class="text-muted mb-0">Upload dan kelola dokumentasi proses perbaikan komponen</p>
+        </div>
+    </div>
 
     <!-- Filter Form -->
-    <div class="row mb-4 g-2">
-        <form action="{{ route('dokumentasi.filter') }}" method="GET" class="row g-2 w-100">
-            <div class="col-md-3">
-                <input type="text" class="form-control" name="no_wbs" placeholder="Nomor WBS"
-                    value="{{ request('no_wbs') }}">
-            </div>
-            <div class="col-md-3">
-                <input type="text" class="form-control" name="customer" placeholder="Customer"
-                    value="{{ request('customer') }}">
-            </div>
-            <div class="col-md-2">
-                <input type="text" class="form-control" name="teknisi" placeholder="Teknisi"
-                    value="{{ request('teknisi') }}">
-            </div>
-            <div class="col-md-1">
-                <button type="submit" class="btn btn-primary w-100">Filter</button>
-            </div>
-        </form>
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="{{ route('dokumentasi.filter') }}" method="GET">
+                <div class="row g-3 align-items-end">
+                    <div class="col-lg-3 col-md-6">
+                        <label for="no_wbs" class="form-label fw-semibold">
+                            <i class="bi bi-upc-scan me-2"></i>Nomor WBS
+                        </label>
+                        <input type="text" class="form-control" id="no_wbs" name="no_wbs" placeholder="Cari nomor WBS"
+                            value="{{ request('no_wbs') }}">
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <label for="customer" class="form-label fw-semibold">
+                            <i class="bi bi-building me-2"></i>Customer
+                        </label>
+                        <input type="text" class="form-control" id="customer" name="customer" placeholder="Cari customer"
+                            value="{{ request('customer') }}">
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <label for="teknisi" class="form-label fw-semibold">
+                            <i class="bi bi-person-gear me-2"></i>Teknisi
+                        </label>
+                        <input type="text" class="form-control" id="teknisi" name="teknisi" placeholder="Cari teknisi"
+                            value="{{ request('teknisi') }}">
+                    </div>
+                    <div class="col-lg-3 col-md-12">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary flex-fill">
+                                <i class="bi bi-search me-2"></i>Filter
+                            </button>
+                            <a href="{{ route('dokumentasi-mekanik') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-clockwise me-2"></i>Reset Filter
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 
     @if (session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
     @endif
 
     @if ($errors->any())
-    <div class="alert alert-danger">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>
         <ul class="mb-0">
             @foreach ($errors->all() as $error)
             <li>{{ $error }}</li>
             @endforeach
         </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     @endif
 
-
     <!-- Table -->
-    <div class="table-responsive mb-4">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Customer</th>
-                    <!-- <th>No IWO</th> -->
-                    <th>No WBS</th>
-                    <th>Part Name</th>
-                    <!-- <th>Part Number</th> -->
-                    <!-- <th>Serial Number</th> -->
-                    <th>Step Saat Ini</th>
-                    <th>Status</th>
-                    <th>Teknisi</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($parts as $part)
-                @php
-                $allSteps = $part->workProgres;
-                $existingDocs = $part->dokumentasiMekanik()->get()->groupBy('step_name');
-                @endphp
-                @php
-                $allSteps = $part->workProgres->pluck('step_name');
-                $existingDocs = $part->dokumentasiMekanik()->get()->groupBy('step_name');
-
-                // Ambil step pertama yang belum ada dokumentasinya
-                $currentStepName = $allSteps->first(function ($stepName) use ($existingDocs) {
-                return !$existingDocs->has($stepName);
-                });
-
-                $status = $currentStepName ? 'In Progress' : 'Completed';
-                @endphp
-
-                @php
-                $currentStepName = $allSteps->first(function ($stepName) use ($existingDocs) {
-                return !$existingDocs->has($stepName);
-                });
-                $status = $currentStepName ? 'In Progress' : 'Completed';
-                @endphp
-
-                <!-- @php
-                $currentStep = $part->workProgres->where('is_completed', false)->first();
-                $status = $currentStep ? 'In Progress' : 'Completed';
-                $existingDoc = $part->dokumentasiMekanik()
-                ->where('step_name', $currentStep?->step_name)
-                ->first();
-                @endphp -->
-                <tr>
-                    <td>{{ $part->customer }}</td>
-                    <!-- <td>{{ $part->no_iwo }}</td> -->
-                    <td>{{ $part->no_wbs }}</td>
-                    <td>{{ $part->part_name }}</td>
-                    <!-- <td>{{ $part->part_number }}</td> -->
-                    <!-- <td>{{ $part->no_seri }}</td> -->
-                    <td>{{ $currentStep?->step_name ?? 'Completed' }}</td>
-                    <td>
-                        <span class="status-badge {{ strtolower(str_replace(' ', '-', $status)) }}">
-                            {{ $status }}
-                        </span>
-                    </td>
-                    <td>{{ $part->akunMekanik->name }}</td>
-                    <td>
-                        <!-- Current Step Upload/Display -->
-                        @php $currentStepName = $currentStep?->step_name; @endphp
-
-
-                        @if ($currentStepName)
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-table me-2"></i>Daftar Part untuk Dokumentasi
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>No WBS</th>
+                            <th>Part Name</th>
+                            <th>Step Saat Ini</th>
+                            <th>Status</th>
+                            <th>Teknisi</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($parts as $part)
                         @php
-                        $docsForCurrentStep = $existingDocs[$currentStepName] ?? collect();
+                        $currentStep = $part->workProgres->where('is_completed', false)->first();
+                        $status = $currentStep ? 'In Progress' : 'Completed';
                         @endphp
+                        <tr>
+                            <td>
+                                <span class="fw-semibold">{{ $part->customer }}</span>
+                            </td>
+                            <td>
+                                <a href="{{ route('dokumentasi.detail', $part->no_iwo) }}" 
+                                   class="text-decoration-none fw-bold text-primary">
+                                    {{ $part->no_wbs }}
+                                </a>
+                            </td>
+                            <td>{{ $part->part_name }}</td>
+                            <td>
+                                <span class="badge bg-info bg-opacity-10 text-info">
+                                    {{ $currentStep ? $currentStep->step_name : 'Completed' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {{ $status === 'In Progress' ? 'bg-warning' : 'bg-success' }}">
+                                    {{ $status }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-person-circle me-2 text-muted"></i>
+                                    {{ $part->akunMekanik->name ?? '-' }}
+                                </div>
+                            </td>
+                            <td>
+                                @if($currentStep)
+                                <button class="btn btn-sm btn-primary" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#uploadModal{{ $part->no_iwo }}">
+                                    <i class="bi bi-upload me-1"></i>
+                                    <span class="d-none d-md-inline">Upload</span>
+                                </button>
+                                @else
+                                <span class="text-muted">
+                                    <i class="bi bi-check-circle me-1"></i>Selesai
+                                </span>
+                                @endif
+                            </td>
+                        </tr>
 
-                        @if ($docsForCurrentStep->isNotEmpty())
-                        <!-- <div class="mb-2">
-                            @foreach ($docsForCurrentStep as $doc)
-                            <img src="{{ asset('storage/' . $doc->foto) }}" width="100" class="img-thumbnail me-1 mb-1 previewable-image" style="cursor: pointer;">
-                            @endforeach
-                        </div> -->
-                        <div class="d-flex flex-wrap">
-@foreach ($docsForCurrentStep as $doc)
-    <div class="position-relative me-2 mb-2">
-        <img src="{{ asset('storage/' . $doc->foto) }}" width="100" class="img-thumbnail">
-
-        {{-- Tombol hapus --}}
-        <form action="{{ route('dokumentasi.delete', $doc->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus foto ini?')" class="position-absolute top-0 end-0">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-sm btn-danger px-1 py-0" style="font-size:12px;">&times;</button>
-        </form>
-    </div>
-@endforeach
-</div>
-
-                        @endif
-
-                        <form action="{{ route('dokumentasi.upload') }}" method="POST" enctype="multipart/form-data" class="mt-2">
-                            @csrf
-                            <input type="hidden" name="no_iwo" value="{{ $part->no_iwo }}">
-                            <input type="hidden" name="no_wbs" value="{{ $part->no_wbs }}">
-                            <input type="hidden" name="komponen" value="{{ $part->part_name }}">
-                            <input type="hidden" name="step_name" value="{{ $currentStepName }}">
-                            <input type="hidden" name="tanggal" value="{{ \Carbon\Carbon::now()->toDateString() }}">
-
-                            <input type="file" name="foto[]" class="form-control form-control-sm mb-1" multiple required accept="image/*">
-                            <small class="text-muted">*Upload 1 atau lebih foto dokumentasi</small>
-
-                            <button type="submit" class="btn btn-sm btn-primary">Upload</button>
-                        </form>
-                        @endif
-
-
-                        <!-- Expandable Previous Steps -->
-                        <!-- Expandable Previous Steps -->
-                        @if ($existingDocs->count() > 0)
-                        <!-- Tombol untuk buka modal -->
-                        <button class="btn btn-sm btn-secondary mt-2" type="button" data-bs-toggle="modal" data-bs-target="#modalSteps{{ $part->no_iwo }}">
-                            Lihat Step Sebelumnya
-                        </button>
-
-                        <!-- Modal -->
-                        <div class="modal fade" id="modalSteps{{ $part->no_iwo }}" tabindex="-1" aria-labelledby="modalStepsLabel{{ $part->no_iwo }}" aria-hidden="true">
-                            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                        <!-- Upload Modal for each part -->
+                        @if($currentStep)
+                        <div class="modal fade" id="uploadModal{{ $part->no_iwo }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="modalStepsLabel{{ $part->no_iwo }}">Dokumentasi Step Sebelumnya - {{ $part->no_wbs }} - {{ $part->part_name }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                                        <h5 class="modal-title">
+                                            <i class="bi bi-upload me-2"></i>
+                                            Upload Dokumentasi - {{ $part->no_wbs }}
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
-                                    <div class="modal-body">
-                                        @foreach ($existingDocs as $step => $docs)
-                                        @if ($step !== $currentStepName)
-                                        <div class="mb-4">
-                                            <h6 class="mb-2">{{ $step }}</h6>
-                                            <div class="d-flex flex-wrap">
-                                                @foreach ($docs as $doc)
-                                                <img src="{{ asset('storage/' . $doc->foto) }}" width="100" class="img-thumbnail me-1 mb-1 previewable-image" style="cursor: pointer;">
-                                                @endforeach
+                                    <form action="{{ route('dokumentasi.upload') }}" method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        <div class="modal-body">
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label fw-semibold">No WBS</label>
+                                                    <input type="text" class="form-control" value="{{ $part->no_wbs }}" readonly>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label fw-semibold">Part Name</label>
+                                                    <input type="text" class="form-control" value="{{ $part->part_name }}" readonly>
+                                                </div>
                                             </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label fw-semibold">Step</label>
+                                                    <input type="text" class="form-control" value="{{ $currentStep->step_name }}" readonly>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label fw-semibold">Tanggal</label>
+                                                    <input type="text" class="form-control" value="{{ \Carbon\Carbon::now()->format('d M Y') }}" readonly>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="foto{{ $part->no_iwo }}" class="form-label fw-semibold">
+                                                    <i class="bi bi-images me-2"></i>
+                                                    Pilih Foto Dokumentasi
+                                                </label>
+                                                <input type="file" 
+                                                       class="form-control" 
+                                                       id="foto{{ $part->no_iwo }}" 
+                                                       name="foto[]" 
+                                                       multiple 
+                                                       required 
+                                                       accept="image/*"
+                                                       onchange="previewImages(this, 'preview{{ $part->no_iwo }}')">
+                                                <div class="form-text">
+                                                    <i class="bi bi-info-circle me-1"></i>
+                                                    Pilih 1 atau lebih foto. Format: JPG, JPEG, PNG. Maksimal 5MB per foto.
+                                                </div>
+                                            </div>
+
+                                            <!-- Image Preview -->
+                                            <div id="preview{{ $part->no_iwo }}" class="d-flex flex-wrap gap-2"></div>
+
+                                            <!-- Hidden inputs -->
+                                            <input type="hidden" name="no_iwo" value="{{ $part->no_iwo }}">
+                                            <input type="hidden" name="no_wbs" value="{{ $part->no_wbs }}">
+                                            <input type="hidden" name="komponen" value="{{ $part->part_name }}">
+                                            <input type="hidden" name="step_name" value="{{ $currentStep->step_name }}">
+                                            <input type="hidden" name="tanggal" value="{{ \Carbon\Carbon::now()->toDateString() }}">
                                         </div>
-                                        @endif
-                                        @endforeach
-                                    </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                <i class="bi bi-x-circle me-1"></i>Batal
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="bi bi-upload me-1"></i>Upload Dokumentasi
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                         @endif
-
-                    </td>
-
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                        @empty
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="bi bi-inbox display-4"></i>
+                                    <p class="mt-3 mb-1">Tidak ada part yang perlu dokumentasi</p>
+                                    <small>Semua part telah selesai diproses</small>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
+    <!-- Pagination -->
+    @if($parts->hasPages())
     <div class="d-flex justify-content-between align-items-center mt-4">
-            <div class="text-muted">
+        <div class="text-muted">
+            <small>
                 Showing {{ $parts->firstItem() ?? 0 }} to {{ $parts->lastItem() ?? 0 }} of {{ $parts->total() }} entries
-            </div>
-            <nav aria-label="Page navigation">
-                <ul class="pagination mb-0">
-                    {{-- Previous Page Link --}}
-                    @if ($parts->onFirstPage())
-                        <li class="page-item disabled">
-                            <span class="page-link">Previous</span>
+            </small>
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination mb-0">
+                @if ($parts->onFirstPage())
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                @else
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $parts->previousPageUrl() }}" rel="prev">Previous</a>
+                    </li>
+                @endif
+
+                @foreach ($parts->getUrlRange(1, $parts->lastPage()) as $page => $url)
+                    @if ($page == $parts->currentPage())
+                        <li class="page-item active">
+                            <span class="page-link">{{ $page }}</span>
                         </li>
                     @else
                         <li class="page-item">
-                            <a class="page-link" href="{{ $parts->previousPageUrl() }}" rel="prev">Previous</a>
+                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
                         </li>
                     @endif
+                @endforeach
 
-                    {{-- Pagination Elements --}}
-                    @foreach ($parts->getUrlRange(1, $parts->lastPage()) as $page => $url)
-                        @if ($page == $parts->currentPage())
-                            <li class="page-item active">
-                                <span class="page-link">{{ $page }}</span>
-                            </li>
-                        @else
-                            <li class="page-item">
-                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
-                            </li>
-                        @endif
-                    @endforeach
-
-                    {{-- Next Page Link --}}
-                    @if ($parts->hasMorePages())
-                        <li class="page-item">
-                            <a class="page-link" href="{{ $parts->nextPageUrl() }}" rel="next">Next</a>
-                        </li>
-                    @else
-                        <li class="page-item disabled">
-                            <span class="page-link">Next</span>
-                        </li>
-                    @endif
-                </ul>
-            </nav>
-        </div>
-</div>
-
-
-<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content position-relative">
-            <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
-            <div class="modal-body p-0 d-flex justify-content-center align-items-center">
-                <img id="previewImage" src="" alt="Preview" class="modal-img">
-            </div>
-        </div>
+                @if ($parts->hasMorePages())
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $parts->nextPageUrl() }}" rel="next">Next</a>
+                    </li>
+                @else
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                @endif
+            </ul>
+        </nav>
     </div>
+    @endif
 </div>
 
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    
+    .modal-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+    }
+    
+    .modal-header .btn-close {
+        filter: invert(1);
+    }
 
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .table-responsive {
+            font-size: 0.875rem;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+    }
+</style>
 
 @endsection
 
+@section('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const modal = new bootstrap.Modal(document.getElementById('imagePreviewModal'));
-        const modalImage = document.getElementById('previewImage');
-
-        document.querySelectorAll('.previewable-image').forEach(img => {
-            img.addEventListener('click', function() {
-                modalImage.src = this.src;
-                modal.show();
+    function previewImages(input, previewId) {
+        const preview = document.getElementById(previewId);
+        preview.innerHTML = '';
+        
+        if (input.files) {
+            Array.from(input.files).forEach((file, index) => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'img-thumbnail';
+                        img.style.width = '100px';
+                        img.style.height = '80px';
+                        img.style.objectFit = 'cover';
+                        img.style.margin = '2px';
+                        preview.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
             });
-        });
-    });
-
-    document.getElementById('imagePreviewModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            bootstrap.Modal.getInstance(this).hide();
         }
-    });
+    }
 </script>
+@endsection

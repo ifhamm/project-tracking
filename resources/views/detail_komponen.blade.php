@@ -1,435 +1,469 @@
 @extends('layouts.sidebar')
 
 @section('content')
-    <div class="col-lg-10 content-wrapper">
-        <div class="container-fluid py-4">
+<div class="p-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">
+                <i class="bi bi-info-circle me-3"></i>
+                Detail Komponen
+            </h1>
+            <p class="text-muted mb-0">Informasi lengkap komponen dan breakdown parts</p>
+        </div>
+        <a href="{{ route('komponen') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Kembali
+        </a>
+    </div>
+
+    <!-- Component Details Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-gear me-2"></i>Informasi Komponen
+            </h5>
+        </div>
+        <div class="card-body">
             <div class="row">
-                <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Detail Komponen</h5>
-                            <a href="/komponen" class="btn btn-secondary btn-sm">
-                                <i class="bi bi-arrow-left"></i> Kembali
-                            </a>
+                <div class="col-lg-6">
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-semibold">
+                            <i class="bi bi-upc-scan me-2"></i>No IWO:
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <table class="table table-borderless">
-                                        <tr>
-                                            <th class="text-muted" style="width: 150px;">No IWO</th>
-                                            <td>{{ $part->no_iwo }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th class="text-muted">Nama Part</th>
-                                            <td>{{ $part->part_name }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th class="text-muted">Nomor Part</th>
-                                            <td>{{ $part->part_number }}</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                                <div class="col-md-6">
-                                    <table class="table table-borderless">
-                                        <tr>
-                                            <th class="text-muted" style="width: 150px;">Tanggal Masuk</th>
-                                            <td>{{ \Carbon\Carbon::parse($part->incoming_date)->format('M d, Y') }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th class="text-muted">Customer</th>
-                                            <td>{{ $part->customer }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th class="text-muted">Mekanik</th>
-                                            <td>{{ $part->akunMekanik->name ?? '-' }}</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
+                        <div class="col-sm-8">
+                            <span class="text-primary fw-semibold">{{ $part->no_iwo }}</span>
                         </div>
                     </div>
-
-                    <div class="card shadow-sm mt-4">
-                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Break Down Part List</h5>
-                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#addBdpModal">
-                                <i class="bi bi-plus-lg"></i> Tambah BDP
-                            </button>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-semibold">
+                            <i class="bi bi-tag me-2"></i>Nama Part:
                         </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>BDP Name</th>
-                                            <th>BDP Number Eqv</th>
-                                            <th>Qty</th>
-                                            <th>Unit</th>
-                                            <th>OP Number</th>
-                                            <th>OP Date</th>
-                                            <th>Defect</th>
-                                            <th>MT Number</th>
-                                            <th>MT Qty</th>
-                                            <th>MT Date</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($part->breakdownParts as $bdp)
-                                            <tr>
-                                                <td>{{ $bdp->bdp_name }}</td>
-                                                <td>{{ $bdp->bdp_number_eqv }}</td>
-                                                <td>{{ $bdp->quantity }}</td>
-                                                <td>{{ $bdp->unit }}</td>
-                                                <td>{{ $bdp->op_number }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($bdp->op_date)->format('M d, Y') }}</td>
-                                                <td>{{ $bdp->defect }}</td>
-                                                <td>{{ $bdp->mt_number }}</td>
-                                                <td>{{ $bdp->mt_quantity }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($bdp->mt_date)->format('M d, Y') }}</td>
-                                                <td>
-                                                    <div class="btn-group">
-                                                        {{-- Tombol Edit --}}
-                                                        <button type="button"
-                                                            class="btn btn-sm btn-outline-primary edit-bdp-btn"
-                                                            data-bs-toggle="modal" data-bs-target="#editBdpModal"
-                                                            data-id="{{ $bdp->no_iwo }}"
-                                                            data-bdp_name="{{ $bdp->bdp_name }}"
-                                                            data-bdp_number_eqv="{{ $bdp->bdp_number_eqv }}"
-                                                            data-quantity="{{ $bdp->quantity }}"
-                                                            data-unit="{{ $bdp->unit }}"
-                                                            data-op_number="{{ $bdp->op_number }}"
-                                                            data-op_date="{{ $bdp->op_date }}"
-                                                            data-defect="{{ $bdp->defect }}"
-                                                            data-mt_number="{{ $bdp->mt_number }}"
-                                                            data-mt_quantity="{{ $bdp->mt_quantity }}"
-                                                            data-mt_date="{{ $bdp->mt_date }}">
-                                                            <i class="bi bi-pencil"></i>
-                                                        </button>
-                                                        {{-- Form Delete --}}
-                                                        <form
-                                                            action="{{ route('breakdown.parts.destroy', ['no_iwo' => $bdp->no_iwo]) }}"
-                                                            method="POST"
-                                                            onsubmit="return confirm('Yakin ingin menghapus data ini?')"
-                                                            style="display:inline;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                                <i class="bi bi-trash"></i>
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="11" class="text-center py-4">
-                                                    <div class="text-muted">
-                                                        <i class="bi bi-inbox fs-4 d-block mb-2"></i>
-                                                        Belum ada Breakdown Parts
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="col-sm-8">{{ $part->part_name }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-semibold">
+                            <i class="bi bi-hash me-2"></i>Nomor Part:
                         </div>
+                        <div class="col-sm-8">{{ $part->part_number }}</div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-semibold">
+                            <i class="bi bi-calendar me-2"></i>Tanggal Masuk:
+                        </div>
+                        <div class="col-sm-8">{{ \Carbon\Carbon::parse($part->incoming_date)->format('d M Y') }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-semibold">
+                            <i class="bi bi-building me-2"></i>Customer:
+                        </div>
+                        <div class="col-sm-8">{{ $part->customer }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-semibold">
+                            <i class="bi bi-person-gear me-2"></i>Mekanik:
+                        </div>
+                        <div class="col-sm-8">{{ $part->akunMekanik->name ?? '-' }}</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Modal Tambah BDP --}}
-    <div class="modal fade" id="addBdpModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Tambah Breakdown Part Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form action="{{ route('breakdown.parts.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="no_iwo" value="{{ $part->no_iwo }}">
-                    <div class="modal-body">
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="bdp_name" class="form-label">BDP Name</label>
-                                <input type="text" name="bdp_name" id="bdp_name" class="form-control" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="bdp_number_eqv" class="form-label">BDP Number Eqv</label>
-                                <input type="text" name="bdp_number_eqv" id="bdp_number_eqv" class="form-control"
-                                    required>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="quantity" class="form-label">Quantity</label>
-                                <input type="number" name="quantity" id="quantity" class="form-control" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="unit" class="form-label">Unit</label>
-                                <input type="text" name="unit" id="unit" class="form-control" required>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="op_number" class="form-label">OP Number</label>
-                                <input type="text" name="op_number" id="op_number" class="form-control" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="op_date" class="form-label">OP Date</label>
-                                <input type="date" name="op_date" id="op_date" class="form-control" required>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="defect" class="form-label">Defect</label>
-                                <input type="text" name="defect" id="defect" class="form-control">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="mt_number" class="form-label">MT Number</label>
-                                <input type="text" name="mt_number" id="mt_number" class="form-control">
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="mt_quantity" class="form-label">MT Quantity</label>
-                                <input type="number" name="mt_quantity" id="mt_quantity" class="form-control">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="mt_date" class="form-label">MT Date</label>
-                                <input type="date" name="mt_date" id="mt_date" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </div>
-                </form>
+    <!-- Breakdown Parts Card -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-list-check me-2"></i>Breakdown Part List
+            </h5>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBdpModal">
+                <i class="bi bi-plus-circle me-2"></i>Tambah BDP
+            </button>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>BDP Name</th>
+                            <th>BDP Number Eqv</th>
+                            <th>Qty</th>
+                            <th>Unit</th>
+                            <th>OP Number</th>
+                            <th>OP Date</th>
+                            <th>Defect</th>
+                            <th>MT Number</th>
+                            <th>MT Qty</th>
+                            <th>MT Date</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($part->breakdownParts as $bdp)
+                            <tr>
+                                <td>
+                                    <span class="fw-semibold">{{ $bdp->bdp_name }}</span>
+                                </td>
+                                <td>{{ $bdp->bdp_number_eqv }}</td>
+                                <td>
+                                    <span class="badge bg-primary">{{ $bdp->quantity }}</span>
+                                </td>
+                                <td>{{ $bdp->unit }}</td>
+                                <td>{{ $bdp->op_number }}</td>
+                                <td>{{ \Carbon\Carbon::parse($bdp->op_date)->format('d M Y') }}</td>
+                                <td>
+                                    @if($bdp->defect)
+                                        <span class="badge bg-warning">{{ $bdp->defect }}</span>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td>{{ $bdp->mt_number ?? '-' }}</td>
+                                <td>{{ $bdp->mt_quantity ?? '-' }}</td>
+                                <td>{{ $bdp->mt_date ? \Carbon\Carbon::parse($bdp->mt_date)->format('d M Y') : '-' }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary edit-bdp-btn"
+                                                data-bs-toggle="modal" data-bs-target="#editBdpModal"
+                                                data-id="{{ $bdp->no_iwo }}"
+                                                data-bdp_name="{{ $bdp->bdp_name }}"
+                                                data-bdp_number_eqv="{{ $bdp->bdp_number_eqv }}"
+                                                data-quantity="{{ $bdp->quantity }}"
+                                                data-unit="{{ $bdp->unit }}"
+                                                data-op_number="{{ $bdp->op_number }}"
+                                                data-op_date="{{ $bdp->op_date }}"
+                                                data-defect="{{ $bdp->defect }}"
+                                                data-mt_number="{{ $bdp->mt_number }}"
+                                                data-mt_quantity="{{ $bdp->mt_quantity }}"
+                                                data-mt_date="{{ $bdp->mt_date }}"
+                                                title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                onclick="deleteBdp('{{ $bdp->no_iwo }}', '{{ $bdp->bdp_name }}')"
+                                                title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="11" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                                        <h6>Belum ada Breakdown Parts</h6>
+                                        <p class="mb-0">Klik tombol "Tambah BDP" untuk menambahkan data</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+</div>
 
-    {{-- Modal Edit BDP --}}
-    <div class="modal fade" id="editBdpModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Breakdown Part</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form id="editBdpForm" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="modal-body">
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul class="mb-0">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="edit_bdp_name" class="form-label">BDP Name</label>
-                                <input type="text" name="bdp_name" id="edit_bdp_name"
-                                    class="form-control @error('bdp_name') is-invalid @enderror" required>
-                                @error('bdp_name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6">
-                                <label for="edit_bdp_number_eqv" class="form-label">BDP Number Eqv</label>
-                                <input type="text" name="bdp_number_eqv" id="edit_bdp_number_eqv"
-                                    class="form-control @error('bdp_number_eqv') is-invalid @enderror" required>
-                                @error('bdp_number_eqv')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="edit_quantity" class="form-label">Quantity</label>
-                                <input type="number" name="quantity" id="edit_quantity" class="form-control" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="edit_unit" class="form-label">Unit</label>
-                                <input type="text" name="unit" id="edit_unit" class="form-control" required>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="edit_op_number" class="form-label">OP Number</label>
-                                <input type="text" name="op_number" id="edit_op_number" class="form-control"
-                                    required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="edit_op_date" class="form-label">OP Date</label>
-                                <input type="date" name="op_date" id="edit_op_date" class="form-control" required>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="edit_defect" class="form-label">Defect</label>
-                                <input type="text" name="defect" id="edit_defect" class="form-control">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="edit_mt_number" class="form-label">MT Number</label>
-                                <input type="text" name="mt_number" id="edit_mt_number" class="form-control">
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="edit_mt_quantity" class="form-label">MT Quantity</label>
-                                <input type="number" name="mt_quantity" id="edit_mt_quantity" class="form-control">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="edit_mt_date" class="form-label">MT Date</label>
-                                <input type="date" name="mt_date" id="edit_mt_date" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                    </div>
-                </form>
+<!-- Add BDP Modal -->
+<div class="modal fade" id="addBdpModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2"></i>Tambah Breakdown Part Baru
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-        </div>
-    </div>
-
-    {{-- Modal Konfirmasi Hapus --}}
-    <div class="modal fade" id="deleteBdpModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Konfirmasi Penghapusan</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+            <form action="{{ route('breakdown.parts.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="no_iwo" value="{{ $part->no_iwo }}">
                 <div class="modal-body">
-                    Apakah Anda yakin ingin menghapus Breakdown Part ini?
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="bdp_name" class="form-label fw-semibold">
+                                <i class="bi bi-tag me-2"></i>BDP Name
+                            </label>
+                            <input type="text" name="bdp_name" id="bdp_name" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="bdp_number_eqv" class="form-label fw-semibold">
+                                <i class="bi bi-hash me-2"></i>BDP Number Eqv
+                            </label>
+                            <input type="text" name="bdp_number_eqv" id="bdp_number_eqv" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="quantity" class="form-label fw-semibold">
+                                <i class="bi bi-123 me-2"></i>Quantity
+                            </label>
+                            <input type="number" name="quantity" id="quantity" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="unit" class="form-label fw-semibold">
+                                <i class="bi bi-rulers me-2"></i>Unit
+                            </label>
+                            <input type="text" name="unit" id="unit" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="op_number" class="form-label fw-semibold">
+                                <i class="bi bi-file-earmark-text me-2"></i>OP Number
+                            </label>
+                            <input type="text" name="op_number" id="op_number" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="op_date" class="form-label fw-semibold">
+                                <i class="bi bi-calendar me-2"></i>OP Date
+                            </label>
+                            <input type="date" name="op_date" id="op_date" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="defect" class="form-label fw-semibold">
+                                <i class="bi bi-exclamation-triangle me-2"></i>Defect
+                            </label>
+                            <input type="text" name="defect" id="defect" class="form-control" placeholder="Opsional">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="mt_number" class="form-label fw-semibold">
+                                <i class="bi bi-file-earmark-text me-2"></i>MT Number
+                            </label>
+                            <input type="text" name="mt_number" id="mt_number" class="form-control" placeholder="Opsional">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="mt_quantity" class="form-label fw-semibold">
+                                <i class="bi bi-123 me-2"></i>MT Quantity
+                            </label>
+                            <input type="number" name="mt_quantity" id="mt_quantity" class="form-control" placeholder="Opsional">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="mt_date" class="form-label fw-semibold">
+                                <i class="bi bi-calendar me-2"></i>MT Date
+                            </label>
+                            <input type="date" name="mt_date" id="mt_date" class="form-control" placeholder="Opsional">
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <form id="deleteBdpForm" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Hapus</button>
-                    </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>Batal
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-1"></i>Simpan
+                    </button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
-@endsection
+</div>
 
-@section('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Event listener untuk tombol edit
-            document.querySelectorAll('.edit-bdp-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const noIwo = this.dataset.id;
-
-                    // Mengisi form modal edit dengan data yang diambil dari data-attributes
-                    document.getElementById('edit_bdp_name').value = this.dataset.bdp_name;
-                    document.getElementById('edit_bdp_number_eqv').value = this.dataset
-                        .bdp_number_eqv;
-                    document.getElementById('edit_quantity').value = this.dataset.quantity;
-                    document.getElementById('edit_unit').value = this.dataset.unit;
-                    document.getElementById('edit_op_number').value = this.dataset.op_number;
-                    document.getElementById('edit_op_date').value = this.dataset.op_date ? this
-                        .dataset.op_date.split(' ')[0] : '';
-                    document.getElementById('edit_defect').value = this.dataset.defect;
-                    document.getElementById('edit_mt_number').value = this.dataset.mt_number;
-                    document.getElementById('edit_mt_quantity').value = this.dataset.mt_quantity;
-                    document.getElementById('edit_mt_date').value = this.dataset.mt_date ? this
-                        .dataset.mt_date.split(' ')[0] : '';
-
-                    // Mengatur action form edit
-                    const editForm = document.getElementById('editBdpForm');
-                    editForm.action = `/breakdown_parts/${noIwo}`;
-                });
-            });
-
-            // Event listener untuk tombol delete
-            document.querySelectorAll('.delete-bdp-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const noIwo = this.dataset.id;
-                    const deleteForm = document.getElementById('deleteBdpForm');
-                    deleteForm.action = `/breakdown_parts/${noIwo}`;
-                });
-            });
-
-            // Show success message if it exists using Bootstrap Toast
-            @if (session('success'))
-                const toastContainer = document.createElement('div');
-                toastContainer.classList.add('toast-container', 'position-fixed', 'bottom-0', 'end-0', 'p-3');
-                document.body.appendChild(toastContainer);
-
-                const toastElement = document.createElement('div');
-                toastElement.classList.add('toast', 'align-items-center', 'text-white', 'bg-success', 'border-0');
-                toastElement.setAttribute('role', 'alert');
-                toastElement.setAttribute('aria-live', 'assertive');
-                toastElement.setAttribute('aria-atomic', 'true');
-                toastElement.innerHTML = `
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            {{ session('success') }}
+<!-- Edit BDP Modal -->
+<div class="modal fade" id="editBdpModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil me-2"></i>Edit Breakdown Part
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('breakdown.parts.update', ['no_iwo' => $part->no_iwo]) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="no_iwo" value="{{ $part->no_iwo }}">
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="edit_bdp_name" class="form-label fw-semibold">
+                                <i class="bi bi-tag me-2"></i>BDP Name
+                            </label>
+                            <input type="text" name="bdp_name" id="edit_bdp_name" class="form-control" required>
                         </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        <div class="col-md-6">
+                            <label for="edit_bdp_number_eqv" class="form-label fw-semibold">
+                                <i class="bi bi-hash me-2"></i>BDP Number Eqv
+                            </label>
+                            <input type="text" name="bdp_number_eqv" id="edit_bdp_number_eqv" class="form-control" required>
+                        </div>
                     </div>
-                `;
-                toastContainer.appendChild(toastElement);
 
-                const toast = new bootstrap.Toast(toastElement);
-                toast.show();
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="edit_quantity" class="form-label fw-semibold">
+                                <i class="bi bi-123 me-2"></i>Quantity
+                            </label>
+                            <input type="number" name="quantity" id="edit_quantity" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_unit" class="form-label fw-semibold">
+                                <i class="bi bi-rulers me-2"></i>Unit
+                            </label>
+                            <input type="text" name="unit" id="edit_unit" class="form-control" required>
+                        </div>
+                    </div>
 
-                setTimeout(() => {
-                    toastElement.remove();
-                    if (toastContainer.children.length === 0) {
-                        toastContainer.remove();
-                    }
-                }, 3000);
-            @endif
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="edit_op_number" class="form-label fw-semibold">
+                                <i class="bi bi-file-earmark-text me-2"></i>OP Number
+                            </label>
+                            <input type="text" name="op_number" id="edit_op_number" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_op_date" class="form-label fw-semibold">
+                                <i class="bi bi-calendar me-2"></i>OP Date
+                            </label>
+                            <input type="date" name="op_date" id="edit_op_date" class="form-control" required>
+                        </div>
+                    </div>
 
-            // Menampilkan modal edit jika ada error validasi setelah submit
-            @if ($errors->any() && old('_method') === 'PUT')
-                var editModal = new bootstrap.Modal(document.getElementById('editBdpModal'));
-                editModal.show();
-                // Mengisi kembali form edit dengan old input jika ada error
-                document.getElementById('edit_bdp_name').value = "{{ old('bdp_name') }}";
-                document.getElementById('edit_bdp_number_eqv').value = "{{ old('bdp_number_eqv') }}";
-                document.getElementById('edit_quantity').value = "{{ old('quantity') }}";
-                document.getElementById('edit_unit').value = "{{ old('unit') }}";
-                document.getElementById('edit_op_number').value = "{{ old('op_number') }}";
-                document.getElementById('edit_op_date').value = "{{ old('op_date') }}";
-                document.getElementById('edit_defect').value = "{{ old('defect') }}";
-                document.getElementById('edit_mt_number').value = "{{ old('mt_number') }}";
-                document.getElementById('edit_mt_quantity').value = "{{ old('mt_quantity') }}";
-                document.getElementById('edit_mt_date').value = "{{ old('mt_date') }}";
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="edit_defect" class="form-label fw-semibold">
+                                <i class="bi bi-exclamation-triangle me-2"></i>Defect
+                            </label>
+                            <input type="text" name="defect" id="edit_defect" class="form-control" placeholder="Opsional">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_mt_number" class="form-label fw-semibold">
+                                <i class="bi bi-file-earmark-text me-2"></i>MT Number
+                            </label>
+                            <input type="text" name="mt_number" id="edit_mt_number" class="form-control" placeholder="Opsional">
+                        </div>
+                    </div>
 
-                const editBdpNoIwoAfterError = "{{ session('edit_bdp_no_iwo') }}" || null;
-                if (editBdpNoIwoAfterError) {
-                    const editForm = document.getElementById('editBdpForm');
-                    editForm.action = `/breakdown_parts/${editBdpNoIwoAfterError}`;
-                }
-            @endif
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="edit_mt_quantity" class="form-label fw-semibold">
+                                <i class="bi bi-123 me-2"></i>MT Quantity
+                            </label>
+                            <input type="number" name="mt_quantity" id="edit_mt_quantity" class="form-control" placeholder="Opsional">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_mt_date" class="form-label fw-semibold">
+                                <i class="bi bi-calendar me-2"></i>MT Date
+                            </label>
+                            <input type="date" name="mt_date" id="edit_mt_date" class="form-control" placeholder="Opsional">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>Batal
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-1"></i>Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-group .btn {
+        border-radius: 6px;
+        margin: 0 1px;
+    }
+
+    .btn-group .btn:hover {
+        transform: translateY(-1px);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .table-responsive {
+            font-size: 0.875rem;
+        }
+        
+        .btn-group .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Edit BDP button click handler
+    document.querySelectorAll('.edit-bdp-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const data = this.dataset;
+            
+            document.getElementById('edit_bdp_name').value = data.bdp_name;
+            document.getElementById('edit_bdp_number_eqv').value = data.bdp_number_eqv;
+            document.getElementById('edit_quantity').value = data.quantity;
+            document.getElementById('edit_unit').value = data.unit;
+            document.getElementById('edit_op_number').value = data.op_number;
+            document.getElementById('edit_op_date').value = data.op_date;
+            document.getElementById('edit_defect').value = data.defect || '';
+            document.getElementById('edit_mt_number').value = data.mt_number || '';
+            document.getElementById('edit_mt_quantity').value = data.mt_quantity || '';
+            document.getElementById('edit_mt_date').value = data.mt_date || '';
         });
-    </script>
+    });
+
+    // Delete BDP function
+    function deleteBdp(noIwo, bdpName) {
+        Swal.fire({
+            title: 'Konfirmasi Hapus',
+            text: `Apakah Anda yakin ingin menghapus BDP "${bdpName}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/breakdown_parts/${noIwo}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: 'BDP berhasil dihapus.',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Gagal menghapus BDP'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Terjadi kesalahan saat menghapus BDP'
+                    });
+                });
+            }
+        });
+    }
+</script>
 @endsection

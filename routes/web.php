@@ -38,6 +38,7 @@ Route::middleware([checkSession::class])->group(function () {
     Route::post('/dokumentasi-mekanik/upload', [DokumentasiMekanikController::class, 'upload'])->name('dokumentasi.upload');
     Route::get('/dokumentasi/filter', [DokumentasiMekanikController::class, 'filter'])->name('dokumentasi.filter');
     Route::delete('/dokumentasi/{id}', [DokumentasiMekanikController::class, 'destroy'])->name('dokumentasi.delete');
+    Route::get('/dokumentasi/detail/{no_iwo}', [DokumentasiMekanikController::class, 'show'])->name('dokumentasi.detail');
 
     // Superadmin & Mekanik routes
     Route::middleware([RoleMiddleware::class . ':superadmin,mekanik,ppc'])->group(function () {
@@ -46,18 +47,19 @@ Route::middleware([checkSession::class])->group(function () {
         Route::get('/breakdown_parts', [BreakdownPartController::class, 'index'])->name('breakdown.parts.index');
         Route::get('/detail-proses/{no_iwo}', [PartController::class, 'show'])->name('detail.show');
         Route::get('/detail-proses', [BreakdownPartController::class, 'show'])->name('detail.komponen');
+        Route::get('/part/{no_iwo}', [PartController::class, 'show'])->name('part.show');
         Route::post('/proses-mekanik/update-step', [ProsesMekanikController::class, 'updateStep'])->name('proses-mekanik.update-step');
     });
 
     // superadmin & ppc routes
     Route::middleware([RoleMiddleware::class . ':superadmin,ppc'])->group(function () {
         Route::post('/part/store', [PartController::class, 'store'])->name('part.store');
-        Route::get('/part/edit/{no_iwo}', [PartController::class, 'edit'])->name('part.edit');
         Route::put('/part/update/{no_iwo}', [PartController::class, 'update'])->name('part.update');
         Route::delete('/part/delete/{no_iwo}', [PartController::class, 'destroy'])->name('part.destroy');
         Route::post('/breakdown_parts', [BreakdownPartController::class, 'store'])->name('breakdown.parts.store');
         Route::put('/breakdown_parts/{no_iwo}', [BreakdownPartController::class, 'update'])->name('breakdown.parts.update');
         Route::delete('/breakdown_parts/{no_iwo}', [BreakdownPartController::class, 'destroy'])->name('breakdown.parts.destroy');
+        Route::post('/parts/{no_iwo}/set-urgent', [PartController::class, 'setUrgent'])->name('parts.setUrgent');
     });
 
     // superadmin-only routes
@@ -67,6 +69,7 @@ Route::middleware([checkSession::class])->group(function () {
         Route::delete('/add-mekanik-PM/destroy/{id_credentials}', [AddMekanikPmController::class, 'destroy'])->name('add-mekanik-PM.destroy');
         Route::get('/add-mekanik-PM/edit/{id_credentials}', [AddMekanikPmController::class, 'edit'])->name('add-mekanik-PM.edit');
         Route::put('/add-mekanik-PM/update/{id_credentials}', [AddMekanikPmController::class, 'update'])->name('add-mekanik-PM.update');
+        
     });
 
     // Mekanik-only routes
