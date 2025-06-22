@@ -294,7 +294,7 @@
                     <nav class="flex-grow-1 p-3">
                         <ul class="nav flex-column" id="sidebarNav">
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="/">
+                                <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}">
                                     <i class="bi bi-house"></i>
                                     <span>Dashboard</span>
                                 </a>
@@ -302,7 +302,7 @@
 
                             @if (in_array(Session::get('role'), ['superadmin', 'mekanik', 'ppc']))
                                 <li class="nav-item">
-                                    <a class="nav-link {{ request()->is('komponen*') ? 'active' : '' }}" href="komponen">
+                                    <a class="nav-link {{ request()->is('komponen*') ? 'active' : '' }}" href="{{ url('/komponen') }}">
                                         <i class="bi bi-boxes"></i>
                                         <span>Komponen</span>
                                     </a>
@@ -311,7 +311,7 @@
 
                             @if (in_array(Session::get('role'), ['superadmin', 'mekanik', 'ppc']))
                                 <li class="nav-item">
-                                    <a class="nav-link {{ request()->is('proses-mekanik*') ? 'active' : '' }}" href="proses-mekanik">
+                                    <a class="nav-link {{ request()->is('proses-mekanik*') ? 'active' : '' }}" href="{{ url('/proses-mekanik') }}">
                                         <i class="bi bi-gear"></i>
                                         <span>Proses Mekanik</span>
                                     </a>
@@ -320,7 +320,7 @@
 
                             @if (in_array(Session::get('role'), ['superadmin', 'mekanik', 'ppc']))
                                 <li class="nav-item">
-                                    <a class="nav-link {{ request()->is('dokumentasi*') ? 'active' : '' }}" href="dokumentasi-mekanik">
+                                    <a class="nav-link {{ request()->is('dokumentasi*') ? 'active' : '' }}" href="{{ route('dokumentasi-mekanik') }}">
                                         <i class="bi bi-file-text"></i>
                                         <span>Dokumentasi</span>
                                     </a>
@@ -329,7 +329,7 @@
 
                             @if (in_array(Session::get('role'), ['superadmin']))
                                 <li class="nav-item">
-                                    <a class="nav-link {{ request()->is('add-mekanik*') ? 'active' : '' }}" href="add-mekanik-PM">
+                                    <a class="nav-link {{ request()->is('add-mekanik*') ? 'active' : '' }}" href="{{ url('/add-mekanik-PM') }}">
                                         <i class="bi bi-person-gear"></i>
                                         <span>Tambah Akun</span>
                                     </a>
@@ -339,7 +339,7 @@
                     </nav>
 
                     <div class="p-3 border-top border-light border-opacity-25">
-                        <a class="nav-link text-danger" href="logout">
+                        <a class="nav-link text-danger" href="{{ url('/logout') }}">
                             <i class="bi bi-box-arrow-right"></i>
                             <span>Logout</span>
                         </a>
@@ -390,6 +390,8 @@
             // Active nav item
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
+                    // This is for instant visual feedback on click
+                    // The server will set the correct active class on page load.
                     navLinks.forEach(item => item.classList.remove('active'));
                     this.classList.add('active');
                     
@@ -400,14 +402,6 @@
                         document.body.style.overflow = '';
                     }
                 });
-            });
-
-            // Set active nav based on current path
-            const currentPath = window.location.pathname;
-            navLinks.forEach(link => {
-                if (link.getAttribute('href') === currentPath) {
-                    link.classList.add('active');
-                }
             });
 
             // Add loading state to buttons

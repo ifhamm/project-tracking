@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\akun_mekanik;
 use Illuminate\Support\Str;
 use App\Helpers\DateHelper;
+use App\Rules\NoXSS;
 
 class PartController extends Controller
 {
@@ -70,16 +71,18 @@ class PartController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'no_wbs' => 'required|string|max:255',
-            'incoming_date' => 'required|date',
-            'part_name' => 'required|string|max:255',
-            'part_number' => 'required|string|max:255',
-            'no_seri' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'customer' => 'required|string|max:255',
+            'no_wbs' => ['required','string','max:255', new NoXSS],
+            'incoming_date' => ['required','date', 'date_format:Y-m-d', 'date_equals:today'],
+            'part_name' => ['required','string','max:255', new NoXSS],
+            'part_number' => ['required','string','max:255', new NoXSS],
+            'no_seri' => ['nullable','string','max:255', new NoXSS],
+            'description' => ['nullable','string', new NoXSS],
+            'customer' => ['required','string','max:255', new NoXSS],
             'id_credentials' => 'required|uuid',
             'step_sequence' => 'required|array',
             'step_sequence.*' => 'required|integer|between:1,8',
+        ], [
+            'incoming_date.date_equals' => 'Tanggal masuk harus hari ini',
         ]);
 
         // Hitung deadline berdasarkan incoming_date
@@ -125,7 +128,6 @@ class PartController extends Controller
         return redirect()->route('komponen')->with('success', 'Data part berhasil disimpan dengan priority deadline.');
     }
 
-
     public function getByCustomer(Request $request, $customer = null)
     {
         $query = Part::with(['workProgres' => function ($query) {
@@ -144,6 +146,7 @@ class PartController extends Controller
             $parts = $query->select('no_iwo', 'no_wbs', 'part_name', 'incoming_date', 'is_urgent', 'customer')
                 ->orderBy('incoming_date', 'desc')
                 ->get();
+            
             $statusCalc = function ($part) {
                 $totalSteps = $part->workProgres->count();
                 $completedSteps = $part->workProgres->where('is_completed', true)->count();
@@ -156,6 +159,7 @@ class PartController extends Controller
                 }
                 return $part;
             };
+            
             $parts->transform($statusCalc);
             return response()->json([
                 'data' => $parts->values(),
@@ -215,14 +219,16 @@ class PartController extends Controller
         $part = part::where('no_iwo', $no_iwo)->firstOrFail();
 
         $validated = $request->validate([
-            'no_wbs' => 'required|string|unique:parts,no_wbs,' . $part->no_iwo . ',no_iwo',
+            'no_wbs' => ['required','string','unique:parts,no_wbs,' . $part->no_iwo . ',no_iwo', new NoXSS],
             'id_credentials' => 'required|exists:credentials,id_credentials',
-            'part_name' => 'required|string',
-            'part_number' => 'required|string',
-            'no_seri' => 'nullable|string',
-            'description' => 'nullable|string',
-            'customer' => 'required|string',
-            'incoming_date' => 'required|date',
+            'part_name' => ['required','string', new NoXSS],
+            'part_number' => ['required','string', new NoXSS],
+            'no_seri' => ['nullable','string', new NoXSS],
+            'description' => ['nullable','string', new NoXSS],
+            'customer' => ['required','string', new NoXSS],
+            'incoming_date' => ['required','date', 'date_format:Y-m-d', 'date_equals:today'],
+        ], [
+            'incoming_date.date_equals' => 'Tanggal masuk harus hari ini',
         ]);
 
         $part->update($validated);
@@ -232,10 +238,27 @@ class PartController extends Controller
 
     public function destroy($no_iwo)
     {
-        $part = part::where('no_iwo', $no_iwo)->firstOrFail();
-        $part->delete();
+        try {
+            $part = part::where('no_iwo', $no_iwo)->firstOrFail();
+            
+            // Delete related records first (cascade delete)
+            $part->workProgres()->delete();
+            $part->breakdownParts()->delete();
+            $part->dokumentasiMekanik()->delete();
+            
+            // Delete the part
+            $part->delete();
 
-        return redirect()->route('komponen')->with('success', 'Komponen berhasil dihapus');
+            return response()->json([
+                'success' => true,
+                'message' => 'Komponen berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus komponen: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function setUrgent($no_iwo)

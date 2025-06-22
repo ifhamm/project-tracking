@@ -26,19 +26,17 @@ Route::middleware([checkSession::class])->group(function () {
     Route::get('/dashboard/chart-data', [DashboardController::class, 'getChartData']);
 
     // API routes
-    Route::get('/api/chart-data/{customer}', [ChartController::class, 'getData']);
     Route::get('/api/chart-data/{customer}', [DashboardController::class, 'chartData']);
     Route::get('/api/parts-by-customer/{customer?}', [PartController::class, 'getByCustomer']);
-    Route::get('/dashboard/chart-data', [DashboardController::class, 'getChartData']);
-
 
     Route::get('/export/pdf', [ExportController::class, 'exportPdf'])->name('export.pdf');
 
+    // Dokumentasi routes
     Route::get('/dokumentasi-mekanik', [DokumentasiMekanikController::class, 'index'])->name('dokumentasi-mekanik');
-    Route::post('/dokumentasi-mekanik/upload', [DokumentasiMekanikController::class, 'upload'])->name('dokumentasi.upload');
+    Route::post('/dokumentasi/upload', [DokumentasiMekanikController::class, 'upload'])->name('dokumentasi.upload');
     Route::get('/dokumentasi/filter', [DokumentasiMekanikController::class, 'filter'])->name('dokumentasi.filter');
     Route::delete('/dokumentasi/{id}', [DokumentasiMekanikController::class, 'destroy'])->name('dokumentasi.delete');
-    Route::get('/dokumentasi/detail/{no_iwo}', [DokumentasiMekanikController::class, 'show'])->name('dokumentasi.detail');
+    Route::get('/dokumentasi/{no_iwo}', [DokumentasiMekanikController::class, 'show'])->name('dokumentasi.detail');
 
     // Superadmin & Mekanik routes
     Route::middleware([RoleMiddleware::class . ':superadmin,mekanik,ppc'])->group(function () {
@@ -58,8 +56,8 @@ Route::middleware([checkSession::class])->group(function () {
         Route::delete('/part/delete/{no_iwo}', [PartController::class, 'destroy'])->name('part.destroy');
         Route::post('/breakdown_parts', [BreakdownPartController::class, 'store'])->name('breakdown.parts.store');
         Route::put('/breakdown_parts/{no_iwo}', [BreakdownPartController::class, 'update'])->name('breakdown.parts.update');
-        Route::delete('/breakdown_parts/{no_iwo}', [BreakdownPartController::class, 'destroy'])->name('breakdown.parts.destroy');
         Route::post('/parts/{no_iwo}/set-urgent', [PartController::class, 'setUrgent'])->name('parts.setUrgent');
+        Route::delete('/breakdown_parts/{bdp_number}', [BreakdownPartController::class, 'destroy'])->name('breakdown.parts.destroy');
     });
 
     // superadmin-only routes

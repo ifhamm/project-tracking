@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Str;
 
 class akun_mekanik extends Model
 {
@@ -21,14 +20,6 @@ class akun_mekanik extends Model
         'nik',
         'role',
     ];
-
-    protected static function boot()
-    {
-        parent::boot();
-        static::creating(function ($model) {
-            $model->id_credentials = (string) Str::uuid();
-        });
-    }
 
     public function part()
     {

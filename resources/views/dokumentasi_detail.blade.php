@@ -1,6 +1,8 @@
 @extends('layouts.sidebar')
 
 @section('content')
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <div class="p-4">
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -15,6 +17,20 @@
             <i class="bi bi-arrow-left me-2"></i>Kembali
         </a>
     </div>
+
+    @if (session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
+    @if (session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>{{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
 
     <!-- Informasi Part -->
     <div class="card mb-4">
@@ -125,6 +141,12 @@
                                                  style="object-fit: cover; cursor: pointer;"
                                                  title="{{ $doc->tanggal }}"
                                                  onerror="this.style.display='none'; console.log('Failed to load image:', '{{ asset('storage/' . $doc->foto) }}');">
+                                            <button type="button" 
+                                                    class="btn-delete-photo" 
+                                                    onclick="deletePhoto({{ $doc->id }}, '{{ $doc->foto }}')"
+                                                    title="Hapus foto">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </div>
                                         @endforeach
                                     </div>
@@ -155,12 +177,18 @@
                     <div class="row">
                         @foreach($docs as $doc)
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <div class="card h-100">
+                            <div class="card h-100 position-relative">
                                 <img src="{{ asset('storage/' . $doc->foto) }}" 
                                      class="card-img-top previewable-image" 
                                      style="height: 150px; object-fit: cover; cursor: pointer;"
                                      alt="Dokumentasi {{ $stepName }}"
                                      onerror="this.style.display='none'; console.log('Failed to load image:', '{{ asset('storage/' . $doc->foto) }}');">
+                                <button type="button" 
+                                        class="btn-delete-photo-large" 
+                                        onclick="deletePhoto({{ $doc->id }}, '{{ $doc->foto }}')"
+                                        title="Hapus foto">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                                 <div class="card-body p-3">
                                     <small class="text-muted">
                                         <i class="bi bi-calendar me-1"></i>
@@ -203,6 +231,73 @@
     
     .previewable-image:hover {
         transform: scale(1.05);
+    }
+
+    /* Delete button styling */
+    .btn-delete-photo {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: rgba(220, 53, 69, 0.9);
+        border: 2px solid white;
+        color: white;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 10;
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    .btn-delete-photo:hover {
+        background: rgba(220, 53, 69, 1);
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    .position-relative:hover .btn-delete-photo {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .btn-delete-photo-large {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(220, 53, 69, 0.9);
+        border: 2px solid white;
+        color: white;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 10;
+        opacity: 0;
+        transform: scale(0.8);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-delete-photo-large:hover {
+        background: rgba(220, 53, 69, 1);
+        transform: scale(1.1);
+        opacity: 1;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .card:hover .btn-delete-photo-large {
+        opacity: 1;
+        transform: scale(1);
     }
 
     #imagePreviewModal .modal-content {
@@ -274,6 +369,30 @@
         .table th {
             width: 120px;
         }
+
+        /* Mobile delete button adjustments */
+        .btn-delete-photo {
+            width: 28px;
+            height: 28px;
+            font-size: 12px;
+            top: -6px;
+            right: -6px;
+        }
+
+        .btn-delete-photo-large {
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+            top: 6px;
+            right: 6px;
+        }
+
+        /* Show delete buttons on mobile by default */
+        .btn-delete-photo,
+        .btn-delete-photo-large {
+            opacity: 1;
+            transform: scale(1);
+        }
     }
 </style>
 
@@ -300,5 +419,85 @@
             bootstrap.Modal.getInstance(this).hide();
         }
     });
+
+    // Auto-hide alerts after 5 seconds
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+
+    // Function to delete photo
+    function deletePhoto(photoId, photoPath) {
+        Swal.fire({
+            title: 'Hapus Foto?',
+            text: 'Apakah Anda yakin ingin menghapus foto ini? Tindakan ini tidak dapat dibatalkan.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Show loading
+                Swal.fire({
+                    title: 'Menghapus Foto...',
+                    text: 'Mohon tunggu sebentar',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Send delete request
+                fetch(`/dokumentasi/${photoId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: data.message || 'Foto berhasil dihapus',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#198754'
+                        }).then(() => {
+                            // Reload page to update the view
+                            window.location.reload();
+                        });
+                    } else {
+                        throw new Error(data.message || 'Gagal menghapus foto');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: error.message || 'Gagal menghapus foto. Silakan coba lagi.',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#dc3545'
+                    });
+                });
+            }
+        });
+    }
 </script>
 @endsection 

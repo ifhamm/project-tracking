@@ -153,9 +153,9 @@
                         <button type="submit" class="btn btn-primary flex-fill">
                             <i class="bi bi-search me-2"></i>Filter
                         </button>
-                        <a href="{{ route('komponen') }}" class="btn btn-outline-secondary flex-fill">
+                        <button type="button" class="btn btn-outline-secondary flex-fill" onclick="resetFilters()">
                             <i class="bi bi-arrow-clockwise me-2"></i>Reset Filter
-                        </a>
+                        </button>
                     </div>
                 </div>
             </form>
@@ -195,6 +195,21 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
+                                    <label for="customer" class="form-label fw-semibold">
+                                        <i class="bi bi-building me-2"></i>Customer
+                                    </label>
+                                    <input type="text" class="form-control @error('customer') is-invalid @enderror" 
+                                           id="customer" name="customer" value="{{ old('customer') }}" required>
+                                    @error('customer')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
                                     <label for="no_wbs" class="form-label fw-semibold">
                                         <i class="bi bi-upc-scan me-2"></i>No WBS
                                     </label>
@@ -205,21 +220,29 @@
                                     @enderror
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="incoming_date" class="form-label fw-semibold">
                                         <i class="bi bi-calendar me-2"></i>Tanggal Masuk
                                     </label>
                                     <input type="date" class="form-control @error('incoming_date') is-invalid @enderror"
-                                        id="incoming_date" name="incoming_date" value="{{ old('incoming_date') }}" required>
+                                        id="incoming_date" name="incoming_date" 
+                                        value="{{ old('incoming_date', date('Y-m-d')) }}" 
+                                        min="{{ date('Y-m-d') }}" 
+                                        max="{{ date('Y-m-d') }}" 
+                                        required>
+                                    <div class="form-text">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Hanya tanggal hari ini yang diizinkan
+                                    </div>
                                     @error('incoming_date')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="part_name" class="form-label fw-semibold">
@@ -232,9 +255,6 @@
                                     @enderror
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="part_number" class="form-label fw-semibold">
@@ -247,6 +267,9 @@
                                     @enderror
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="no_seri" class="form-label fw-semibold">
@@ -259,17 +282,18 @@
                                     @enderror
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="description" class="form-label fw-semibold">
-                                <i class="bi bi-text-paragraph me-2"></i>Deskripsi (Opsional)
-                            </label>
-                            <textarea class="form-control @error('description') is-invalid @enderror" 
-                                      id="description" name="description" rows="3">{{ old('description') }}</textarea>
-                            @error('description')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="description" class="form-label fw-semibold">
+                                        <i class="bi bi-text-paragraph me-2"></i>Deskripsi (Opsional)
+                                    </label>
+                                    <input type="text" class="form-control @error('description') is-invalid @enderror" 
+                                           id="description" name="description" value="{{ old('description') }}">
+                                    @error('description')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -292,17 +316,6 @@
                                 Pilih urutan step yang akan dilakukan (gunakan Ctrl/Cmd untuk memilih multiple)
                             </div>
                             @error('step_sequence')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="customer" class="form-label fw-semibold">
-                                <i class="bi bi-building me-2"></i>Customer
-                            </label>
-                            <textarea class="form-control @error('customer') is-invalid @enderror" 
-                                      id="customer" name="customer" rows="2">{{ old('customer') }}</textarea>
-                            @error('customer')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -355,6 +368,20 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
+                                    <label for="customer{{ $part->no_iwo }}" class="form-label fw-semibold">
+                                        <i class="bi bi-building me-2"></i>Customer
+                                    </label>
+                                    <input type="text" class="form-control" 
+                                           id="customer{{ $part->no_iwo }}" 
+                                           name="customer" 
+                                           value="{{ $part->customer }}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
                                     <label for="no_wbs{{ $part->no_iwo }}" class="form-label fw-semibold">
                                         <i class="bi bi-upc-scan me-2"></i>No WBS
                                     </label>
@@ -364,9 +391,6 @@
                                            value="{{ $part->no_wbs }}" required>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="incoming_date{{ $part->no_iwo }}" class="form-label fw-semibold">
@@ -375,9 +399,19 @@
                                     <input type="date" class="form-control" 
                                            id="incoming_date{{ $part->no_iwo }}" 
                                            name="incoming_date" 
-                                           value="{{ $part->incoming_date }}" required>
+                                           value="{{ $part->incoming_date }}" 
+                                           min="{{ date('Y-m-d') }}" 
+                                           max="{{ date('Y-m-d') }}" 
+                                           required>
+                                    <div class="form-text">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Hanya tanggal hari ini yang diizinkan
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="part_name{{ $part->no_iwo }}" class="form-label fw-semibold">
@@ -389,9 +423,6 @@
                                            value="{{ $part->part_name }}" required>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="part_number{{ $part->no_iwo }}" class="form-label fw-semibold">
@@ -403,6 +434,9 @@
                                            value="{{ $part->part_number }}" required>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="no_seri{{ $part->no_iwo }}" class="form-label fw-semibold">
@@ -414,26 +448,17 @@
                                            value="{{ $part->no_seri }}">
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="description{{ $part->no_iwo }}" class="form-label fw-semibold">
-                                <i class="bi bi-text-paragraph me-2"></i>Deskripsi (Opsional)
-                            </label>
-                            <textarea class="form-control" 
-                                      id="description{{ $part->no_iwo }}" 
-                                      name="description" 
-                                      rows="3">{{ $part->description }}</textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="customer{{ $part->no_iwo }}" class="form-label fw-semibold">
-                                <i class="bi bi-building me-2"></i>Customer
-                            </label>
-                            <textarea class="form-control" 
-                                      id="customer{{ $part->no_iwo }}" 
-                                      name="customer" 
-                                      rows="2">{{ $part->customer }}</textarea>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="description{{ $part->no_iwo }}" class="form-label fw-semibold">
+                                        <i class="bi bi-text-paragraph me-2"></i>Deskripsi (Opsional)
+                                    </label>
+                                    <input type="text" class="form-control" 
+                                           id="description{{ $part->no_iwo }}" 
+                                           name="description" 
+                                           value="{{ $part->description }}">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -550,36 +575,272 @@
             </div>
         </div>
     </div>
+
+    <!-- Pagination -->
+    @if($parts->hasPages())
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <div class="text-muted">
+            <small>
+                Showing {{ $parts->firstItem() ?? 0 }} to {{ $parts->lastItem() ?? 0 }} of {{ $parts->total() }} entries
+            </small>
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination mb-0">
+                @if ($parts->onFirstPage())
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                @else
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $parts->previousPageUrl() }}" rel="prev">Previous</a>
+                    </li>
+                @endif
+
+                @foreach ($parts->getUrlRange(1, $parts->lastPage()) as $page => $url)
+                    @if ($page == $parts->currentPage())
+                        <li class="page-item active">
+                            <span class="page-link">{{ $page }}</span>
+                        </li>
+                    @else
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                        </li>
+                    @endif
+                @endforeach
+
+                @if ($parts->hasMorePages())
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $parts->nextPageUrl() }}" rel="next">Next</a>
+                    </li>
+                @else
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                @endif
+            </ul>
+        </nav>
+    </div>
+    @endif
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function resetFilters() {
-        document.getElementById('statusFilter').value = 'All';
-        document.getElementById('dateFilter').value = '';
+        Swal.fire({
+            title: 'Reset Filter',
+            text: 'Apakah Anda yakin ingin mereset semua filter?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, reset!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('statusFilter').value = '';
+                document.getElementById('searchFilter').value = '';
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Filter Direset!',
+                    text: 'Semua filter telah direset.',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    window.location.href = '{{ route('komponen') }}';
+                });
+            }
+        });
     }
 
     function deletePart(noIwo) {
-        if (confirm('Are you sure you want to delete this component?')) {
-            fetch(`/parts/${noIwo}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
+        Swal.fire({
+            title: 'Konfirmasi Hapus',
+            text: 'Apakah Anda yakin ingin menghapus komponen ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Show loading state
+                Swal.fire({
+                    title: 'Menghapus...',
+                    text: 'Mohon tunggu sebentar',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                fetch(`/part/delete/${noIwo}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: 'Komponen berhasil dihapus.',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Gagal menghapus komponen'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Terjadi kesalahan saat menghapus komponen'
+                    });
+                });
+            }
+        });
+    }
+
+    // Date validation for insert form
+    document.addEventListener('DOMContentLoaded', function() {
+        const incomingDateInput = document.getElementById('incoming_date');
+        if (incomingDateInput) {
+            // Set min and max date to today (only today is allowed)
+            const today = new Date();
+            // Convert to WIB (UTC+7)
+            const wibDate = new Date(today.getTime() + (7 * 60 * 60 * 1000));
+            const todayString = wibDate.toISOString().split('T')[0];
+            incomingDateInput.value = todayString;
+            incomingDateInput.setAttribute('min', todayString);
+            incomingDateInput.setAttribute('max', todayString);
+            
+            // Add validation on change
+            incomingDateInput.addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                const today = new Date();
+                // Convert to WIB (UTC+7)
+                const wibDate = new Date(today.getTime() + (7 * 60 * 60 * 1000));
+                wibDate.setHours(0, 0, 0, 0); // Reset time to start of day
+                const selectedDay = new Date(selectedDate);
+                selectedDay.setHours(0, 0, 0, 0); // Reset time to start of day
+                
+                if (selectedDay.getTime() !== wibDate.getTime()) {
+                    this.setCustomValidity('Hanya tanggal hari ini yang diizinkan');
+                    this.classList.add('is-invalid');
                 } else {
-                    alert('Failed to delete component');
+                    this.setCustomValidity('');
+                    this.classList.remove('is-invalid');
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while deleting the component');
             });
         }
-    }
+        
+        // Date validation for edit forms
+        const editDateInputs = document.querySelectorAll('input[id^="incoming_date"][id!="incoming_date"]');
+        editDateInputs.forEach(function(input) {
+            const today = new Date();
+            // Convert to WIB (UTC+7)
+            const wibDate = new Date(today.getTime() + (7 * 60 * 60 * 1000));
+            const todayString = wibDate.toISOString().split('T')[0];
+            input.setAttribute('min', todayString);
+            input.setAttribute('max', todayString);
+            
+            input.addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                const today = new Date();
+                // Convert to WIB (UTC+7)
+                const wibDate = new Date(today.getTime() + (7 * 60 * 60 * 1000));
+                wibDate.setHours(0, 0, 0, 0); // Reset time to start of day
+                const selectedDay = new Date(selectedDate);
+                selectedDay.setHours(0, 0, 0, 0); // Reset time to start of day
+                
+                if (selectedDay.getTime() !== wibDate.getTime()) {
+                    this.setCustomValidity('Hanya tanggal hari ini yang diizinkan');
+                    this.classList.add('is-invalid');
+                } else {
+                    this.setCustomValidity('');
+                    this.classList.remove('is-invalid');
+                }
+            });
+        });
+    });
+</script>
+
+@if ($errors->any())
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show validation errors with SweetAlert
+        const errorMessages = [];
+        @foreach ($errors->all() as $error)
+            errorMessages.push('{{ $error }}');
+        @endforeach
+        
+        Swal.fire({
+            icon: 'error',
+            title: 'Validasi Error',
+            html: errorMessages.join('<br>'),
+            confirmButtonColor: '#d33'
+        });
+        
+        // Show the modal
+        var insertModal = new bootstrap.Modal(document.getElementById('insertModal'));
+        insertModal.show();
+    });
+</script>
+@endif
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var insertModalEl = document.getElementById('insertModal');
+        if (insertModalEl) {
+            insertModalEl.addEventListener('hidden.bs.modal', function () {
+                var form = insertModalEl.querySelector('form');
+                if(form) form.reset();
+                insertModalEl.querySelectorAll('.is-invalid').forEach(function(el) {
+                    el.classList.remove('is-invalid');
+                });
+                insertModalEl.querySelectorAll('.invalid-feedback').forEach(function(el) {
+                    el.innerHTML = '';
+                });
+            });
+        }
+        
+        // Show success messages with SweetAlert
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        @endif
+        
+        // Show error messages with SweetAlert
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+                confirmButtonColor: '#d33'
+            });
+        @endif
+    });
 </script>
 @endsection

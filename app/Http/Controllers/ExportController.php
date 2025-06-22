@@ -10,25 +10,49 @@ class ExportController extends Controller
 {
     public function exportPdf(Request $request)
     {
-        $customer = $request->query('customer'); // Gunakan query() untuk GET parameter
-        
-        // Jika customer adalah 'all', ambil semua data
-        if ($customer === 'all') {
-            $parts = Part::all();
-            $customerName = 'Semua Customer';
-        } 
-        // Jika customer ada nilainya tapi bukan 'all'
-        else if ($customer) {
-            $parts = Part::where('customer', $customer)->get();
-            $customerName = $customer;
-        } 
-        // Jika tidak ada customer yang dipilih
-        else {
-            $parts = Part::all();
-            $customerName = 'Semua Customer';
+        try {
+            $customer = $request->query('customer');
+            
+            // Validate customer parameter
+            if (!$customer) {
+                return response()->json([
+                    'error' => 'Customer parameter is required'
+                ], 400);
+            }
+            
+            // Get parts data
+            if ($customer === 'all') {
+                $parts = Part::all();
+                $customerName = 'Semua Customer';
+            } else {
+                $parts = Part::where('customer', $customer)->get();
+                $customerName = $customer;
+            }
+            
+            // Check if any parts exist
+            if ($parts->isEmpty()) {
+                return response()->json([
+                    'error' => 'No data found for the specified customer'
+                ], 404);
+            }
+            
+            // Generate PDF
+            $pdf = Pdf::html(view('export.ExportPart', compact('parts', 'customerName')));
+            
+            // Set response headers
+            return $pdf->download("komponen-{$customerName}.pdf", [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="komponen-' . $customerName . '.pdf"'
+            ]);
+            
+        } catch (\Exception $e) {
+            // Log the error
+            \Log::error('PDF Export Error: ' . $e->getMessage());
+            
+            // Return error response
+            return response()->json([
+                'error' => 'Failed to generate PDF: ' . $e->getMessage()
+            ], 500);
         }
-    
-        return Pdf::html(view('export.ExportPart', compact('parts', 'customerName')))
-            ->download("komponen-{$customerName}.pdf");
     }
 }

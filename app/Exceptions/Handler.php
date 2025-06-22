@@ -3,6 +3,8 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -25,6 +27,37 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        // Handle HTTP exceptions
+        $this->renderable(function (HttpException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'error' => $e->getMessage(),
+                    'status' => $e->getStatusCode()
+                ], $e->getStatusCode());
+            }
+
+            // Handle specific HTTP status codes
+            switch ($e->getStatusCode()) {
+                case 403:
+                    return response()->view('errors.403', [], 403);
+                case 404:
+                    return response()->view('errors.404', [], 404);
+                case 419:
+                    return response()->view('errors.419', [], 419);
+                case 429:
+                    return response()->view('errors.429', [], 429);
+                case 500:
+                    return response()->view('errors.500', [], 500);
+                case 503:
+                    return response()->view('errors.503', [], 503);
+                default:
+                    return response()->view('errors.generic', [
+                        'statusCode' => $e->getStatusCode(),
+                        'message' => $e->getMessage()
+                    ], $e->getStatusCode());
+            }
         });
     }
 }

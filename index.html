@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wall of Words - Expo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      animation: fadeInDown 1s ease-out;
+    }
+
+    .header p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      animation: fadeInUp 1s ease-out 0.3s both;
+    }
+
+    .input-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 40px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      animation: slideInUp 0.8s ease-out;
+    }
+
+    .input-section h2 {
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 1.8rem;
+    }
+
+    .message-input {
+      width: 100%;
+      min-height: 120px;
+      padding: 20px;
+      border: 2px solid #e1e5e9;
+      border-radius: 15px;
+      font-size: 1.1rem;
+      font-family: inherit;
+      resize: vertical;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    .message-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .submit-btn {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .submit-btn:active {
+      transform: translateY(-1px);
+    }
+
+    .wall-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px 0;
+    }
+
+    .message-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      animation: fadeInScale 0.6s ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .message-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+    }
+
+    .message-card:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    .message-text {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    .message-time {
+      font-size: 0.9rem;
+      color: #666;
+      font-style: italic;
+    }
+
+    .loading {
+      text-align: center;
+      color: white;
+      font-size: 1.2rem;
+      margin: 40px 0;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: white;
+      font-size: 1.3rem;
+      margin: 60px 0;
+      opacity: 0.8;
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .wall-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .input-section {
+        padding: 20px;
+      }
+    }
+
+    /* Floating animation for cards */
+    .message-card:nth-child(odd) {
+      animation-delay: 0.1s;
+    }
+    
+    .message-card:nth-child(even) {
+      animation-delay: 0.2s;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>💬 Wall of Words</h1>
+      <p>Tinggalkan pesan dan kesanmu di sini!</p>
+    </div>
+
+    <div class="input-section">
+      <h2>✍️ Tulis Pesanmu</h2>
+      <textarea 
+        id="message" 
+        class="message-input" 
+        placeholder="Tulis pesan dan kesanmu tentang expo ini di sini..."
+      ></textarea>
+      <button id="kirimBtn" class="submit-btn">Kirim Pesan ✨</button>
+    </div>
+
+    <div id="messages" class="wall-container">
+      <div class="loading">Memuat pesan...</div>
+    </div>
+  </div>
+
+  <!-- Firebase with ES Module -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, push, onValue, query, orderByChild } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    // Konfigurasi Firebase kamu
+    const firebaseConfig = {
+      apiKey: "AIzaSyDITp0bzGIwdQdQf2RlsS8B77OVDVSbm7A",
+      authDomain: "testi-expo.firebaseapp.com",
+      databaseURL: "https://testi-expo-default-rtdb.firebaseio.com",
+      projectId: "testi-expo",
+      storageBucket: "testi-expo.appspot.com",
+      messagingSenderId: "1047014985889",
+      appId: "1:1047014985889:web:fee8a0ff6c6a5271ea60e0",
+      measurementId: "G-RS3WC26FQG"
+    };
+
+    // Inisialisasi Firebase & Database
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Ambil elemen
+    const messageInput = document.getElementById('message');
+    const messagesDiv = document.getElementById('messages');
+    const kirimBtn = document.getElementById('kirimBtn');
+
+    // Fungsi format waktu
+    function formatTime(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diff = now - date;
+      
+      if (diff < 60000) return 'Baru saja';
+      if (diff < 3600000) return `${Math.floor(diff / 60000)} menit yang lalu`;
+      if (diff < 86400000) return `${Math.floor(diff / 3600000)} jam yang lalu`;
+      return date.toLocaleDateString('id-ID', { 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    // Fungsi submit
+    kirimBtn.addEventListener('click', () => {
+      const message = messageInput.value.trim();
+      if (message) {
+        kirimBtn.disabled = true;
+        kirimBtn.textContent = 'Mengirim...';
+        
+        const data = { message, timestamp: Date.now() };
+        push(ref(db, 'messages'), data).then(() => {
+          messageInput.value = '';
+          kirimBtn.disabled = false;
+          kirimBtn.textContent = 'Kirim Pesan ✨';
+        }).catch((error) => {
+          console.error('Error:', error);
+          kirimBtn.disabled = false;
+          kirimBtn.textContent = 'Kirim Pesan ✨';
+        });
+      }
+    });
+
+    // Submit dengan Enter
+    messageInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        kirimBtn.click();
+      }
+    });
+
+    // Ambil & tampilkan pesan
+    const messagesRef = query(ref(db, 'messages'), orderByChild('timestamp'));
+    onValue(messagesRef, (snapshot) => {
+      messagesDiv.innerHTML = '';
+      
+      if (snapshot.exists()) {
+        const messages = [];
+        snapshot.forEach((childSnapshot) => {
+          messages.push({ id: childSnapshot.key, ...childSnapshot.val() });
+        });
+        
+        // Urutkan dari yang terbaru
+        messages.reverse().forEach((msg) => {
+          const div = document.createElement('div');
+          div.className = 'message-card';
+          div.innerHTML = `
+            <div class="message-text">${msg.message}</div>
+            <div class="message-time">${formatTime(msg.timestamp)}</div>
+          `;
+          messagesDiv.appendChild(div);
+        });
+      } else {
+        messagesDiv.innerHTML = '<div class="empty-state">Belum ada pesan. Jadilah yang pertama! 🎉</div>';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -113,9 +113,13 @@
                                     </div>
                                 </td>
                                 <td>
-                                    @if ($part->is_urgent == 1)
+                                    @if ($part->urgency_icon === 'red')
                                         <div class="text-center">
-                                            <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                                            <i class="bi bi-exclamation-triangle-fill text-danger" title="Urgent"></i>
+                                        </div>
+                                    @elseif ($part->urgency_icon === 'yellow')
+                                        <div class="text-center">
+                                            <i class="bi bi-exclamation-circle-fill text-warning" title="Mendekati Deadline"></i>
                                         </div>
                                     @else
                                         <span class="text-muted">-</span>

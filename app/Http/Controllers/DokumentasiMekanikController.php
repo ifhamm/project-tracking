@@ -74,24 +74,44 @@ class DokumentasiMekanikController extends Controller
             });
         }
 
-        $parts = $query->paginate(10);
+        $parts = $query->paginate(10)->withQueryString();
 
-        return view('dokumentasi', compact('parts'));
+        return redirect()->route('dokumentasi-mekanik', $request->query());
     }
 
     public function destroy($id)
     {
-        $doc = dokumentasi_mekanik::findOrFail($id);
+        try {
+            $doc = dokumentasi_mekanik::findOrFail($id);
 
-        // Hapus file dari storage
-        if ($doc->foto && Storage::exists('public/' . $doc->foto)) {
-            Storage::delete('public/' . $doc->foto);
+            // Hapus file dari storage
+            if ($doc->foto && Storage::exists('public/' . $doc->foto)) {
+                Storage::delete('public/' . $doc->foto);
+            }
+
+            // Hapus dari database
+            $doc->delete();
+
+            // Check if request expects JSON (AJAX request)
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Foto berhasil dihapus'
+                ]);
+            }
+
+            return back()->with('success', 'Foto berhasil dihapus.');
+        } catch (\Exception $e) {
+            // Check if request expects JSON (AJAX request)
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal menghapus foto: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return back()->with('error', 'Gagal menghapus foto: ' . $e->getMessage());
         }
-
-        // Hapus dari database
-        $doc->delete();
-
-        return back()->with('success', 'Foto berhasil dihapus.');
     }
 
     public function show($no_iwo)

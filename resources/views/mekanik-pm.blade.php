@@ -74,11 +74,16 @@
                                             title="Edit">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-outline-danger" 
-                                            onclick="deleteUser('{{ $user->id_credentials }}', '{{ $user->name }}')"
-                                            title="Delete">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+                                    <form action="{{ route('add-mekanik-PM.destroy', $user->id_credentials) }}" 
+                                          method="POST" 
+                                          style="display: inline;"
+                                          onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun {{ $user->name }}?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -236,55 +241,31 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function deleteUser(id, name) {
-        Swal.fire({
-            title: 'Konfirmasi Hapus',
-            text: `Apakah Anda yakin ingin menghapus akun "${name}"?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(`/add-mekanik-PM/destroy/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Content-Type': 'application/json',
-                    },
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil!',
-                            text: 'Akun berhasil dihapus.',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: data.message || 'Gagal menghapus akun'
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Terjadi kesalahan saat menghapus akun'
+    @if ($errors->any())
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var addUserModal = new bootstrap.Modal(document.getElementById('addUserModal'));
+            addUserModal.show();
+        });
+    </script>
+    @endif
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var addUserModalEl = document.getElementById('addUserModal');
+            if (addUserModalEl) {
+                addUserModalEl.addEventListener('hidden.bs.modal', function () {
+                    var form = addUserModalEl.querySelector('form');
+                    if(form) form.reset();
+                    addUserModalEl.querySelectorAll('.is-invalid').forEach(function(el) {
+                        el.classList.remove('is-invalid');
+                    });
+                    addUserModalEl.querySelectorAll('.invalid-feedback').forEach(function(el) {
+                        el.innerHTML = '';
                     });
                 });
             }
         });
-    }
+    </script>
 </script>
 @endsection

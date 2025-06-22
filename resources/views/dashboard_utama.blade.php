@@ -5,11 +5,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         .chart-container {
             height: 300px;
             position: relative;
+        }
+
+        .chart-container canvas {
+            max-height: 100%;
+        }
+
+        /* Chart specific styles */
+        .card .chart-container {
+            padding: 1rem;
         }
 
         .status-badge {
@@ -121,6 +132,84 @@
                 font-size: 0.875rem;
             }
         }
+
+        /* Pagination styling */
+        .pagination {
+            margin-bottom: 0;
+        }
+
+        .pagination .page-link {
+            border-radius: 6px;
+            margin: 0 2px;
+            border: 1px solid #dee2e6;
+            color: var(--primary-color);
+            font-weight: 500;
+            background-color: #fff;
+        }
+
+        .pagination .page-link:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+
+        /* Dashboard pagination specific styling */
+        #pagination-container {
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+
+        #pagination-container .pagination .page-link {
+            color: #495057;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+        }
+
+        #pagination-container .pagination .page-link:hover {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+
+        #pagination-container .pagination .page-item.active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+
+        #pagination-container .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+
+        #pagination-info {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        /* Export button disabled state */
+        .btn.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .btn.disabled:hover {
+            transform: none;
+        }
     </style>
 
     <div class="p-4">
@@ -216,7 +305,7 @@
                 <div class="card h-100">
                     <div class="card-header">
                         <h5 class="mb-0">
-                            <i class="bi bi-graph-up me-2"></i>Status Komponen
+                            <i class="bi bi-pie-chart me-2"></i>Distribusi Status Komponen
                         </h5>
                     </div>
                     <div class="card-body">
@@ -230,13 +319,12 @@
                 <div class="card h-100">
                     <div class="card-header">
                         <h5 class="mb-0">
-                            <i class="bi bi-bar-chart me-2"></i>Tren Pemrosesan
+                            <i class="bi bi-graph-up me-2"></i>Tren Pemrosesan Komponen
                         </h5>
                     </div>
-                    <div class="card-body d-flex justify-content-center align-items-center">
-                        <div class="text-center text-muted">
-                            <i class="bi bi-chart-line display-4"></i>
-                            <p class="mt-2">Diagram Tren Pemrosesan</p>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="trendChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -270,7 +358,7 @@
                     </table>
                 </div>
                 <!-- Pagination -->
-                <div id="pagination-container" class="d-flex justify-content-between align-items-center p-3 border-top" style="display: none !important;">
+                <div id="pagination-container" class="d-flex justify-content-between align-items-center p-3 border-top">
                     <div class="text-muted">
                         <small id="pagination-info">Showing 0 to 0 of 0 entries</small>
                     </div>
@@ -289,7 +377,8 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
-        let chartInstance;
+        let statusChartInstance;
+        let trendChartInstance;
 
         $(document).ready(function() {
             console.log("Document ready");
@@ -312,11 +401,100 @@
                 const exportButton = $('#exportButton');
                 if (customer) {
                     exportButton.attr('href', '{{ route('export.pdf') }}?customer=' + encodeURIComponent(customer));
+                    exportButton.removeClass('disabled');
                 } else {
-                    exportButton.attr('href', '{{ route('export.pdf') }}?customer=all');
+                    exportButton.addClass('disabled');
+                    exportButton.removeAttr('href');
                 }
-                exportButton.removeClass('disabled');
             }
+
+            // Event handler untuk export button
+            $('#exportButton').on('click', function(e) {
+                const customer = $('#customerSelect').val();
+                if (!customer) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Pilih Customer Terlebih Dahulu',
+                        text: 'Silakan pilih customer untuk mengexport data',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#007bff'
+                    });
+                    return false;
+                }
+                
+                // Show confirmation before export
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Export PDF?',
+                    text: `Apakah Anda yakin ingin mengexport data untuk customer "${customer}"?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#007bff',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Export!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Show loading
+                        Swal.fire({
+                            title: 'Mengexport PDF...',
+                            text: 'Mohon tunggu sebentar',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                        
+                        // Use AJAX to fetch the PDF
+                        fetch(`{{ route('export.pdf') }}?customer=${encodeURIComponent(customer)}`, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/pdf'
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Export failed');
+                            }
+                            return response.blob();
+                        })
+                        .then(blob => {
+                            // Create a download link and trigger it
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.style.display = 'none';
+                            a.href = url;
+                            a.download = `komponen-${customer}.pdf`;
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            
+                            // Show success notification
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Export Berhasil',
+                                text: 'File PDF telah berhasil diunduh',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Export error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Export Gagal',
+                                text: 'Terjadi kesalahan saat mengexport data',
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#dc3545'
+                            });
+                        });
+                    }
+                });
+            });
 
             // Fungsi untuk update stats
             function updateStats(parts, totalAll) {
@@ -339,17 +517,63 @@
                 $('#urgent').text(urgent);
             }
 
-            // Fungsi untuk render chart
-            function renderChart(data) {
-                console.log("Rendering chart with data:", data);
+            // Fungsi untuk render status chart (doughnut)
+            function renderStatusChart(data) {
+                console.log("Rendering status chart with data:", data);
 
                 const ctx = document.getElementById('statusChart').getContext('2d');
 
-                if (chartInstance) {
-                    chartInstance.destroy();
+                if (statusChartInstance) {
+                    statusChartInstance.destroy();
                 }
 
-                chartInstance = new Chart(ctx, {
+                statusChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true,
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Distribusi Status Komponen',
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        cutout: '60%',
+                        elements: {
+                            arc: {
+                                borderWidth: 2
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Fungsi untuk render trend chart (line)
+            function renderTrendChart(data) {
+                console.log("Rendering trend chart with data:", data);
+
+                const ctx = document.getElementById('trendChart').getContext('2d');
+
+                if (trendChartInstance) {
+                    trendChartInstance.destroy();
+                }
+
+                trendChartInstance = new Chart(ctx, {
                     type: 'line',
                     data: data,
                     options: {
@@ -357,16 +581,43 @@
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
-                                position: 'top'
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    font: {
+                                        size: 12
+                                    }
+                                }
                             },
                             title: {
                                 display: true,
-                                text: 'Status Komponen per Minggu'
+                                text: 'Tren Komponen Selesai per Bulan',
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                }
                             }
                         },
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        elements: {
+                            point: {
+                                radius: 6,
+                                hoverRadius: 8
+                            },
+                            line: {
+                                tension: 0.4
                             }
                         }
                     }
@@ -381,8 +632,19 @@
                 tbody.empty();
 
                 if (!parts || (isPaginated ? parts.data.length === 0 : parts.length === 0)) {
-                    tbody.append('<tr><td colspan="7" class="text-center py-4"><div class="text-muted"><i class="bi bi-inbox display-4"></i><p class="mt-2">Tidak ada komponen</p></div></td></tr>');
+                    tbody.append(
+                        '<tr><td colspan="7" class="text-center py-4"><div class="text-muted"><i class="bi bi-inbox display-4"></i><p class="mt-2">Tidak ada komponen</p></div></td></tr>'
+                        );
                     $('#pagination-container').hide();
+                    
+                    // Show no data notification
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Tidak Ada Data',
+                        text: 'Tidak ada komponen yang ditemukan untuk ditampilkan',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#6c757d'
+                    });
                     return;
                 }
 
@@ -423,9 +685,12 @@
                         <td>${formattedDate}</td>
                         <td><span class="badge ${part.is_urgent == 1 ? 'bg-danger' : 'bg-secondary'}">${priorityText}</span></td>
                         <td>
-                            ${part.is_urgent != 1 ? `<button class="btn btn-sm btn-danger set-urgent-btn" data-id="${part.no_iwo}">
-                                <i class="bi bi-exclamation-triangle me-1"></i>Set Urgent
-                            </button>` : '<span class="text-success"><i class="bi bi-check-circle me-1"></i>Urgent</span>'}
+                            ${part.status === 'Completed' ? 
+                                '<span class="text-muted"><i class="bi bi-check-circle me-1"></i>Selesai</span>' : 
+                                (part.is_urgent != 1 ? `<button class="btn btn-sm btn-danger set-urgent-btn" data-id="${part.no_iwo}">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>Set Urgent
+                                </button>` : '<span class="text-success"><i class="bi bi-check-circle me-1"></i>Urgent</span>')
+                            }
                         </td>
                     </tr>
                 `;
@@ -443,19 +708,54 @@
                 // Event klik tombol Set Urgent
                 tbody.off('click', '.set-urgent-btn').on('click', '.set-urgent-btn', function() {
                     const partId = $(this).data('id');
-                    if (confirm('Yakin ingin set part ini menjadi Urgent?')) {
-                        $.ajax({
-                            url: `/parts/${partId}/set-urgent`,
-                            method: 'POST',
-                            success: function(response) {
-                                alert('Part berhasil di-set menjadi Urgent!');
-                                $('#customerSelect').trigger('change');
-                            },
-                            error: function(xhr) {
-                                alert('Gagal mengubah status urgent: ' + xhr.responseText);
-                            }
-                        });
-                    }
+                    const button = $(this);
+                    
+                    Swal.fire({
+                        title: 'Set Priority Urgent?',
+                        text: 'Apakah Anda yakin ingin mengubah status komponen ini menjadi Urgent?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc3545',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Set Urgent!',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Show loading state
+                            button.prop('disabled', true);
+                            button.html('<i class="bi bi-hourglass-split me-1"></i>Processing...');
+                            
+                            $.ajax({
+                                url: `/parts/${partId}/set-urgent`,
+                                method: 'POST',
+                                success: function(response) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Berhasil!',
+                                        text: 'Komponen berhasil di-set menjadi Urgent',
+                                        confirmButtonText: 'OK',
+                                        confirmButtonColor: '#198754'
+                                    }).then(() => {
+                                        $('#customerSelect').trigger('change');
+                                    });
+                                },
+                                error: function(xhr) {
+                                    // Reset button state
+                                    button.prop('disabled', false);
+                                    button.html('<i class="bi bi-exclamation-triangle me-1"></i>Set Urgent');
+                                    
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Gagal!',
+                                        text: 'Gagal mengubah status urgent: ' + (xhr.responseJSON?.message || xhr.responseText || 'Terjadi kesalahan'),
+                                        confirmButtonText: 'OK',
+                                        confirmButtonColor: '#dc3545'
+                                    });
+                                }
+                            });
+                        }
+                    });
                 });
             }
 
@@ -469,7 +769,9 @@
 
                 // Previous button
                 if (data.prev_page_url) {
-                    links.append(`<li class="page-item"><a class="page-link" href="#" data-page="${data.current_page - 1}">Previous</a></li>`);
+                    links.append(
+                        `<li class="page-item"><a class="page-link" href="#" data-page="${data.current_page - 1}">Previous</a></li>`
+                        );
                 } else {
                     links.append(`<li class="page-item disabled"><span class="page-link">Previous</span></li>`);
                 }
@@ -479,13 +781,17 @@
                     if (i === data.current_page) {
                         links.append(`<li class="page-item active"><span class="page-link">${i}</span></li>`);
                     } else {
-                        links.append(`<li class="page-item"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`);
+                        links.append(
+                            `<li class="page-item"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`
+                            );
                     }
                 }
 
                 // Next button
                 if (data.next_page_url) {
-                    links.append(`<li class="page-item"><a class="page-link" href="#" data-page="${data.current_page + 1}">Next</a></li>`);
+                    links.append(
+                        `<li class="page-item"><a class="page-link" href="#" data-page="${data.current_page + 1}">Next</a></li>`
+                        );
                 } else {
                     links.append(`<li class="page-item disabled"><span class="page-link">Next</span></li>`);
                 }
@@ -495,6 +801,18 @@
                     e.preventDefault();
                     const page = $(this).data('page');
                     if (page) {
+                        // Show loading notification
+                        Swal.fire({
+                            title: 'Memuat Halaman...',
+                            text: `Memuat halaman ${page}`,
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                        
                         loadData('all', page);
                     }
                 });
@@ -502,15 +820,41 @@
 
             // Fungsi untuk load data
             function loadData(customer, page = 1) {
+                console.log("Loading data for customer:", customer, "page:", page);
                 updateExportButton(customer);
 
                 if (customer && customer !== 'all') {
-                    // Load chart data
+                    // Load chart data for specific customer
                     $.ajax({
                         url: `/api/chart-data/${customer}`,
                         method: 'GET',
                         success: function(response) {
-                            renderChart(response);
+                            console.log("Chart data response:", response);
+                            renderStatusChart(response.statusChart);
+                            renderTrendChart(response.trendChart);
+                            
+                            // Close loading and show success notification
+                            Swal.close();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Data Berhasil Dimuat',
+                                text: `Data untuk customer "${customer}" berhasil dimuat`,
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true
+                            });
+                        },
+                        error: function(xhr) {
+                            console.error("Error loading chart data:", xhr);
+                            Swal.close();
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal Memuat Data Chart',
+                                text: 'Terjadi kesalahan saat memuat data chart',
+                                confirmButtonText: 'OK'
+                            });
                         }
                     });
 
@@ -519,44 +863,103 @@
                         url: `/api/parts-by-customer/${customer}`,
                         method: 'GET',
                         success: function(response) {
+                            console.log("Customer specific response:", response);
                             updateTable(response.data, false);
                             updateStats(response.data, response.total_all);
                         },
                         error: function(xhr) {
+                            console.error("Error loading customer data:", xhr);
+                            Swal.close();
                             $('table tbody').html(
                                 '<tr><td colspan="7" class="text-center text-danger py-4"><i class="bi bi-exclamation-triangle display-4"></i><p class="mt-2">Gagal memuat data</p></td></tr>'
                             );
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal Memuat Data',
+                                text: 'Terjadi kesalahan saat memuat data customer',
+                                confirmButtonText: 'OK'
+                            });
                         }
                     });
                 } else {
+                    // Close loading if exists
+                    if (Swal.isVisible()) {
+                        Swal.close();
+                    }
+                    
+                    // Load chart data for all customers
+                    $.ajax({
+                        url: '/api/chart-data/all',
+                        method: 'GET',
+                        success: function(response) {
+                            console.log("All customers chart data:", response);
+                            renderStatusChart(response.statusChart);
+                            renderTrendChart(response.trendChart);
+                        },
+                        error: function(xhr) {
+                            console.error("Error loading all customers chart data:", xhr);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal Memuat Data Chart',
+                                text: 'Terjadi kesalahan saat memuat data chart',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    });
+
                     // Request 1: Untuk statistik (all=1)
                     $.ajax({
                         url: '/api/parts-by-customer/all?all=1',
                         method: 'GET',
                         success: function(response) {
+                            console.log("Stats response:", response);
                             updateStats(response.data, response.total_all);
+                        },
+                        error: function(xhr) {
+                            console.error("Error loading stats:", xhr);
                         }
                     });
+                    
                     // Request 2: Untuk tabel (paginated)
                     $.ajax({
                         url: '/api/parts-by-customer/all?page=' + page,
                         method: 'GET',
                         success: function(response) {
-                            updateTable(response.data, true);
+                            console.log("Table response:", response);
+                            updateTable(response, true);
+                            
+                            // Close loading if exists (for pagination)
+                            if (Swal.isVisible()) {
+                                Swal.close();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Halaman Berhasil Dimuat',
+                                    text: `Halaman ${page} berhasil dimuat`,
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                    timerProgressBar: true
+                                });
+                            }
                         },
                         error: function(xhr) {
+                            console.error("Error loading table data:", xhr);
+                            // Close loading if exists
+                            if (Swal.isVisible()) {
+                                Swal.close();
+                            }
                             $('table tbody').html(
                                 '<tr><td colspan="7" class="text-center text-danger py-4"><i class="bi bi-exclamation-triangle display-4"></i><p class="mt-2">Gagal memuat data</p></td></tr>'
                             );
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal Memuat Data',
+                                text: 'Terjadi kesalahan saat memuat data tabel',
+                                confirmButtonText: 'OK'
+                            });
                         }
                     });
-
-                    // Reset chart
-                    $('#statusChart').closest('.card-body').html(`
-                        <div class="chart-container">
-                            <canvas id="statusChart"></canvas>
-                        </div>
-                    `);
                 }
             }
 
@@ -567,13 +970,44 @@
             $('#customerSelect').on('change', function() {
                 const customer = $(this).val();
                 console.log("Customer selected:", customer);
+                
+                // Show loading notification
+                if (customer) {
+                    Swal.fire({
+                        title: 'Memuat Data...',
+                        text: `Memuat data untuk customer "${customer}"`,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                }
+                
                 loadData(customer, 1); // Reset to page 1 when customer changes
             });
 
-            // Fungsi reset filter
-            function resetFilter() {
-                $('#customerSelect').val('').trigger('change');
-            }
+            // Initialize pagination container visibility
+            $('#pagination-container').hide();
         });
+
+        // Fungsi reset filter (global)
+        function resetFilter() {
+            $('#customerSelect').val('').trigger('change');
+            loadData('all', 1); // Load all parts when filter is reset
+            
+            // Show reset notification
+            Swal.fire({
+                icon: 'info',
+                title: 'Filter Direset',
+                text: 'Filter customer telah direset ke semua customer',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        }
     </script>
 @endsection

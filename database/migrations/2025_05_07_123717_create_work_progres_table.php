@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreign('no_iwo')->references('no_iwo')->on('parts');
             $table->string('step_order');
             $table->string('step_name');
-            $table->boolean('is_complete')->default(false);
+            $table->boolean('is_completed')->default(false);
             $table->timestamps();
         });
     }
