@@ -17,7 +17,21 @@ class DokumentasiMekanikController extends Controller
                 $query->where('is_completed', false);
             });
 
-        $parts = $query->paginate(10);
+        if ($request->filled('customer')) {
+            $query->where('customer', 'like', '%' . $request->customer . '%');
+        }
+
+        if ($request->filled('no_wbs')) {
+            $query->where('no_wbs', 'like', '%' . $request->no_wbs . '%');
+        }
+
+        if ($request->filled('teknisi')) {
+            $query->whereHas('akunMekanik', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->teknisi . '%');
+            });
+        }
+
+        $parts = $query->paginate(10)->withQueryString();
 
         return view('dokumentasi', compact('parts'));
     }
@@ -50,33 +64,6 @@ class DokumentasiMekanikController extends Controller
         }
 
         return back()->with('success', 'Foto dokumentasi berhasil diunggah.');
-    }
-
-
-    public function filter(Request $request)
-    {
-        $query = Part::with(['workProgres', 'akunMekanik', 'dokumentasiMekanik'])
-            ->whereHas('workProgres', function ($query) {
-                $query->where('is_completed', false);
-            });
-
-        if ($request->filled('customer')) {
-            $query->where('customer', 'like', '%' . $request->customer . '%');
-        }
-
-        if ($request->filled('no_wbs')) {
-            $query->where('no_wbs', 'like', '%' . $request->no_wbs . '%');
-        }
-
-        if ($request->filled('teknisi')) {
-            $query->whereHas('akunMekanik', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->teknisi . '%');
-            });
-        }
-
-        $parts = $query->paginate(10)->withQueryString();
-
-        return redirect()->route('dokumentasi-mekanik', $request->query());
     }
 
     public function destroy($id)

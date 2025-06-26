@@ -676,9 +676,9 @@
                     const priorityText = part.is_urgent == 1 ? 'Urgent' : 'Normal';
                     console.log('no_iwo yang dikirim:', part.no_iwo);
 
-                    const row = `
+                    const row = `s
                     <tr>
-                        <td><a href="/dokumentasi/detail/${part.no_iwo}" class="text-decoration-none fw-bold text-primary">${part.no_wbs || '-'}</a></td>
+                        <td><a href="/dokumentasi/${part.no_iwo}" class="text-decoration-none fw-bold text-primary">${part.no_wbs || '-'}</a></td>
                         <td>${part.part_name || '-'}</td>
                         <td>${part.customer || '-'}</td>
                         <td><span class="status-badge ${statusClass}">${statusText || '-'}</span></td>
